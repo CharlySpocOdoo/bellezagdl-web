@@ -1,0 +1,137 @@
+// ─── Auth ───────────────────────────────────────────────────────────────────
+
+export interface LoginResponse {
+  access_token: string
+  refresh_token: string
+  token_type: string
+}
+
+export interface User {
+  id: string
+  email: string
+  role: 'admin' | 'vendor' | 'client'
+  active: boolean
+  profile_id: string | null
+}
+
+// ─── Vendor ─────────────────────────────────────────────────────────────────
+
+export interface Vendor {
+  id: string
+  display_name: string
+  first_name: string
+  last_name: string
+  phone: string
+  invitation_link: string
+  commission_percentage: number
+  active: boolean
+}
+
+export interface Client {
+  id: string
+  first_name: string
+  last_name: string
+  email: string
+  phone: string
+  delivery_address: string
+  active: boolean
+}
+
+// ─── Catalog ─────────────────────────────────────────────────────────────────
+
+export interface Category {
+  id: string
+  name: string
+  slug: string
+  children: Category[]
+}
+
+export interface Brand {
+  id: string
+  name: string
+  active: boolean
+}
+
+export interface ProductVariant {
+  id: string
+  sku: string
+  variant_name: string
+  stock_qty: number
+  returned_stock_qty: number
+  active: boolean
+}
+
+export interface Product {
+  id: string
+  name: string
+  slug: string
+  category_id: string
+  brand_id: string
+  display_price: number
+  tags: string[]
+  variants: ProductVariant[]
+  images: ProductImage[]
+}
+
+export interface ProductImage {
+  id: string
+  url: string
+  thumb_url: string
+  is_primary: boolean
+}
+
+// ─── Orders ──────────────────────────────────────────────────────────────────
+
+export type OrderStatus =
+  | 'pending'
+  | 'partially_available'
+  | 'confirmed'
+  | 'preparing'
+  | 'in_delivery'
+  | 'delivery_failed'
+  | 'delivered_to_vendor'
+  | 'delivered_to_client'
+  | 'return_requested'
+  | 'cancelled'
+
+export interface OrderItem {
+  id: string
+  variant_id: string
+  unit_price: number
+  quantity: number
+  subtotal: number
+}
+
+export interface Order {
+  id: string
+  order_number: string
+  status: OrderStatus
+  subtotal: number
+  shipping_cost: number
+  total: number
+  created_at: string
+  items: OrderItem[]
+}
+
+// ─── Commissions ─────────────────────────────────────────────────────────────
+
+export interface CommissionPeriod {
+  id: string
+  week_start: string
+  week_end: string
+  gross_sales_amount: number
+  commission_amount: number
+  shipping_charges: number
+  net_commission: number
+  status: 'pending' | 'paid'
+}
+
+// ─── Cart (local — sin tabla en BD) ──────────────────────────────────────────
+
+export interface CartItem {
+  variant_id: string
+  product_name: string
+  variant_name: string
+  unit_price: number
+  quantity: number
+}
