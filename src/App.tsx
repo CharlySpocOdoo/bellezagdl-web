@@ -6,6 +6,8 @@ import { LoginPage } from './pages/auth/LoginPage'
 import { CatalogPage } from './pages/catalog/CatalogPage'
 import { OrdersPage } from './pages/orders/OrdersPage'
 import { VendorPage } from './pages/vendor/VendorPage'
+import { RegisterPage } from './pages/auth/RegisterPage'
+import { ActivatePage } from './pages/auth/ActivatePage'
 
 function App() {
   return (
@@ -19,6 +21,24 @@ function App() {
             element={
               <PublicRoute>
                 <LoginPage />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/registro"
+            element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />  
+
+          <Route
+            path="/activar"
+            element={
+              <PublicRoute>
+                <ActivatePage />
               </PublicRoute>
             }
           />
