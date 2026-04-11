@@ -41,3 +41,10 @@ export const addOrderNote = async (id: string, note: string): Promise<Order> => 
   const res = await apiClient.patch<Order>(`/orders/${id}/notes`, { note })
   return res.data
 }
+
+export const cancelOrder = async (id: string): Promise<Order> => {
+  const res = await apiClient.patch<Order>(`/orders/${id}/status`, {
+    status: 'cancelled',
+  })
+  return res.data
+}

@@ -1,9 +1,8 @@
 
-
+import { getOrder, acceptPartialOrder, requestReturn, cancelOrder } from '../../api/orders'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
-import { getOrder, acceptPartialOrder, requestReturn } from '../../api/orders'
 import { theme } from '../../theme'
 import type { Order, OrderStatus } from '../../types'
 
@@ -94,6 +93,22 @@ export function OrderDetailPage() {
             setIsActing(false)
         }
     }
+
+    const handleCancel = async () => {
+        if (!order) return
+        setIsActing(true)
+        setActionError('')
+        try {
+            const updated = await cancelOrder(order.id)
+            setOrder(updated)
+            setActionSuccess('Pedido cancelado correctamente.')
+        } catch {
+            setActionError('No se pudo cancelar el pedido. Intenta de nuevo.')
+        } finally {
+            setIsActing(false)
+        }
+    }
+
 
     if (isLoading) {
         return (
@@ -275,7 +290,7 @@ export function OrderDetailPage() {
                 )}
 
                 {/* Acción — solicitar devolución */}
-                {order.status === 'delivered_to_client' && (
+                {(order.status === 'delivered_to_client' || order.status === 'delivered_to_vendor') && (
                     <div style={{
                         background: theme.colors.neutral[50],
                         border: '1px solid ' + theme.semantic.border,
@@ -306,6 +321,43 @@ export function OrderDetailPage() {
                             }}
                         >
                             {isActing ? 'Procesando...' : 'Solicitar devolución'}
+                        </button>
+                    </div>
+                )}
+
+
+
+                {(order.status === 'pending' || order.status === 'confirmed') && (
+                    <div style={{
+                        background: theme.colors.neutral[50],
+                        border: '1px solid ' + theme.semantic.border,
+                        borderRadius: '12px',
+                        padding: '16px 24px',
+                        marginBottom: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '12px',
+                    }}>
+                        <p style={{ fontSize: '14px', color: theme.semantic.textSecondary, margin: 0 }}>
+                            ¿Deseas cancelar este pedido?
+                        </p>
+                        <button
+                            onClick={handleCancel}
+                            disabled={isActing}
+                            style={{
+                                padding: '8px 20px',
+                                background: 'transparent',
+                                color: theme.colors.accent[800],
+                                border: '1px solid ' + theme.colors.accent[200],
+                                borderRadius: '8px',
+                                cursor: isActing ? 'not-allowed' : 'pointer',
+                                fontSize: '14px',
+                                opacity: isActing ? 0.7 : 1,
+                            }}
+                        >
+                            {isActing ? 'Procesando...' : 'Cancelar pedido'}
                         </button>
                     </div>
                 )}

@@ -123,6 +123,7 @@ export interface CommissionPeriod {
   week_end: string
   gross_sales_amount: number
   commission_amount: number
+  commission_rate: number
   shipping_charges: number
   net_commission: number
   status: 'pending' | 'paid'
