@@ -7,6 +7,7 @@ import { Button } from '../../components/Button'
 import { theme } from '../../theme'
 import apiClient from '../../api/client'
 
+
 export function ActivatePage() {
   const { login } = useAuth()
   const navigate = useNavigate()

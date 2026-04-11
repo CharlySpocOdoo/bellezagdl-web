@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, isLoading, isAuthenticated } = useAuth()
 
+  // Mientras verifica la sesión — no redirigir todavía
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -18,10 +19,12 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     )
   }
 
+  // Sin sesión — ir a login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
+  // Con sesión pero sin el rol correcto — ir a su home
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     if (user.role === 'vendor') return <Navigate to="/vendor" replace />
     if (user.role === 'client') return <Navigate to="/catalog" replace />
