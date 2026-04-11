@@ -7,6 +7,7 @@ import { LoginPage } from './pages/auth/LoginPage'
 import { CatalogPage } from './pages/catalog/CatalogPage'
 import { ProductDetailPage } from './pages/catalog/ProductDetailPage'
 import { OrdersPage } from './pages/orders/OrdersPage'
+import { OrderDetailPage } from './pages/orders/OrderDetailPage'
 import { VendorPage } from './pages/vendor/VendorPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
 import { ActivatePage } from './pages/auth/ActivatePage'
@@ -17,75 +18,19 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <Routes>
+            <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+            <Route path="/registro" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+            <Route path="/activar" element={<PublicRoute><ActivatePage /></PublicRoute>} />
 
-            {/* Rutas públicas — solo sin sesión */}
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <LoginPage />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/registro"
-              element={
-                <PublicRoute>
-                  <RegisterPage />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/activar"
-              element={
-                <PublicRoute>
-                  <ActivatePage />
-                </PublicRoute>
-              }
-            />
+            <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin']}><CatalogPage /></ProtectedRoute>} />
+            <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin']}><ProductDetailPage /></ProtectedRoute>} />
+            <Route path="/orders" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrdersPage /></ProtectedRoute>} />
+            <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrderDetailPage /></ProtectedRoute>} />
 
-            {/* Rutas de cliente */}
-            <Route
-              path="/catalog"
-              element={
-                <ProtectedRoute allowedRoles={['client', 'admin']}>
-                  <CatalogPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/catalog/:id"
-              element={
-                <ProtectedRoute allowedRoles={['client', 'admin']}>
-                  <ProductDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/orders"
-              element={
-                <ProtectedRoute allowedRoles={['client', 'admin']}>
-                  <OrdersPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/vendor" element={<ProtectedRoute allowedRoles={['vendor']}><VendorPage /></ProtectedRoute>} />
 
-            {/* Rutas de vendedor */}
-            <Route
-              path="/vendor"
-              element={
-                <ProtectedRoute allowedRoles={['vendor']}>
-                  <VendorPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Ruta raíz — redirige a login */}
             <Route path="/" element={<Navigate to="/login" replace />} />
-
-            {/* Cualquier ruta desconocida — redirige a login */}
             <Route path="*" element={<Navigate to="/login" replace />} />
-
           </Routes>
         </CartProvider>
       </AuthProvider>

@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { theme } from '../theme'
 
 export function TopBar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleLogout = async () => {
     await logout()
@@ -17,11 +18,13 @@ export function TopBar() {
     client: 'Cliente',
   }
 
+  const isActive = (path: string) => location.pathname.startsWith(path)
+
   return (
     <div style={{
       width: '100%',
       background: theme.semantic.bgCard,
-      borderBottom: `1px solid ${theme.semantic.border}`,
+      borderBottom: '1px solid ' + theme.semantic.border,
       padding: '0 24px',
       height: '56px',
       display: 'flex',
@@ -31,41 +34,52 @@ export function TopBar() {
     }}>
 
       {/* Logo */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-      }}>
-        <span style={{ fontSize: '20px' }}>🌸</span>
-        <span style={{
-          fontSize: '16px',
-          fontWeight: 500,
-          color: theme.semantic.textPrimary,
-        }}>
-          BellezaGDL
-        </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div
+          onClick={() => navigate(user?.role === 'vendor' ? '/vendor' : '/catalog')}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+        >
+          <span style={{ fontSize: '20px' }}>🌸</span>
+          <span style={{ fontSize: '16px', fontWeight: 500, color: theme.semantic.textPrimary }}>
+            BellezaGDL
+          </span>
+        </div>
+
+        {/* Navegación por rol */}
+        {user?.role === 'client' && (
+          <nav style={{ display: 'flex', gap: '4px' }}>
+            {[
+              { label: 'Catálogo', path: '/catalog' },
+              { label: 'Mis pedidos', path: '/orders' },
+            ].map((item) => (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '14px',
+                  background: isActive(item.path) ? theme.semantic.actionPrimaryLight : 'transparent',
+                  color: isActive(item.path) ? theme.semantic.actionPrimary : theme.semantic.textSecondary,
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: isActive(item.path) ? 500 : 400,
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        )}
       </div>
 
       {/* Usuario y logout */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '16px',
-      }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <div style={{ textAlign: 'right' }}>
-          <p style={{
-            fontSize: '13px',
-            fontWeight: 500,
-            color: theme.semantic.textPrimary,
-            margin: 0,
-          }}>
+          <p style={{ fontSize: '13px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
             {user?.email}
           </p>
-          <p style={{
-            fontSize: '11px',
-            color: theme.semantic.textMuted,
-            margin: 0,
-          }}>
+          <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
             {user ? roleLabel[user.role] : ''}
           </p>
         </div>
@@ -76,7 +90,7 @@ export function TopBar() {
             fontSize: '13px',
             color: theme.semantic.textSecondary,
             background: 'transparent',
-            border: `1px solid ${theme.semantic.border}`,
+            border: '1px solid ' + theme.semantic.border,
             borderRadius: '8px',
             cursor: 'pointer',
           }}
@@ -92,7 +106,6 @@ export function TopBar() {
           Cerrar sesión
         </button>
       </div>
-
     </div>
   )
 }

@@ -100,6 +100,8 @@ export interface OrderItem {
   unit_price: number
   quantity: number
   subtotal: number
+  product_name_snapshot: string | null
+  variant_name_snapshot: string | null
 }
 
 export interface Order {
