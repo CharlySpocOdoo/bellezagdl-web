@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
 import { useCart } from '../../contexts/CartContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { getProducts, getCategories, getBrands } from '../../api/catalog'
 import { createOrder } from '../../api/orders'
 import { theme } from '../../theme'
@@ -11,6 +12,7 @@ import type { Product, Category, Brand } from '../../types'
 export function CatalogPage() {
   const navigate = useNavigate()
   const { itemCount, clearCart, items } = useCart()
+  const { user } = useAuth()
 
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -139,35 +141,37 @@ export function CatalogPage() {
           </h1>
 
           {/* Botón carrito */}
-          <button
-            onClick={() => setIsCartOpen(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 16px',
-              background: itemCount > 0 ? theme.semantic.actionPrimary : 'transparent',
-              color: itemCount > 0 ? theme.semantic.textOnPrimary : theme.semantic.textSecondary,
-              border: `1px solid ${itemCount > 0 ? theme.semantic.actionPrimary : theme.semantic.border}`,
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 500,
-              transition: 'all 0.15s',
-            }}
-          >
-            🛍️ Carrito
-            {itemCount > 0 && (
-              <span style={{
-                background: 'rgba(255,255,255,0.3)',
-                borderRadius: '12px',
-                padding: '2px 8px',
-                fontSize: '12px',
-              }}>
-                {itemCount}
-              </span>
-            )}
-          </button>
+          {user?.role !== 'admin' && (
+            <button
+              onClick={() => setIsCartOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                background: itemCount > 0 ? theme.semantic.actionPrimary : 'transparent',
+                color: itemCount > 0 ? theme.semantic.textOnPrimary : theme.semantic.textSecondary,
+                border: `1px solid ${itemCount > 0 ? theme.semantic.actionPrimary : theme.semantic.border}`,
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 500,
+                transition: 'all 0.15s',
+              }}
+            >
+              🛍️ Carrito
+              {itemCount > 0 && (
+                <span style={{
+                  background: 'rgba(255,255,255,0.3)',
+                  borderRadius: '12px',
+                  padding: '2px 8px',
+                  fontSize: '12px',
+                }}>
+                  {itemCount}
+                </span>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Filtros */}

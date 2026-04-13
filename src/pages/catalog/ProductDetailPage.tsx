@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { useCart } from '../../contexts/CartContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { getProduct } from '../../api/catalog'
 import { theme } from '../../theme'
 import type { Product, ProductVariant } from '../../types'
+
 
 export function ProductDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { addItem } = useCart()
+  const { user } = useAuth()
 
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -37,17 +40,17 @@ export function ProductDetailPage() {
   }, [id])
 
   const handleAddToCart = () => {
-  if (!product || !selectedVariant) return
-  addItem({
-    variant_id: selectedVariant.id,
-    product_name: product.name,
-    variant_name: selectedVariant.variant_name,
-    unit_price: Number(product.display_price),
-    quantity,
-  })
-  setAdded(true)
-  setTimeout(() => setAdded(false), 2000)
-}
+    if (!product || !selectedVariant) return
+    addItem({
+      variant_id: selectedVariant.id,
+      product_name: product.name,
+      variant_name: selectedVariant.variant_name,
+      unit_price: Number(product.display_price),
+      quantity,
+    })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
 
   const primaryImage = product?.images?.find((img) => img.is_primary) || product?.images?.[0]
   const variantStock = selectedVariant
@@ -215,25 +218,27 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            <button
-              onClick={handleAddToCart}
-              disabled={!selectedVariant || variantStock === 0}
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: added ? theme.semantic.statusDone : theme.semantic.actionPrimary,
-                color: added ? theme.semantic.statusDoneText : theme.semantic.textOnPrimary,
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '15px',
-                fontWeight: 500,
-                cursor: selectedVariant ? 'pointer' : 'not-allowed',
-                opacity: selectedVariant ? 1 : 0.6,
-                transition: 'background 0.2s',
-              }}
-            >
-              {added ? '¡Agregado al carrito!' : 'Agregar al carrito'}
-            </button>
+            {user?.role !== 'admin' && (
+              <button
+                onClick={handleAddToCart}
+                disabled={!selectedVariant || variantStock === 0}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: added ? theme.semantic.statusDone : theme.semantic.actionPrimary,
+                  color: added ? theme.semantic.statusDoneText : theme.semantic.textOnPrimary,
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  cursor: selectedVariant ? 'pointer' : 'not-allowed',
+                  opacity: selectedVariant ? 1 : 0.6,
+                  transition: 'background 0.2s',
+                }}
+              >
+                {added ? '¡Agregado al carrito!' : 'Agregar al carrito'}
+              </button>
+            )}
           </div>
         </div>
       </div>
