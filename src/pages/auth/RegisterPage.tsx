@@ -50,7 +50,14 @@ export function RegisterPage() {
       setError('Por favor completa todos los campos.')
       return
     }
-
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.')
+      return
+    }
+    if (!email.includes('@')) {
+      setError('El email no tiene un formato válido.')
+      return
+    }
     setError('')
     setIsLoading(true)
 
@@ -68,8 +75,31 @@ export function RegisterPage() {
       // Login automático después del registro
       await login(email, password)
       navigate('/catalog')
-    } catch {
-      setError('Ocurrió un error al crear tu cuenta. Intenta de nuevo.')
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        const detail = err.response.data.detail
+        if (Array.isArray(detail)) {
+          // Errores de validación de Pydantic
+          const messages = detail.map((e: any) => {
+            if (e.loc?.includes('email')) return 'El email no tiene un formato válido.'
+            if (e.loc?.includes('password')) return 'La contraseña debe tener al menos 8 caracteres.'
+            if (e.loc?.includes('first_name')) return 'El nombre es requerido.'
+            if (e.loc?.includes('last_name')) return 'El apellido es requerido.'
+            if (e.loc?.includes('phone')) return 'El teléfono es requerido.'
+            if (e.loc?.includes('delivery_address')) return 'La dirección de entrega es requerida.'
+            return e.msg
+          })
+          setError(messages.join(' '))
+        } else if (typeof detail === 'string') {
+          if (detail.includes('already exists') || detail.includes('ya existe')) {
+            setError('Ya existe una cuenta con ese email.')
+          } else {
+            setError(detail)
+          }
+        }
+      } else {
+        setError('Ocurrió un error al crear tu cuenta. Intenta de nuevo.')
+      }
     } finally {
       setIsLoading(false)
     }

@@ -66,8 +66,18 @@ export function CatalogPage() {
         setOrderSuccess(false)
         navigate('/orders')
       }, 2000)
-    } catch {
-      setOrderError('No se pudo crear el pedido. Intenta de nuevo.')
+
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        const detail = err.response.data.detail
+        if (typeof detail === 'string') {
+          setOrderError(detail)
+        } else if (Array.isArray(detail)) {
+          setOrderError('Error al crear el pedido. Verifica los productos seleccionados.')
+        }
+      } else {
+        setOrderError('No se pudo crear el pedido. Intenta de nuevo.')
+      }
     } finally {
       setIsOrdering(false)
     }

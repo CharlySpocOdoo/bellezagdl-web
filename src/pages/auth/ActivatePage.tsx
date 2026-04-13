@@ -72,8 +72,21 @@ export function ActivatePage() {
       // Login automático con el email del vendedor
       await login(res.data.email || vendorEmail, password)
       navigate('/vendor')
-    } catch {
-      setError('Ocurrió un error al activar tu cuenta. Intenta de nuevo.')
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        const detail = err.response.data.detail
+        if (typeof detail === 'string') {
+          if (detail.includes('expired') || detail.includes('expirado')) {
+            setError('El link de activación expiró. Contacta al administrador para obtener uno nuevo.')
+          } else if (detail.includes('already') || detail.includes('ya')) {
+            setError('Esta cuenta ya fue activada. Puedes iniciar sesión directamente.')
+          } else {
+            setError(detail)
+          }
+        }
+      } else {
+        setError('Ocurrió un error al activar tu cuenta. Intenta de nuevo.')
+      }
     } finally {
       setIsLoading(false)
     }

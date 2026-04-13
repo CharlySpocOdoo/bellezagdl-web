@@ -175,7 +175,7 @@ export function VendorPage() {
                 <p style={{ fontSize: '13px', fontWeight: 500, color: theme.colors.primary[800], margin: '0 0 4px' }}>
                   Tu link de invitacion
                 </p>
-                <p style={{ fontSize: '12px', color: theme.colors.primary[600], margin: 0, wordBreak: 'break-all' }}>
+                <p style={{ fontSize: '12px', color: theme.colors.primary[600], margin: 0, wordBreak: 'break-all', fontFamily: 'monospace' }}>
                   {vendor?.invitation_link}
                 </p>
               </div>

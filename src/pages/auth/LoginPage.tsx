@@ -15,8 +15,17 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleLogin = async () => {
+
     if (!email || !password) {
       setError('Por favor ingresa tu email y contraseña.')
+      return
+    }
+    if (!email.includes('@')) {
+      setError('El email no tiene un formato válido.')
+      return
+    }
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.')
       return
     }
 
@@ -32,8 +41,15 @@ export function LoginPage() {
       } else {
         navigate('/catalog')
       }
-    } catch {
-      setError('Email o contraseña incorrectos.')
+
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        setError('Email o contraseña incorrectos.')
+      } else if (err.response?.status === 422) {
+        setError('Por favor ingresa un email válido y una contraseña.')
+      } else {
+        setError('Ocurrió un error al iniciar sesión. Intenta de nuevo.')
+      }
     } finally {
       setIsLoading(false)
     }

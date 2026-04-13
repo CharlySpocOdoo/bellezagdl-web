@@ -72,8 +72,12 @@ export function OrderDetailPage() {
                 ? 'Pedido aceptado con los productos disponibles.'
                 : 'Pedido cancelado correctamente.'
             )
-        } catch {
-            setActionError('No se pudo procesar la acción. Intenta de nuevo.')
+        } catch (err: any) {
+            if (err.response?.data?.detail) {
+                setActionError(err.response.data.detail)
+            } else {
+                setActionError('No se pudo procesar la acción. Intenta de nuevo.')
+            }
         } finally {
             setIsActing(false)
         }
@@ -87,8 +91,12 @@ export function OrderDetailPage() {
             const updated = await requestReturn(order.id)
             setOrder(updated)
             setActionSuccess('Devolución solicitada correctamente.')
-        } catch {
-            setActionError('No se pudo solicitar la devolución. Intenta de nuevo.')
+        } catch (err: any) {
+            if (err.response?.data?.detail) {
+                setActionError(err.response.data.detail)
+            } else {
+                setActionError('No se pudo solicitar la devolución. Intenta de nuevo.')
+            }
         } finally {
             setIsActing(false)
         }
@@ -102,8 +110,13 @@ export function OrderDetailPage() {
             const updated = await cancelOrder(order.id)
             setOrder(updated)
             setActionSuccess('Pedido cancelado correctamente.')
-        } catch {
-            setActionError('No se pudo cancelar el pedido. Intenta de nuevo.')
+
+        } catch (err: any) {
+            if (err.response?.data?.detail) {
+                setActionError(err.response.data.detail)
+            } else {
+                setActionError('No se pudo cancelar el pedido. Intenta de nuevo.')
+            }
         } finally {
             setIsActing(false)
         }
