@@ -388,6 +388,9 @@ export function OrderDetailPage() {
                             Productos
                         </h2>
                     </div>
+
+
+
                     {order.items?.map((item, index) => (
                         <div
                             key={item.id}
@@ -399,24 +402,47 @@ export function OrderDetailPage() {
                                 alignItems: 'center',
                                 flexWrap: 'wrap',
                                 gap: '8px',
+                                opacity: item.cancelled_in_partial ? 0.5 : 1,
+                                background: item.cancelled_in_partial ? theme.colors.neutral[50] : 'transparent',
                             }}
                         >
                             <div>
-
-                                <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
-                                    {item.product_name_snapshot || 'Producto — variante ' + (index + 1)}
-                                    {item.variant_name_snapshot && ' — ' + item.variant_name_snapshot}
-                                </p>
-
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                                    <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
+                                        {item.product_name_snapshot || 'Producto — variante ' + (index + 1)}
+                                        {item.variant_name_snapshot && ' — ' + item.variant_name_snapshot}
+                                    </p>
+                                    {item.cancelled_in_partial && (
+                                        <span style={{
+                                            fontSize: '11px',
+                                            padding: '2px 8px',
+                                            borderRadius: '12px',
+                                            background: theme.colors.accent[50],
+                                            color: theme.colors.accent[800],
+                                            fontWeight: 500,
+                                        }}>
+                                            No disponible
+                                        </span>
+                                    )}
+                                </div>
                                 <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
                                     Cantidad: {item.quantity} × ${Number(item.unit_price).toFixed(2)}
                                 </p>
                             </div>
-                            <p style={{ fontSize: '15px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
+                            <p style={{
+                                fontSize: '15px',
+                                fontWeight: 500,
+                                color: item.cancelled_in_partial ? theme.semantic.textMuted : theme.semantic.textPrimary,
+                                margin: 0,
+                                textDecoration: item.cancelled_in_partial ? 'line-through' : 'none',
+                            }}>
                                 ${Number(item.subtotal).toFixed(2)}
                             </p>
                         </div>
                     ))}
+
+
+
                 </div>
 
             </div>
