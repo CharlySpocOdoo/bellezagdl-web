@@ -129,6 +129,32 @@ export function ProductDetailPage() {
               {product.name}
             </h1>
 
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+              {product.brand_name && (
+                <span style={{
+                  fontSize: '12px',
+                  padding: '3px 10px',
+                  borderRadius: '12px',
+                  background: theme.colors.secondary[50],
+                  color: theme.colors.secondary[800],
+                }}>
+                  {product.brand_name}
+                </span>
+              )}
+              {product.category_name && (
+                <span style={{
+                  fontSize: '12px',
+                  padding: '3px 10px',
+                  borderRadius: '12px',
+                  background: theme.colors.neutral[50],
+                  color: theme.colors.neutral[800],
+                }}>
+                  {product.category_name}
+                </span>
+              )}
+            </div>
+
             <p style={{
               fontSize: '28px',
               fontWeight: 500,
@@ -176,7 +202,7 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            {selectedVariant && (
+            {selectedVariant && user?.role === 'client' && (
               <div style={{ marginBottom: '24px' }}>
                 <p style={{
                   fontSize: '13px',
@@ -218,7 +244,7 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            {user?.role !== 'admin' && (
+            {user?.role === 'client' && (
               <button
                 onClick={handleAddToCart}
                 disabled={!selectedVariant || variantStock === 0}

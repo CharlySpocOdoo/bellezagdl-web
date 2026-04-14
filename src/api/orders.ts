@@ -1,12 +1,13 @@
 import apiClient from './client'
 import type { Order, CartItem } from '../types'
 
-export const createOrder = async (items: CartItem[]): Promise<Order> => {
+export const createOrder = async (items: CartItem[], isVendorPurchase = false): Promise<Order> => {
   const payload = {
     items: items.map((item) => ({
       variant_id: item.variant_id,
       quantity: item.quantity,
     })),
+    is_vendor_purchase: isVendorPurchase,
   }
   const res = await apiClient.post<Order>('/orders', payload)
   return res.data

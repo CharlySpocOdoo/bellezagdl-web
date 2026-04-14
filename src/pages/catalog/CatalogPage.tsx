@@ -60,7 +60,7 @@ export function CatalogPage() {
     setIsOrdering(true)
     setOrderError('')
     try {
-      await createOrder(items)
+      await createOrder(items, user?.role === 'vendor')
       clearCart()
       setIsCartOpen(false)
       setOrderSuccess(true)
@@ -141,7 +141,7 @@ export function CatalogPage() {
           </h1>
 
           {/* Botón carrito */}
-          {user?.role !== 'admin' && (
+          {user?.role === 'client' && (
             <button
               onClick={() => setIsCartOpen(true)}
               style={{

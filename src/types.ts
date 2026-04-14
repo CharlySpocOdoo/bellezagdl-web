@@ -67,6 +67,8 @@ export interface Product {
   slug: string
   category_id: string
   brand_id: string
+  brand_name: string | null
+  category_name: string | null
   display_price: number
   tags: string[]
   variants: ProductVariant[]
@@ -102,6 +104,7 @@ export interface OrderItem {
   subtotal: number
   product_name_snapshot: string | null
   variant_name_snapshot: string | null
+  cancelled_in_partial: boolean
 }
 
 export interface Order {
@@ -113,6 +116,7 @@ export interface Order {
   total: number
   created_at: string
   items: OrderItem[]
+  vendor_notes: string | null
 }
 
 // ─── Commissions ─────────────────────────────────────────────────────────────

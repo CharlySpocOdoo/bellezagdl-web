@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react'
 import { TopBar } from '../../components/TopBar'
 import { getVendorProfile, getVendorClients, getVendorCommissions } from '../../api/vendor'
 import { getOrders, addOrderNote } from '../../api/orders'
+import apiClient from '../../api/client'
 import { theme } from '../../theme'
 import type { Vendor, Client, CommissionPeriod, Order } from '../../types'
 
-type Tab = 'clientes' | 'pedidos' | 'comisiones'
+type Tab = 'clientes' | 'pedidos' | 'comisiones' | 'perfil'
 
 export function VendorPage() {
   const [activeTab, setActiveTab] = useState<Tab>('clientes')
@@ -21,6 +22,18 @@ export function VendorPage() {
   const [noteOrderId, setNoteOrderId] = useState<string | null>(null)
   const [noteText, setNoteText] = useState('')
   const [isSavingNote, setIsSavingNote] = useState(false)
+  const [noteSavedId, setNoteSavedId] = useState<string | null>(null)
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [profileForm, setProfileForm] = useState({
+    first_name: '',
+    last_name: '',
+    phone: '',
+    address: '',
+    workplace: '',
+  })
+  const [isSavingProfile, setIsSavingProfile] = useState(false)
+  const [profileSuccess, setProfileSuccess] = useState('')
+  const [profileError, setProfileError] = useState('')
 
   useEffect(() => {
     const load = async () => {
@@ -32,6 +45,13 @@ export function VendorPage() {
           getVendorCommissions(),
         ])
         setVendor(vendorData)
+        setProfileForm({
+          first_name: vendorData.first_name || '',
+          last_name: vendorData.last_name || '',
+          phone: vendorData.phone || '',
+          address: vendorData.address || '',
+          workplace: vendorData.workplace || '',
+        })
         setClients(clientsData)
         setOrders(ordersData)
         setCommissions(commissionsData)
@@ -51,10 +71,30 @@ export function VendorPage() {
       await addOrderNote(orderId, noteText)
       setNoteOrderId(null)
       setNoteText('')
+      setNoteSavedId(orderId)
+      setTimeout(() => setNoteSavedId(null), 3000)
+      const updatedOrders = await getOrders()
+      setOrders(updatedOrders)
     } catch {
       console.error('Error guardando nota')
     } finally {
       setIsSavingNote(false)
+    }
+  }
+
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true)
+    setProfileError('')
+    try {
+      const res = await apiClient.patch('/vendors/me', profileForm)
+      setVendor(res.data)
+      setIsEditingProfile(false)
+      setProfileSuccess('Perfil actualizado correctamente.')
+      setTimeout(() => setProfileSuccess(''), 3000)
+    } catch {
+      setProfileError('No se pudo actualizar el perfil. Intenta de nuevo.')
+    } finally {
+      setIsSavingProfile(false)
     }
   }
 
@@ -133,7 +173,7 @@ export function VendorPage() {
           borderBottom: '1px solid ' + theme.semantic.border,
           marginBottom: '24px',
         }}>
-          {(['clientes', 'pedidos', 'comisiones'] as Tab[]).map((tab) => (
+          {(['clientes', 'pedidos', 'comisiones', 'perfil'] as Tab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -150,7 +190,7 @@ export function VendorPage() {
                 marginBottom: '-1px',
               }}
             >
-              {tab === 'clientes' ? 'Mis clientes' : tab === 'pedidos' ? 'Pedidos de mi red' : 'Mis comisiones'}
+              {tab === 'clientes' ? 'Mis clientes' : tab === 'pedidos' ? 'Pedidos de mi red' : tab === 'comisiones' ? 'Mis comisiones' : 'Mi perfil'}
             </button>
           ))}
         </div>
@@ -158,7 +198,6 @@ export function VendorPage() {
         {/* Tab — Clientes */}
         {activeTab === 'clientes' && (
           <div>
-            {/* Link de invitacion */}
             <div style={{
               background: theme.colors.primary[50],
               border: '1px solid ' + theme.colors.primary[100],
@@ -180,9 +219,7 @@ export function VendorPage() {
                 </p>
               </div>
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(vendor?.invitation_link || '')
-                }}
+                onClick={() => { navigator.clipboard.writeText(vendor?.invitation_link || '') }}
                 style={{
                   padding: '8px 16px',
                   background: theme.semantic.actionPrimary,
@@ -301,10 +338,37 @@ export function VendorPage() {
                         >
                           + Nota
                         </button>
+                        {noteSavedId === order.id && (
+                          <span style={{
+                            fontSize: '12px',
+                            color: '#27500A',
+                            background: '#EAF3DE',
+                            padding: '4px 10px',
+                            borderRadius: '8px',
+                          }}>
+                            ✓ Nota guardada
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    {/* Input de nota */}
+                    {order.vendor_notes && (
+                      <div style={{
+                        marginTop: '8px',
+                        padding: '8px 12px',
+                        background: theme.colors.secondary[50],
+                        borderRadius: '8px',
+                        border: '1px solid ' + theme.colors.secondary[100],
+                      }}>
+                        <p style={{ fontSize: '11px', color: theme.colors.secondary[600], margin: '0 0 2px', fontWeight: 500 }}>
+                          Nota guardada
+                        </p>
+                        <p style={{ fontSize: '13px', color: theme.colors.secondary[800], margin: 0 }}>
+                          {order.vendor_notes}
+                        </p>
+                      </div>
+                    )}
+
                     {noteOrderId === order.id && (
                       <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                         <input
@@ -377,10 +441,7 @@ export function VendorPage() {
                           Semana del {new Date(period.week_start).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} al {new Date(period.week_end).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                         <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
-                         
                           Tasa: {Number(period.commission_rate).toFixed(0)}%
-
-
                         </p>
                       </div>
                       <span style={{
@@ -419,6 +480,171 @@ export function VendorPage() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Tab — Perfil */}
+        {activeTab === 'perfil' && (
+          <div style={{ maxWidth: '560px' }}>
+
+            {profileSuccess && (
+              <div style={{
+                background: '#EAF3DE',
+                border: '1px solid #C0DD97',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                marginBottom: '16px',
+                fontSize: '14px',
+                color: '#27500A',
+              }}>
+                {profileSuccess}
+              </div>
+            )}
+
+            {profileError && (
+              <div style={{
+                background: theme.semantic.statusAlert,
+                border: '1px solid ' + theme.colors.accent[100],
+                borderRadius: '8px',
+                padding: '12px 16px',
+                marginBottom: '16px',
+                fontSize: '14px',
+                color: theme.semantic.statusAlertText,
+              }}>
+                {profileError}
+              </div>
+            )}
+
+            <div style={{
+              background: theme.semantic.bgCard,
+              borderRadius: '12px',
+              border: '1px solid ' + theme.semantic.border,
+              padding: '24px',
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '20px',
+              }}>
+                <h2 style={{ fontSize: '16px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
+                  Mis datos
+                </h2>
+
+                {/* Editar perfil — pendiente de endpoint en backend */}
+                {false && (
+                  <button
+                    onClick={() => setIsEditingProfile(true)}
+                    style={{
+                      padding: '6px 16px',
+                      fontSize: '13px',
+                      color: theme.semantic.actionPrimary,
+                      background: theme.semantic.actionPrimaryLight,
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Editar
+                  </button>
+                )}
+
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {[
+                  { label: 'Nombre', field: 'first_name' as const },
+                  { label: 'Apellido', field: 'last_name' as const },
+                  { label: 'Teléfono', field: 'phone' as const },
+                  { label: 'Dirección', field: 'address' as const },
+                  { label: 'Lugar de trabajo', field: 'workplace' as const },
+                ].map((item) => (
+                  <div key={item.field}>
+                    <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 4px' }}>
+                      {item.label}
+                    </p>
+                    {isEditingProfile ? (
+                      <input
+                        type="text"
+                        value={profileForm[item.field]}
+                        onChange={(e) => setProfileForm({ ...profileForm, [item.field]: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          fontSize: '14px',
+                          border: '1px solid ' + theme.semantic.border,
+                          borderRadius: '8px',
+                          outline: 'none',
+                          color: theme.semantic.textPrimary,
+                          boxSizing: 'border-box' as const,
+                        }}
+                      />
+                    ) : (
+                      <p style={{ fontSize: '14px', color: theme.semantic.textPrimary, margin: 0 }}>
+                        {profileForm[item.field] || '—'}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                <div>
+                  <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 4px' }}>
+                    Email
+                  </p>
+                  <p style={{ fontSize: '14px', color: theme.semantic.textSecondary, margin: 0 }}>
+                    {vendor?.email || '—'}
+                  </p>
+                </div>
+
+                <div>
+                  <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 4px' }}>
+                    Código de invitación
+                  </p>
+                  <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0, fontFamily: 'monospace' }}>
+                    {vendor?.invitation_code || '—'}
+                  </p>
+                </div>
+              </div>
+
+              {isEditingProfile && (
+                <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                  <button
+                    onClick={handleSaveProfile}
+                    disabled={isSavingProfile}
+                    style={{
+                      padding: '10px 24px',
+                      background: theme.semantic.actionPrimary,
+                      color: theme.semantic.textOnPrimary,
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: isSavingProfile ? 'not-allowed' : 'pointer',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      opacity: isSavingProfile ? 0.7 : 1,
+                    }}
+                  >
+                    {isSavingProfile ? 'Guardando...' : 'Guardar cambios'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditingProfile(false)
+                      setProfileError('')
+                    }}
+                    style={{
+                      padding: '10px 24px',
+                      background: 'transparent',
+                      color: theme.semantic.textSecondary,
+                      border: '1px solid ' + theme.semantic.border,
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

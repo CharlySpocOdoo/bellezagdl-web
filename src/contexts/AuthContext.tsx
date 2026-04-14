@@ -2,11 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import type { User } from '../types'
 import { getMe, login as loginApi, logout as logoutApi } from '../api/auth'
 import { setAccessToken } from '../api/client'
+import { getVendorProfile } from '../api/vendor'
 
 // ─── Tipos del contexto ───────────────────────────────────────────────────────
 
 interface AuthContextType {
   user: User | null
+  displayName: string
   isLoading: boolean
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
@@ -22,6 +24,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [displayName, setDisplayName] = useState('')
 
   // Al arrancar la app — intentar restaurar sesión con refresh token
   useEffect(() => {
@@ -50,6 +53,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Obtener perfil del usuario
         const me = await getMe()
         setUser(me)
+
+        // Obtener nombre según rol
+        if (me.role === 'vendor' && me.profile_id) {
+          try {
+            const vendorProfile = await getVendorProfile()
+            setDisplayName(vendorProfile.first_name + ' ' + vendorProfile.last_name)
+          } catch {
+            setDisplayName(me.email)
+          }
+        } else {
+          setDisplayName(me.email)
+        }  // Obtener nombre según rol         
+
       } catch {
         // Sesión inválida — limpiar
         setAccessToken(null)
@@ -76,6 +92,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Obtener perfil completo
     const me = await getMe()
     setUser(me)
+
+    
+    // Obtener nombre según rol
+    if (me.role === 'vendor' && me.profile_id) {
+      try {
+        const vendorProfile = await getVendorProfile()
+        setDisplayName(vendorProfile.first_name + ' ' + vendorProfile.last_name)
+      } catch {
+        setDisplayName(me.email)
+      }
+    } else {
+      setDisplayName(me.email)
+    }
+
   }
 
   // ─── Logout ───────────────────────────────────────────────────────────────
@@ -94,6 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        displayName,
         isLoading,
         isAuthenticated: !!user,
         login,

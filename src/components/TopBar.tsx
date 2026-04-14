@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { theme } from '../theme'
 
 export function TopBar() {
-  const { user, logout } = useAuth()
+  const { user, logout, displayName } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -71,13 +71,41 @@ export function TopBar() {
             ))}
           </nav>
         )}
+
+        {user?.role === 'vendor' && (
+          <nav style={{ display: 'flex', gap: '4px' }}>
+            {[
+              { label: 'Mi panel', path: '/vendor' },
+              { label: 'Catálogo', path: '/catalog' },
+            ].map((item) => (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '14px',
+                  background: isActive(item.path) ? theme.semantic.actionPrimaryLight : 'transparent',
+                  color: isActive(item.path) ? theme.semantic.actionPrimary : theme.semantic.textSecondary,
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: isActive(item.path) ? 500 : 400,
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        )}
+
+
       </div>
 
       {/* Usuario y logout */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <div style={{ textAlign: 'right' }}>
           <p style={{ fontSize: '13px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
-            {user?.email}
+            {displayName || user?.email}
           </p>
           <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
             {user ? roleLabel[user.role] : ''}
