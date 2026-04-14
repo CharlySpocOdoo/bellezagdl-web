@@ -208,9 +208,22 @@ export function OrderDetailPage() {
                         gap: '12px',
                     }}>
                         {[
-                            { label: 'Subtotal', value: '$' + Number(order.subtotal).toFixed(2) },
-                            { label: 'Envío', value: Number(order.shipping_cost) === 0 ? 'Gratis' : '$' + Number(order.shipping_cost).toFixed(2) },
-                            { label: 'Total', value: '$' + Number(order.total).toFixed(2) },
+                            {
+                                label: 'Subtotal',
+                                value: '$' + (order.status === 'partially_available'
+                                    ? order.items?.filter(i => !i.cancelled_in_partial).reduce((sum, i) => sum + Number(i.subtotal), 0).toFixed(2)
+                                    : Number(order.subtotal).toFixed(2))
+                            },
+                            {
+                                label: 'Envío',
+                                value: Number(order.shipping_cost) === 0 ? 'Gratis' : '$' + Number(order.shipping_cost).toFixed(2)
+                            },
+                            {
+                                label: 'Total',
+                                value: '$' + (order.status === 'partially_available'
+                                    ? (order.items?.filter(i => !i.cancelled_in_partial).reduce((sum, i) => sum + Number(i.subtotal), 0) + Number(order.shipping_cost)).toFixed(2)
+                                    : Number(order.total).toFixed(2))
+                            },
                         ].map((item) => (
                             <div key={item.label} style={{ background: theme.colors.neutral[50], borderRadius: '8px', padding: '12px 16px' }}>
                                 <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 4px' }}>{item.label}</p>
