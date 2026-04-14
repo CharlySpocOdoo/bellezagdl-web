@@ -25,6 +25,7 @@ export function VendorPage() {
   const [noteSavedId, setNoteSavedId] = useState<string | null>(null)
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [profileForm, setProfileForm] = useState({
+    display_name: '',
     first_name: '',
     last_name: '',
     phone: '',
@@ -46,6 +47,7 @@ export function VendorPage() {
         ])
         setVendor(vendorData)
         setProfileForm({
+          display_name: vendorData.display_name || '',
           first_name: vendorData.first_name || '',
           last_name: vendorData.last_name || '',
           phone: vendorData.phone || '',
@@ -83,6 +85,22 @@ export function VendorPage() {
   }
 
   const handleSaveProfile = async () => {
+
+    setProfileError('')
+
+    if (!profileForm.first_name.trim()) {
+      setProfileError('El nombre es requerido.')
+      return
+    }
+    if (!profileForm.last_name.trim()) {
+      setProfileError('El apellido es requerido.')
+      return
+    }
+    if (profileForm.phone && !/^\d{10}$/.test(profileForm.phone.replace(/\s/g, ''))) {
+      setProfileError('El teléfono debe tener exactamente 10 dígitos.')
+      return
+    }
+
     setIsSavingProfile(true)
     setProfileError('')
     try {
@@ -532,7 +550,7 @@ export function VendorPage() {
                 </h2>
 
                 {/* Editar perfil — pendiente de endpoint en backend */}
-                {false && (
+                {!isEditingProfile && (
                   <button
                     onClick={() => setIsEditingProfile(true)}
                     style={{
@@ -553,6 +571,7 @@ export function VendorPage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {[
+                  { label: 'Nombre para mostrar', field: 'display_name' as const },
                   { label: 'Nombre', field: 'first_name' as const },
                   { label: 'Apellido', field: 'last_name' as const },
                   { label: 'Teléfono', field: 'phone' as const },
@@ -625,11 +644,24 @@ export function VendorPage() {
                   >
                     {isSavingProfile ? 'Guardando...' : 'Guardar cambios'}
                   </button>
+
+
                   <button
                     onClick={() => {
                       setIsEditingProfile(false)
                       setProfileError('')
+                      // Restaurar datos originales
+                      setProfileForm({
+                        display_name: vendor?.display_name || '',
+                        first_name: vendor?.first_name || '',
+                        last_name: vendor?.last_name || '',
+                        phone: vendor?.phone || '',
+                        address: vendor?.address || '',
+                        workplace: vendor?.workplace || '',
+                      })
                     }}
+
+
                     style={{
                       padding: '10px 24px',
                       background: 'transparent',
