@@ -1,15 +1,24 @@
-import { useState, useEffect } from 'react'
 import { TopBar } from '../../components/TopBar'
 import { getVendorProfile, getVendorClients, getVendorCommissions } from '../../api/vendor'
 import { getOrders, addOrderNote } from '../../api/orders'
 import apiClient from '../../api/client'
 import { theme } from '../../theme'
 import type { Vendor, Client, CommissionPeriod, Order } from '../../types'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+
 
 type Tab = 'clientes' | 'pedidos' | 'comisiones' | 'perfil'
 
 export function VendorPage() {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<Tab>('clientes')
+  useEffect(() => {
+  const tab = searchParams.get('tab') as Tab
+  if (tab) setActiveTab(tab)
+}, [searchParams])
+  
   const [vendor, setVendor] = useState<Vendor | null>(null)
   const [clients, setClients] = useState<Client[]>([])
   const [orders, setOrders] = useState<Order[]>([])
@@ -18,7 +27,7 @@ export function VendorPage() {
     pending_payment: number
     periods: CommissionPeriod[]
   } | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true) 
   const [noteOrderId, setNoteOrderId] = useState<string | null>(null)
   const [noteText, setNoteText] = useState('')
   const [isSavingNote, setIsSavingNote] = useState(false)
@@ -304,12 +313,24 @@ export function VendorPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {orders.map((order) => (
-                  <div key={order.id} style={{
-                    background: theme.semantic.bgCard,
-                    borderRadius: '12px',
-                    border: '1px solid ' + theme.semantic.border,
-                    padding: '16px 20px',
-                  }}>
+
+                  <div
+                    key={order.id}
+                    style={{
+                      background: theme.semantic.bgCard,
+                      borderRadius: '12px',
+                      border: '1px solid ' + theme.semantic.border,
+                      padding: '16px 20px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={(e) => {
+                      // Solo navegar si no se hizo clic en el botón de nota
+                      if ((e.target as HTMLElement).closest('button')) return
+                      navigate('/orders/' + order.id)
+                    }}
+                  >
+
+
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -319,12 +340,19 @@ export function VendorPage() {
                       marginBottom: noteOrderId === order.id ? '12px' : 0,
                     }}>
                       <div>
+
+
                         <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
                           {order.order_number}
+                        </p>
+                        <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>
+                          {order.client_name || 'Cliente'}
                         </p>
                         <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
                           {new Date(order.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
+
+
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{

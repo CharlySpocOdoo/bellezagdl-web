@@ -22,7 +22,10 @@ export interface Vendor {
   first_name: string
   last_name: string
   phone: string
+  address: string | null
+  workplace: string | null
   invitation_link: string
+  invitation_code: string
   commission_percentage: number
   active: boolean
 }
@@ -117,6 +120,7 @@ export interface Order {
   created_at: string
   items: OrderItem[]
   vendor_notes: string | null
+  client_name: string | null
 }
 
 // ─── Commissions ─────────────────────────────────────────────────────────────

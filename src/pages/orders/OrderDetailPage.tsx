@@ -5,6 +5,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { theme } from '../../theme'
 import type { Order, OrderStatus } from '../../types'
+import { useAuth } from '../../contexts/AuthContext'
+
 
 const statusLabel: Record<OrderStatus, string> = {
     pending: 'Pendiente',
@@ -35,6 +37,7 @@ const statusColors: Record<OrderStatus, { bg: string; text: string }> = {
 export function OrderDetailPage() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { user } = useAuth()
 
     const [order, setOrder] = useState<Order | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -145,7 +148,7 @@ export function OrderDetailPage() {
 
                 {/* Volver */}
                 <button
-                    onClick={() => navigate('/orders')}
+                    onClick={() => navigate(user?.role === 'vendor' ? '/vendor' : '/orders')}
                     style={{
                         background: 'transparent',
                         border: 'none',

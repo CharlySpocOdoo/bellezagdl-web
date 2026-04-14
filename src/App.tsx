@@ -26,7 +26,7 @@ function App() {
             <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><ProductDetailPage /></ProtectedRoute>} />
 
             <Route path="/orders" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrdersPage /></ProtectedRoute>} />
-            <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrderDetailPage /></ProtectedRoute>} />
+            <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><OrderDetailPage /></ProtectedRoute>} />
 
             <Route path="/vendor" element={<ProtectedRoute allowedRoles={['vendor']}><VendorPage /></ProtectedRoute>} />
 
