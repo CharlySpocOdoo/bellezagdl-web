@@ -39,7 +39,7 @@ export const requestReturn = async (id: string): Promise<Order> => {
 }
 
 export const addOrderNote = async (id: string, note: string): Promise<Order> => {
-  const res = await apiClient.patch<Order>(`/orders/${id}/notes`, { note })
+  const res = await apiClient.patch<Order>(`/orders/${id}/notes`, { vendor_notes: note })
   return res.data
 }
 

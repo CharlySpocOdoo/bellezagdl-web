@@ -15,10 +15,10 @@ export function VendorPage() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<Tab>('clientes')
   useEffect(() => {
-  const tab = searchParams.get('tab') as Tab
-  if (tab) setActiveTab(tab)
-}, [searchParams])
-  
+    const tab = searchParams.get('tab') as Tab
+    if (tab) setActiveTab(tab)
+  }, [searchParams])
+
   const [vendor, setVendor] = useState<Vendor | null>(null)
   const [clients, setClients] = useState<Client[]>([])
   const [orders, setOrders] = useState<Order[]>([])
@@ -27,7 +27,7 @@ export function VendorPage() {
     pending_payment: number
     periods: CommissionPeriod[]
   } | null>(null)
-  const [isLoading, setIsLoading] = useState(true) 
+  const [isLoading, setIsLoading] = useState(true)
   const [noteOrderId, setNoteOrderId] = useState<string | null>(null)
   const [noteText, setNoteText] = useState('')
   const [isSavingNote, setIsSavingNote] = useState(false)
@@ -79,13 +79,14 @@ export function VendorPage() {
     if (!noteText.trim()) return
     setIsSavingNote(true)
     try {
-      await addOrderNote(orderId, noteText)
+      const updatedOrder = await addOrderNote(orderId, noteText)
+      console.log('vendor_notes en respuesta:', updatedOrder.vendor_notes)
+      // Actualizar solo el pedido modificado en el estado local
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, vendor_notes: updatedOrder.vendor_notes } : o))
       setNoteOrderId(null)
       setNoteText('')
       setNoteSavedId(orderId)
       setTimeout(() => setNoteSavedId(null), 3000)
-      const updatedOrders = await getOrders()
-      setOrders(updatedOrders)
     } catch {
       console.error('Error guardando nota')
     } finally {
@@ -324,8 +325,8 @@ export function VendorPage() {
                       cursor: 'pointer',
                     }}
                     onClick={(e) => {
-                      // Solo navegar si no se hizo clic en el botón de nota
                       if ((e.target as HTMLElement).closest('button')) return
+                      if ((e.target as HTMLElement).closest('input')) return
                       navigate('/orders/' + order.id)
                     }}
                   >
