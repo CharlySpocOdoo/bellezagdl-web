@@ -80,7 +80,7 @@ export function VendorPage() {
     setIsSavingNote(true)
     try {
       const updatedOrder = await addOrderNote(orderId, noteText)
-      console.log('vendor_notes en respuesta:', updatedOrder.vendor_notes)
+
       // Actualizar solo el pedido modificado en el estado local
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, vendor_notes: updatedOrder.vendor_notes } : o))
       setNoteOrderId(null)
@@ -475,6 +475,11 @@ export function VendorPage() {
                     border: '1px solid ' + theme.semantic.border,
                     padding: '16px 20px',
                   }}>
+
+
+
+
+
                     <div style={{
                       display: 'flex',
                       alignItems: 'flex-start',
@@ -488,19 +493,28 @@ export function VendorPage() {
                           Semana del {new Date(period.week_start).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} al {new Date(period.week_end).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                         <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
-                          Tasa: {Number(period.commission_rate).toFixed(0)}%
+                          Tu porcentaje: {Number(period.commission_rate).toFixed(0)}%
                         </p>
                       </div>
-                      <span style={{
-                        padding: '4px 12px',
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        background: period.status === 'paid' ? '#EAF3DE' : theme.colors.accent[50],
-                        color: period.status === 'paid' ? '#27500A' : theme.colors.accent[800],
-                      }}>
-                        {period.status === 'paid' ? 'Pagado' : 'Pendiente'}
-                      </span>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          background: period.status === 'paid' ? '#EAF3DE' : theme.colors.accent[50],
+                          color: period.status === 'paid' ? '#27500A' : theme.colors.accent[800],
+                          display: 'block',
+                          marginBottom: '4px',
+                        }}>
+                          {period.status === 'paid' ? 'Pagado' : 'Por pagar'}
+                        </span>
+                        {period.status === 'paid' && period.paid_at && (
+                          <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
+                            {new Date(period.paid_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div style={{
                       display: 'grid',
@@ -508,9 +522,9 @@ export function VendorPage() {
                       gap: '8px',
                     }}>
                       {[
-                        { label: 'Ventas brutas', value: '$' + Number(period.gross_sales_amount).toFixed(2) },
-                        { label: 'Comision bruta', value: '$' + Number(period.commission_amount).toFixed(2) },
-                        { label: 'Costo envio', value: '-$' + Number(period.shipping_charges).toFixed(2) },
+                        { label: 'Base de cálculo', value: '$' + Number(period.commission_base_amount).toFixed(2) },
+                        { label: 'Comisión bruta', value: '$' + Number(period.commission_amount).toFixed(2) },
+                        { label: 'Costo envío', value: '-$' + Number(period.shipping_charges).toFixed(2) },
                         { label: 'A cobrar', value: '$' + Number(period.net_commission).toFixed(2) },
                       ].map((item) => (
                         <div key={item.label} style={{
@@ -523,6 +537,13 @@ export function VendorPage() {
                         </div>
                       ))}
                     </div>
+
+
+
+
+
+
+
                   </div>
                 ))}
               </div>
