@@ -8,9 +8,6 @@ import { theme } from '../../theme'
 import type { Order, OrderStatus } from '../../types'
 import { useAuth } from '../../contexts/AuthContext'
 
-
-
-
 const statusLabel: Record<OrderStatus, string> = {
     pending: 'Pendiente',
     partially_available: 'Revisar disponibilidad',
@@ -357,7 +354,7 @@ export function OrderDetailPage() {
 
 
 
-                {(order.status === 'pending' || order.status === 'confirmed') && (
+                {(order.status === 'pending' || order.status === 'confirmed') && user?.role === 'client' && (
                     <div style={{
                         background: theme.colors.neutral[50],
                         border: '1px solid ' + theme.semantic.border,
