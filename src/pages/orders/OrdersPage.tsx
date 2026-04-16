@@ -1,9 +1,12 @@
+import { formatShortDate } from '../../utils/date'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { getOrders } from '../../api/orders'
 import { theme } from '../../theme'
 import type { Order, OrderStatus } from '../../types'
+
+
 
 const statusLabel: Record<OrderStatus, string> = {
   pending: 'Pendiente',
@@ -19,16 +22,16 @@ const statusLabel: Record<OrderStatus, string> = {
 }
 
 const statusColors: Record<OrderStatus, { bg: string; text: string }> = {
-  pending:               { bg: theme.colors.neutral[50],    text: theme.colors.neutral[800] },
-  partially_available:   { bg: theme.colors.accent[50],     text: theme.colors.accent[800] },
-  confirmed:             { bg: theme.colors.secondary[50],  text: theme.colors.secondary[800] },
-  preparing:             { bg: theme.colors.secondary[50],  text: theme.colors.secondary[800] },
-  in_delivery:           { bg: theme.colors.primary[50],    text: theme.colors.primary[800] },
-  delivery_failed:       { bg: theme.colors.accent[50],     text: theme.colors.accent[800] },
-  delivered_to_vendor:   { bg: theme.colors.primary[50],    text: theme.colors.primary[800] },
-  delivered_to_client:   { bg: '#EAF3DE',                   text: '#27500A' },
-  return_requested:      { bg: theme.colors.accent[50],     text: theme.colors.accent[800] },
-  cancelled:             { bg: theme.colors.neutral[50],    text: theme.colors.neutral[600] },
+  pending: { bg: theme.colors.neutral[50], text: theme.colors.neutral[800] },
+  partially_available: { bg: theme.colors.accent[50], text: theme.colors.accent[800] },
+  confirmed: { bg: theme.colors.secondary[50], text: theme.colors.secondary[800] },
+  preparing: { bg: theme.colors.secondary[50], text: theme.colors.secondary[800] },
+  in_delivery: { bg: theme.colors.primary[50], text: theme.colors.primary[800] },
+  delivery_failed: { bg: theme.colors.accent[50], text: theme.colors.accent[800] },
+  delivered_to_vendor: { bg: theme.colors.primary[50], text: theme.colors.primary[800] },
+  delivered_to_client: { bg: '#EAF3DE', text: '#27500A' },
+  return_requested: { bg: theme.colors.accent[50], text: theme.colors.accent[800] },
+  cancelled: { bg: theme.colors.neutral[50], text: theme.colors.neutral[600] },
 }
 
 export function OrdersPage() {
@@ -129,9 +132,7 @@ export function OrdersPage() {
                       {order.order_number}
                     </p>
                     <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
-                      {new Date(order.created_at).toLocaleDateString('es-MX', {
-                        day: 'numeric', month: 'long', year: 'numeric'
-                      })}
+                      {formatShortDate(order.created_at)}
                     </p>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

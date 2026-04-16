@@ -1,4 +1,5 @@
 
+import { formatDateTime } from '../../utils/date'
 import { getOrder, acceptPartialOrder, requestReturn, cancelOrder } from '../../api/orders'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -6,6 +7,8 @@ import { TopBar } from '../../components/TopBar'
 import { theme } from '../../theme'
 import type { Order, OrderStatus } from '../../types'
 import { useAuth } from '../../contexts/AuthContext'
+
+
 
 
 const statusLabel: Record<OrderStatus, string> = {
@@ -148,7 +151,7 @@ export function OrderDetailPage() {
 
                 {/* Volver */}
                 <button
-                    onClick={() => navigate(user?.role === 'vendor' ? '/vendor' : '/orders')}
+                    onClick={() => navigate(user?.role === 'vendor' ? '/vendor?tab=pedidos' : '/orders')}
                     style={{
                         background: 'transparent',
                         border: 'none',
@@ -185,9 +188,7 @@ export function OrderDetailPage() {
                                 {order.order_number}
                             </h1>
                             <p style={{ fontSize: '13px', color: theme.semantic.textMuted, margin: 0 }}>
-                                {new Date(order.created_at).toLocaleDateString('es-MX', {
-                                    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                                })}
+                                {formatDateTime(order.created_at)}
                             </p>
                         </div>
                         <span style={{

@@ -6,6 +6,7 @@ import { theme } from '../../theme'
 import type { Vendor, Client, CommissionPeriod, Order } from '../../types'
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { formatShortDate, formatMonthRange } from '../../utils/date'
 
 
 type Tab = 'clientes' | 'pedidos' | 'comisiones' | 'perfil'
@@ -341,8 +342,6 @@ export function VendorPage() {
                       marginBottom: noteOrderId === order.id ? '12px' : 0,
                     }}>
                       <div>
-
-
                         <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
                           {order.order_number}
                         </p>
@@ -350,10 +349,8 @@ export function VendorPage() {
                           {order.client_name || 'Cliente'}
                         </p>
                         <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
-                          {new Date(order.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          {formatShortDate(order.created_at)}
                         </p>
-
-
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{
@@ -475,11 +472,6 @@ export function VendorPage() {
                     border: '1px solid ' + theme.semantic.border,
                     padding: '16px 20px',
                   }}>
-
-
-
-
-
                     <div style={{
                       display: 'flex',
                       alignItems: 'flex-start',
@@ -490,7 +482,7 @@ export function VendorPage() {
                     }}>
                       <div>
                         <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
-                          Semana del {new Date(period.week_start).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} al {new Date(period.week_end).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          {formatMonthRange(period.week_start, { day: 'numeric', month: 'short' })} al {formatMonthRange(period.week_end, { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                         <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
                           Tu porcentaje: {Number(period.commission_rate).toFixed(0)}%
@@ -511,7 +503,7 @@ export function VendorPage() {
                         </span>
                         {period.status === 'paid' && period.paid_at && (
                           <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
-                            {new Date(period.paid_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            {formatShortDate(period.paid_at!)}
                           </p>
                         )}
                       </div>
