@@ -53,10 +53,7 @@ export function ProductDetailPage() {
   }
 
   const primaryImage = product?.images?.find((img) => img.is_primary) || product?.images?.[0]
-  const variantStock = selectedVariant
-    ? selectedVariant.stock_qty + selectedVariant.returned_stock_qty
-    : 0
-
+  
   if (isLoading) {
     return (
       <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
@@ -175,29 +172,30 @@ export function ProductDetailPage() {
                   Presentación
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+
+
                   {product.variants.filter((v) => v.active).map((variant) => {
-                    const stock = variant.stock_qty + variant.returned_stock_qty
                     const isSelected = selectedVariant?.id === variant.id
-                    const hasStock = stock > 0
                     return (
                       <button
                         key={variant.id}
-                        onClick={() => { if (hasStock) setSelectedVariant(variant) }}
+                        onClick={() => setSelectedVariant(variant)}
                         style={{
                           padding: '8px 16px',
                           borderRadius: '8px',
                           fontSize: '13px',
-                          cursor: hasStock ? 'pointer' : 'not-allowed',
+                          cursor: 'pointer',
                           border: '1px solid ' + (isSelected ? theme.semantic.actionPrimary : theme.semantic.border),
                           background: isSelected ? theme.semantic.actionPrimaryLight : 'transparent',
-                          color: isSelected ? theme.semantic.actionPrimary : hasStock ? theme.semantic.textPrimary : theme.semantic.textMuted,
-                          opacity: hasStock ? 1 : 0.5,
+                          color: isSelected ? theme.semantic.actionPrimary : theme.semantic.textPrimary,
                         }}
                       >
-                        {variant.variant_name}{!hasStock && ' (agotado)'}
+                        {variant.variant_name}
                       </button>
                     )
                   })}
+
+
                 </div>
               </div>
             )}
@@ -231,15 +229,13 @@ export function ProductDetailPage() {
                       {quantity}
                     </span>
                     <button
-                      onClick={() => setQuantity(Math.min(variantStock, quantity + 1))}
+                      onClick={() => setQuantity(quantity + 1)}
                       style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '18px', color: theme.semantic.textSecondary, lineHeight: 1 }}
                     >
                       +
                     </button>
                   </div>
-                  <span style={{ fontSize: '12px', color: theme.semantic.textMuted }}>
-                    {variantStock} disponibles
-                  </span>
+
                 </div>
               </div>
             )}
@@ -247,7 +243,7 @@ export function ProductDetailPage() {
             {user?.role === 'client' && (
               <button
                 onClick={handleAddToCart}
-                disabled={!selectedVariant || variantStock === 0}
+                
                 style={{
                   width: '100%',
                   padding: '12px',

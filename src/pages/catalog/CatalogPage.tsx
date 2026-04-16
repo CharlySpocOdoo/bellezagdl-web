@@ -60,7 +60,7 @@ export function CatalogPage() {
     setIsOrdering(true)
     setOrderError('')
     try {
-      await createOrder(items, user?.role === 'vendor')
+      await createOrder(items)
       clearCart()
       setIsCartOpen(false)
       setOrderSuccess(true)
@@ -309,10 +309,6 @@ export function CatalogPage() {
 
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
   const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0]
-  const totalStock = product.variants?.reduce(
-    (sum, v) => sum + v.stock_qty + v.returned_stock_qty, 0
-  ) ?? 0
-
   return (
     <div
       onClick={onClick}
@@ -377,19 +373,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           }}>
             ${Number(product.display_price)?.toFixed(2)}
           </span>
-          <span style={{
-            fontSize: '11px',
-            padding: '3px 8px',
-            borderRadius: '12px',
-            background: totalStock > 5
-              ? theme.semantic.statusDone
-              : theme.semantic.statusAlert,
-            color: totalStock > 5
-              ? theme.semantic.statusDoneText
-              : theme.semantic.statusAlertText,
-          }}>
-            {totalStock > 5 ? 'Disponible' : `${totalStock} restantes`}
-          </span>
+
         </div>
       </div>
     </div>
