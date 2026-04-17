@@ -185,7 +185,7 @@ export function OrderDetailPage() {
                                 {order.order_number}
                             </h1>
                             <p style={{ fontSize: '13px', color: theme.semantic.textMuted, margin: 0 }}>
-                                {formatDateTime(order.created_at)}
+                                {formatDateTime(order.status === 'cancelled' ? order.cancelled_at! : order.created_at)}
                             </p>
                         </div>
                         <span style={{
@@ -263,7 +263,7 @@ export function OrderDetailPage() {
                 )}
 
                 {/* Acción — pedido parcial */}
-                {order.status === 'partially_available' && (
+                {order.status === 'partially_available' && user?.role === 'client' && (
                     <div style={{
                         background: theme.colors.accent[50],
                         border: '1px solid ' + theme.colors.accent[100],
@@ -317,7 +317,7 @@ export function OrderDetailPage() {
                 )}
 
                 {/* Acción — solicitar devolución */}
-                {(order.status === 'delivered_to_client' || order.status === 'delivered_to_vendor') && (
+                {(order.status === 'delivered_to_client' || order.status === 'delivered_to_vendor') && user?.role === 'client' && (
                     <div style={{
                         background: theme.colors.neutral[50],
                         border: '1px solid ' + theme.semantic.border,

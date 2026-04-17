@@ -208,7 +208,7 @@ export function VendorPage() {
               onClick={() => setActiveTab(tab)}
               style={{
                 padding: '10px 20px',
-                fontSize: '14px',
+                fontSize: '13px',
                 fontWeight: activeTab === tab ? 500 : 400,
                 color: activeTab === tab ? theme.semantic.actionPrimary : theme.semantic.textSecondary,
                 background: 'transparent',
