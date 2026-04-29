@@ -3,7 +3,7 @@ import axios from 'axios'
 // ─── Instancia base ───────────────────────────────────────────────────────────
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000/v1',
+  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/v1',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -88,7 +88,7 @@ apiClient.interceptors.response.use(
 
     try {
       // Llamada directa con fetch para evitar el interceptor
-      const res = await fetch('http://127.0.0.1:8000/v1/auth/refresh', {
+      const res = await fetch((import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/v1') + '/auth/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: refreshToken }),

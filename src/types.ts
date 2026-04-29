@@ -28,6 +28,7 @@ export interface Vendor {
   invitation_code: string
   commission_percentage: number
   active: boolean
+  email: string
 }
 
 export interface Client {
@@ -121,6 +122,7 @@ export interface Order {
   items: OrderItem[]
   vendor_notes: string | null
   client_name: string | null
+  cancelled_at: string | null
 }
 
 // ─── Commissions ─────────────────────────────────────────────────────────────
