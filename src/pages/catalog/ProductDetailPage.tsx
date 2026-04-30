@@ -51,9 +51,7 @@ export function ProductDetailPage() {
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
-
-  const primaryImage = product?.images?.find((img) => img.is_primary) || product?.images?.[0]
-  
+   
   if (isLoading) {
     return (
       <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
@@ -104,15 +102,17 @@ export function ProductDetailPage() {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            {primaryImage ? (
-              <img
-                src={primaryImage.url}
-                alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span style={{ fontSize: '80px' }}>🌸</span>
-            )}
+
+	    {(selectedVariant?.image_url || product.image_url) ? (
+  	      <img
+      	    src={selectedVariant?.image_url || product.image_url || undefined}
+    		alt={product.name}
+    		style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+  	      />
+	    ) : (
+  	      <span style={{ fontSize: '80px' }}>🌸</span>
+	    )}
+
           </div>
 
           <div style={{ padding: '28px 24px' }}>

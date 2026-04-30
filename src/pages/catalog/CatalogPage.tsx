@@ -308,7 +308,6 @@ export function CatalogPage() {
 // ─── Tarjeta de producto ──────────────────────────────────────────────────────
 
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
-  const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0]
   return (
     <div
       onClick={onClick}
@@ -338,15 +337,15 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         justifyContent: 'center',
         overflow: 'hidden',
       }}>
-        {primaryImage ? (
-          <img
-            src={primaryImage.thumb_url || primaryImage.url}
-            alt={product.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <span style={{ fontSize: '40px' }}>🌸</span>
-        )}
+	{product.image_url ? (
+  	  <img
+    	    src={product.image_url}
+    	    alt={product.name}
+    	    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+  	  />
+	) : (
+  	  <span style={{ fontSize: '40px' }}>🌸</span>
+	)}
       </div>
 
       {/* Info */}

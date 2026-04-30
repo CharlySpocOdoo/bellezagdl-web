@@ -63,6 +63,7 @@ export interface ProductVariant {
   stock_qty: number
   returned_stock_qty: number
   active: boolean
+  image_url: string | null
 }
 
 export interface Product {
@@ -77,6 +78,7 @@ export interface Product {
   tags: string[]
   variants: ProductVariant[]
   images: ProductImage[]
+  image_url: string | null
 }
 
 export interface ProductImage {
