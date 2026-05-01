@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
 import { useCart } from '../../contexts/CartContext'
@@ -12,7 +12,9 @@ import type { Product, Category, Brand } from '../../types'
 export function CatalogPage() {
   const navigate = useNavigate()
   const { itemCount, clearCart, items } = useCart()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+
+  const location = useLocation()
 
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -48,7 +50,6 @@ export function CatalogPage() {
     loadData()
   }, [])
 
-  // Filtrar productos
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
     const matchCat = selectedCategory ? p.category_id === selectedCategory : true
@@ -68,7 +69,6 @@ export function CatalogPage() {
         setOrderSuccess(false)
         navigate('/orders')
       }, 2000)
-
     } catch (err: any) {
       if (err.response?.data?.detail) {
         const detail = err.response.data.detail
@@ -87,9 +87,9 @@ export function CatalogPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
-      <TopBar />
+      <TopBar itemCount={itemCount} onCartClick={() => setIsCartOpen(true)} />
 
-      {/* Banner de pedido exitoso */}
+      {/* Banner pedido exitoso */}
       {orderSuccess && (
         <div style={{
           background: theme.semantic.statusDone,
@@ -103,7 +103,7 @@ export function CatalogPage() {
         </div>
       )}
 
-      {/* Banner de error en pedido */}
+      {/* Banner error */}
       {orderError && (
         <div style={{
           background: theme.semantic.statusAlert,
@@ -119,115 +119,127 @@ export function CatalogPage() {
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        padding: '24px 16px',
+        padding: '16px',
       }}>
 
-        {/* Header con título y carrito */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}>
-          <h1 style={{
-            fontSize: '22px',
-            fontWeight: 500,
-            color: theme.semantic.textPrimary,
-            margin: 0,
-          }}>
-            Catálogo
-          </h1>
-
-          {/* Botón carrito */}
-          {user?.role === 'client' && (
-            <button
-              onClick={() => setIsCartOpen(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 16px',
-                background: itemCount > 0 ? theme.semantic.actionPrimary : 'transparent',
-                color: itemCount > 0 ? theme.semantic.textOnPrimary : theme.semantic.textSecondary,
-                border: `1px solid ${itemCount > 0 ? theme.semantic.actionPrimary : theme.semantic.border}`,
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 500,
-                transition: 'all 0.15s',
-              }}
-            >
-              🛍️ Carrito
-              {itemCount > 0 && (
-                <span style={{
-                  background: 'rgba(255,255,255,0.3)',
-                  borderRadius: '12px',
-                  padding: '2px 8px',
-                  fontSize: '12px',
-                }}>
-                  {itemCount}
-                </span>
-              )}
-            </button>
-          )}
-        </div>
-
-        {/* Filtros */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '12px',
-          marginBottom: '24px',
-        }}>
-          {/* Búsqueda */}
+        {/* Buscador */}
+        <div style={{ position: 'relative', marginBottom: '10px' }}>
+          <span style={{
+            position: 'absolute',
+            left: '12px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: '16px',
+            pointerEvents: 'none',
+          }}>🔍</span>
           <input
             type="text"
             placeholder="Buscar producto..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
-              padding: '10px 14px',
+              width: '100%',
+              padding: '10px 14px 10px 38px',
               fontSize: '14px',
-              border: `1px solid ${theme.semantic.border}`,
-              borderRadius: '8px',
+              border: `1.5px solid ${theme.semantic.border}`,
+              borderRadius: '10px',
               background: theme.semantic.bgCard,
               color: theme.semantic.textPrimary,
               outline: 'none',
+              boxSizing: 'border-box',
             }}
           />
+        </div>
 
-          {/* Categoría */}
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{
-              padding: '10px 14px',
-              fontSize: '14px',
-              border: `1px solid ${theme.semantic.border}`,
-              borderRadius: '8px',
-              background: theme.semantic.bgCard,
-              color: selectedCategory ? theme.semantic.textPrimary : theme.semantic.textMuted,
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="">Todas las categorías</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+
+        {/* Nav Catálogo / Mis pedidos / Carrito / Salir */}
+        {user?.role === 'client' && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '10px',
+            flexWrap: 'wrap',
+          }}>
+            {[
+              { label: 'Catálogo', path: '/catalog' },
+              { label: 'Mis pedidos', path: '/orders' },
+            ].map((item) => (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                style={{
+                  padding: '7px 16px',
+                  fontSize: '13px',
+                  fontWeight: location.pathname.startsWith(item.path) ? 600 : 400,
+                  background: location.pathname.startsWith(item.path) ? theme.colors.secondary[800] : 'transparent',
+                  color: location.pathname.startsWith(item.path) ? 'white' : theme.semantic.textSecondary,
+                  border: `1.5px solid ${location.pathname.startsWith(item.path) ? theme.colors.secondary[800] : theme.semantic.border}`,
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                }}
+              >
+                {item.label}
+              </button>
             ))}
-          </select>
 
-          {/* Marca */}
+            {/* Carrito */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              style={{
+                marginLeft: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 14px',
+                background: itemCount > 0 ? theme.colors.secondary[800] : 'transparent',
+                color: itemCount > 0 ? 'white' : theme.semantic.textSecondary,
+                border: `1.5px solid ${itemCount > 0 ? theme.colors.secondary[800] : theme.semantic.border}`,
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 500,
+              }}
+            >
+              🛍️ Carrito
+              {itemCount > 0 && (
+                <span style={{
+                  background: theme.semantic.actionPrimary,
+                  color: 'white',
+                  borderRadius: '10px',
+                  minWidth: '16px',
+                  height: '16px',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 4px',
+                }}>
+                  {itemCount}
+                </span>
+              )}
+            </button>
+          </div>
+        )}
+
+
+
+        {/* Filtros en 2 columnas */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '10px',
+          marginBottom: '16px',
+        }}>
           <select
             value={selectedBrand}
             onChange={(e) => setSelectedBrand(e.target.value)}
             style={{
-              padding: '10px 14px',
-              fontSize: '14px',
-              border: `1px solid ${theme.semantic.border}`,
-              borderRadius: '8px',
+              padding: '9px 10px',
+              fontSize: '13px',
+              border: `1.5px solid ${theme.semantic.border}`,
+              borderRadius: '10px',
               background: theme.semantic.bgCard,
               color: selectedBrand ? theme.semantic.textPrimary : theme.semantic.textMuted,
               outline: 'none',
@@ -239,9 +251,39 @@ export function CatalogPage() {
               <option key={brand.id} value={brand.id}>{brand.name}</option>
             ))}
           </select>
+
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            style={{
+              padding: '9px 10px',
+              fontSize: '13px',
+              border: `1.5px solid ${theme.semantic.border}`,
+              borderRadius: '10px',
+              background: theme.semantic.bgCard,
+              color: selectedCategory ? theme.semantic.textPrimary : theme.semantic.textMuted,
+              outline: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="">Todas las categorías</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
         </div>
 
-        {/* Estado de carga */}
+        {/* Contador de productos */}
+        <p style={{
+          fontSize: '13px',
+          fontWeight: 500,
+          color: theme.colors.secondary[800],
+          margin: '0 0 12px',
+        }}>
+          {isLoading ? 'Cargando...' : `${filtered.length} producto${filtered.length !== 1 ? 's' : ''}`}
+        </p>
+
+        {/* Productos */}
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '48px', color: theme.semantic.textMuted }}>
             Cargando productos...
@@ -256,8 +298,8 @@ export function CatalogPage() {
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-            gap: '16px',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '12px',
           }}>
             {filtered.map((product) => (
               <ProductCard
@@ -271,14 +313,12 @@ export function CatalogPage() {
 
       </div>
 
-      {/* Carrito */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         onCheckout={handleCheckout}
       />
 
-      {/* Overlay de procesando pedido */}
       {isOrdering && (
         <div style={{
           position: 'fixed',
@@ -321,59 +361,57 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)'
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(30,58,95,0.10)'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)'
         e.currentTarget.style.boxShadow = 'none'
       }}
     >
-      {/* Imagen */}
+{/* Imagen */}
       <div style={{
-        height: '180px',
-        background: theme.colors.primary[50],
+        height: '120px',
+        background: '#FFFFFF', 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
+        padding: '8px',
+        boxSizing: 'border-box',
       }}>
-	{product.image_url ? (
-  	  <img
-    	    src={product.image_url}
-    	    alt={product.name}
-    	    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-  	  />
-	) : (
-  	  <span style={{ fontSize: '40px' }}>🌸</span>
-	)}
+        {product.image_url ? (
+          <img
+            src={product.image_url}
+            alt={product.name}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+            }}
+          />
+        ) : (
+          <span style={{ fontSize: '36px' }}>🌸</span>
+        )}
       </div>
 
       {/* Info */}
-      <div style={{ padding: '14px' }}>
+      <div style={{ padding: '10px' }}>
         <p style={{
-          fontSize: '14px',
+          fontSize: '12px',
           fontWeight: 500,
           color: theme.semantic.textPrimary,
-          margin: '0 0 4px',
+          margin: '0 0 6px',
           lineHeight: 1.3,
         }}>
           {product.name}
         </p>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginTop: '8px',
+        <span style={{
+          fontSize: '14px',
+          fontWeight: 600,
+          color: theme.semantic.actionPrimary,
         }}>
-          <span style={{
-            fontSize: '16px',
-            fontWeight: 500,
-            color: theme.semantic.actionPrimary,
-          }}>
-            ${Number(product.display_price)?.toFixed(2)}
-          </span>
-
-        </div>
+          ${Number(product.display_price)?.toFixed(2)}
+        </span>
       </div>
     </div>
   )
