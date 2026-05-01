@@ -32,8 +32,8 @@ export function Button({
         fontSize: '15px',
         fontWeight: 500,
         color: isPrimary ? theme.semantic.textOnPrimary : theme.semantic.actionPrimary,
-        background: isPrimary ? theme.semantic.actionPrimary : 'transparent',
-        border: `1px solid ${isPrimary ? theme.semantic.actionPrimary : theme.semantic.actionPrimary}`,
+        background: isPrimary ? theme.colors.secondary[800] : 'transparent',
+        border: `1px solid ${isPrimary ? theme.colors.secondary[800] : theme.semantic.actionPrimary}`,
         borderRadius: '8px',
         cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
         opacity: disabled || isLoading ? 0.7 : 1,
@@ -42,7 +42,7 @@ export function Button({
       onMouseEnter={(e) => {
         if (!disabled && !isLoading) {
           const el = e.currentTarget
-          el.style.background = isPrimary
+          el.style.background = isPrimary ? theme.colors.secondary[900] : theme.semantic.actionPrimaryLight
             ? theme.semantic.actionPrimaryHover
             : theme.semantic.actionPrimaryLight
         }

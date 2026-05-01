@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
 import { theme } from '../../theme'
+import logoRosaLima from '../../assets/logorosalima.png'
 
 export function LoginPage() {
   const { login } = useAuth()
@@ -15,7 +16,6 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleLogin = async () => {
-
     if (!email || !password) {
       setError('Por favor ingresa tu email y contraseña.')
       return
@@ -34,14 +34,12 @@ export function LoginPage() {
 
     try {
       await login(email, password)
-      // La redirección la maneja AuthContext según el rol
       const user = JSON.parse(atob(localStorage.getItem('refresh_token')?.split('.')[1] || '{}'))
       if (user.role === 'vendor') {
         navigate('/vendor')
       } else {
         navigate('/catalog')
       }
-
     } catch (err: any) {
       if (err.response?.status === 401) {
         setError('Email o contraseña incorrectos.')
@@ -73,45 +71,45 @@ export function LoginPage() {
         padding: '40px 36px',
       }}>
 
-        {/* Logo / Título */}
+{/* Logo / Título */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{
-            width: '56px',
-            height: '56px',
+            width: '200px',
+            height: '200px',
             borderRadius: '50%',
             background: theme.colors.primary[50],
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 16px',
-            fontSize: '24px',
+            margin: '0 auto 24px',
+            overflow: 'hidden',
+            border: `2px solid ${theme.colors.primary[100]}`,
           }}>
-            🌸
+            <img
+              src={logoRosaLima}
+              alt="Rosa de Lima Cosméticos"
+              style={{ width: '185px', height: '185px', objectFit: 'contain' }}
+            />
           </div>
-          <h1 style={{
-            fontSize: '22px',
-            fontWeight: 500,
-            color: theme.semantic.textPrimary,
-            margin: '0 0 6px',
-          }}>
-            BellezaGDL
-          </h1>
           <p style={{
             fontSize: '14px',
-            color: theme.semantic.textMuted,
+            color: theme.semantic.textSecondary,
             margin: 0,
           }}>
             Inicia sesión para continuar
           </p>
         </div>
 
+
+
         {/* Formulario */}
         <Input
-          label="Email"
+          label="Correo electrónico"
           type="email"
           value={email}
           onChange={setEmail}
           placeholder="tu@email.com"
+          
         />
         <Input
           label="Contraseña"
