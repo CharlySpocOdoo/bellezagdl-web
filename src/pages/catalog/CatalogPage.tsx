@@ -12,7 +12,7 @@ import type { Product, Category, Brand } from '../../types'
 export function CatalogPage() {
   const navigate = useNavigate()
   const { itemCount, clearCart, items } = useCart()
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
 
   const location = useLocation()
 
@@ -87,7 +87,7 @@ export function CatalogPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
-      <TopBar itemCount={itemCount} onCartClick={() => setIsCartOpen(true)} />
+      <TopBar />
 
       {/* Banner pedido exitoso */}
       {orderSuccess && (
