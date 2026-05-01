@@ -11,10 +11,9 @@ import type { Product, Category, Brand } from '../../types'
 
 export function CatalogPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { itemCount, clearCart, items } = useCart()
   const { user } = useAuth()
-
-  const location = useLocation()
 
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -89,7 +88,6 @@ export function CatalogPage() {
     <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
       <TopBar />
 
-      {/* Banner pedido exitoso */}
       {orderSuccess && (
         <div style={{
           background: theme.semantic.statusDone,
@@ -103,7 +101,6 @@ export function CatalogPage() {
         </div>
       )}
 
-      {/* Banner error */}
       {orderError && (
         <div style={{
           background: theme.semantic.statusAlert,
@@ -116,20 +113,16 @@ export function CatalogPage() {
         </div>
       )}
 
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '16px',
-      }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
 
-        {/* Buscador */}
+        {/* Buscador con X */}
         <div style={{ position: 'relative', marginBottom: '10px' }}>
           <span style={{
             position: 'absolute',
             left: '12px',
             top: '50%',
             transform: 'translateY(-50%)',
-            fontSize: '16px',
+            fontSize: '15px',
             pointerEvents: 'none',
           }}>🔍</span>
           <input
@@ -139,8 +132,8 @@ export function CatalogPage() {
             onChange={(e) => setSearch(e.target.value)}
             style={{
               width: '100%',
-              padding: '10px 14px 10px 38px',
-              fontSize: '14px',
+              padding: '10px 38px 10px 38px',
+              fontSize: '16px',
               border: `1.5px solid ${theme.semantic.border}`,
               borderRadius: '10px',
               background: theme.semantic.bgCard,
@@ -149,17 +142,42 @@ export function CatalogPage() {
               boxSizing: 'border-box',
             }}
           />
+          {search.length > 0 && (
+            <button
+              onClick={() => setSearch('')}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: theme.semantic.textMuted,
+                border: 'none',
+                borderRadius: '50%',
+                width: '20px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                padding: 0,
+                flexShrink: 0,
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <line x1="1" y1="1" x2="9" y2="9" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                <line x1="9" y1="1" x2="1" y2="9" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </button>
+          )}
         </div>
 
-
-        {/* Nav Catálogo / Mis pedidos / Carrito / Salir */}
+        {/* Nav + Carrito */}
         {user?.role === 'client' && (
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             marginBottom: '10px',
-            flexWrap: 'wrap',
           }}>
             {[
               { label: 'Catálogo', path: '/catalog' },
@@ -183,7 +201,7 @@ export function CatalogPage() {
               </button>
             ))}
 
-            {/* Carrito */}
+            {/* Carrito al extremo derecho */}
             <button
               onClick={() => setIsCartOpen(true)}
               style={{
@@ -223,9 +241,7 @@ export function CatalogPage() {
           </div>
         )}
 
-
-
-        {/* Filtros en 2 columnas */}
+        {/* Filtros Marcas + Categorías */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -273,7 +289,7 @@ export function CatalogPage() {
           </select>
         </div>
 
-        {/* Contador de productos */}
+        {/* Contador */}
         <p style={{
           fontSize: '13px',
           fontWeight: 500,
@@ -283,7 +299,7 @@ export function CatalogPage() {
           {isLoading ? 'Cargando...' : `${filtered.length} producto${filtered.length !== 1 ? 's' : ''}`}
         </p>
 
-        {/* Productos */}
+        {/* Grid productos */}
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '48px', color: theme.semantic.textMuted }}>
             Cargando productos...
@@ -345,8 +361,6 @@ export function CatalogPage() {
   )
 }
 
-// ─── Tarjeta de producto ──────────────────────────────────────────────────────
-
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
   return (
     <div
@@ -357,7 +371,6 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         border: `1px solid ${theme.semantic.border}`,
         overflow: 'hidden',
         cursor: 'pointer',
-        transition: 'transform 0.15s, box-shadow 0.15s',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)'
@@ -368,10 +381,9 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         e.currentTarget.style.boxShadow = 'none'
       }}
     >
-{/* Imagen */}
       <div style={{
         height: '120px',
-        background: '#FFFFFF', 
+        background: '#FFFFFF',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -383,18 +395,13 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           <img
             src={product.image_url}
             alt={product.name}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-            }}
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
           />
         ) : (
           <span style={{ fontSize: '36px' }}>🌸</span>
         )}
       </div>
 
-      {/* Info */}
       <div style={{ padding: '10px' }}>
         <p style={{
           fontSize: '12px',
