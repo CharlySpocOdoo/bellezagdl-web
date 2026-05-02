@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { theme } from '../theme'
-import logoRosaLima from '../assets/logorosalima.png'
 
 export function TopBar() {
   const { user, logout, displayName } = useAuth()
@@ -29,34 +28,45 @@ export function TopBar() {
       zIndex: 50,
     }}>
 
-      {/* Logo más grande */}
+      {/* Marca */}
       <div
         onClick={() => navigate(user?.role === 'vendor' ? '/vendor' : '/catalog')}
         style={{
-          width: '46px',
-          height: '46px',
-          borderRadius: '50%',
-          background: 'white',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          border: '2px solid rgba(232,99,122,0.4)',
           cursor: 'pointer',
-          flexShrink: 0,
         }}
       >
-        <img
-          src={logoRosaLima}
-          alt="Rosa de Lima"
-          style={{ width: '42px', height: '42px', objectFit: 'contain' }}
-        />
+        <span style={{
+          fontSize: '15px',
+          fontWeight: 800,
+          color: '#FFFFFF',
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          lineHeight: 1.2,
+        }}>
+          Rosa de Lima
+        </span>
+        {/* Línea coral */}
+        <div style={{
+          width: '100%',
+          height: '1.5px',
+          background: theme.semantic.actionPrimary,
+          margin: '2px 0',
+        }} />
+        <span style={{
+          fontSize: '9px',
+          color: 'rgba(255,255,255,0.7)',
+          letterSpacing: '4px',
+          textTransform: 'uppercase',
+          fontWeight: 400,
+        }}>
+          Cosméticos
+        </span>
       </div>
-
       {/* Derecha: ícono persona + nombre + cerrar sesión */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-
-        {/* Ícono persona + nombre */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
           <div style={{
             width: '32px',
@@ -83,7 +93,6 @@ export function TopBar() {
           </span>
         </div>
 
-        {/* Cerrar sesión */}
         <button
           onClick={handleLogout}
           style={{

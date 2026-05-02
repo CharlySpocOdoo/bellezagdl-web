@@ -1,3 +1,5 @@
+import logoRosaLima from '../../assets/logorosalima.png'
+import logoRosa from '../../assets/logorosa.png'
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
@@ -115,16 +117,8 @@ export function CatalogPage() {
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
 
-        {/* Buscador con X */}
+        {/* Buscador con logo / X */}
         <div style={{ position: 'relative', marginBottom: '10px' }}>
-          <span style={{
-            position: 'absolute',
-            left: '12px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            fontSize: '15px',
-            pointerEvents: 'none',
-          }}>🔍</span>
           <input
             type="text"
             placeholder="Buscar producto..."
@@ -132,7 +126,7 @@ export function CatalogPage() {
             onChange={(e) => setSearch(e.target.value)}
             style={{
               width: '100%',
-              padding: '10px 38px 10px 38px',
+              padding: '10px 44px 10px 14px',
               fontSize: '16px',
               border: `1.5px solid ${theme.semantic.border}`,
               borderRadius: '10px',
@@ -142,33 +136,47 @@ export function CatalogPage() {
               boxSizing: 'border-box',
             }}
           />
-          {search.length > 0 && (
-            <button
-              onClick={() => setSearch('')}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: theme.semantic.textMuted,
-                border: 'none',
-                borderRadius: '50%',
-                width: '20px',
-                height: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                padding: 0,
-                flexShrink: 0,
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                <line x1="1" y1="1" x2="9" y2="9" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-                <line x1="9" y1="1" x2="1" y2="9" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-            </button>
-          )}
+
+          {/* Logo o X al extremo derecho */}
+          <div style={{
+            position: 'absolute',
+            right: '10px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            {search.length > 0 ? (
+              <button
+                onClick={() => setSearch('')}
+                style={{
+                  background: theme.semantic.textMuted,
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '22px',
+                  height: '22px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  padding: 0,
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <line x1="1" y1="1" x2="9" y2="9" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                  <line x1="9" y1="1" x2="1" y2="9" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+              </button>
+            ) : (
+              <img
+                src={logoRosa}
+                alt="Rosa de Lima"
+                style={{ width: '30px', height: '30px', objectFit: 'contain' }}
+              />
+            )}
+          </div>
         </div>
 
         {/* Nav + Carrito */}
@@ -416,6 +424,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           <img
             src={product.image_url}
             alt={product.name}
+            loading="lazy"
             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
           />
         ) : (
