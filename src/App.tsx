@@ -12,7 +12,9 @@ import { VendorPage } from './pages/vendor/VendorPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
 import { ActivatePage } from './pages/auth/ActivatePage'
 
+
 function App() {
+  
   return (
     <BrowserRouter>
       <AuthProvider>

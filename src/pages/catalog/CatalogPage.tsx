@@ -362,34 +362,55 @@ export function CatalogPage() {
 }
 
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
+  
   return (
-    <div
+<div
       onClick={onClick}
       style={{
-        background: theme.semantic.bgCard,
+        background: '#FFFFFF',
         borderRadius: '12px',
         border: `1px solid ${theme.semantic.border}`,
         overflow: 'hidden',
         cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)'
         e.currentTarget.style.boxShadow = '0 4px 12px rgba(30,58,95,0.10)'
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)'
         e.currentTarget.style.boxShadow = 'none'
       }}
     >
+      {/* Nombre arriba centrado */}
+      <div style={{
+        padding: '10px 10px 6px',
+        borderBottom: `0.5px solid ${theme.semantic.border}`,
+      }}>
+        <p style={{
+          fontSize: '12px',
+          fontWeight: 500,
+          color: theme.semantic.textPrimary,
+          margin: 0,
+          lineHeight: 1.35,
+          textAlign: 'center',
+        }}>
+          {product.name}
+        </p>
+      </div>
+
+      {/* Imagen con badge de marca */}
       <div style={{
         height: '120px',
-        background: '#FFFFFF',
+        background: '#F9F5F7',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
         padding: '8px',
         boxSizing: 'border-box',
+        position: 'relative',
+        flexShrink: 0,
       }}>
         {product.image_url ? (
           <img
@@ -398,28 +419,109 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
           />
         ) : (
-          <span style={{ fontSize: '36px' }}>🌸</span>
+          <span style={{ fontSize: '32px' }}>🌸</span>
+        )}
+        {product.brand_name && (
+          <span style={{
+            position: 'absolute',
+            top: '7px',
+            left: '7px',
+            background: theme.colors.secondary[800],
+            color: 'white',
+            fontSize: '10px',
+            padding: '2px 7px',
+            borderRadius: '20px',
+            fontWeight: 500,
+            letterSpacing: '0.3px',
+          }}>
+            {product.brand_name}
+          </span>
         )}
       </div>
 
-      <div style={{ padding: '10px' }}>
-        <p style={{
-          fontSize: '12px',
-          fontWeight: 500,
-          color: theme.semantic.textPrimary,
-          margin: '0 0 6px',
-          lineHeight: 1.3,
+      {/* Cuerpo */}
+      <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+        {/* Categoría */}
+        {product.category_name && (
+          <p style={{
+            fontSize: '10px',
+            color: theme.semantic.textMuted,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            margin: '0 0 4px',
+          }}>
+            {product.category_name}
+          </p>
+        )}
+
+        {/* Descripción */}
+        {product.description && (
+          <p style={{
+            fontSize: '11px',
+            color: theme.semantic.textSecondary,
+            margin: '0 0 6px',
+            lineHeight: 1.4,
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+          }}>
+            {product.description}
+          </p>
+        )}
+
+        {/* Tags */}
+        {product.tags && product.tags.length > 0 && (
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
+            {product.tags.slice(0, 2).map((tag) => (
+              <span key={tag} style={{
+                fontSize: '10px',
+                background: theme.colors.primary[50],
+                color: theme.colors.primary[800],
+                padding: '2px 6px',
+                borderRadius: '20px',
+              }}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Footer: precio + variantes */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderTop: `0.5px solid ${theme.semantic.border}`,
+          paddingTop: '8px',
+          marginTop: 'auto',
         }}>
-          {product.name}
-        </p>
-        <span style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: theme.semantic.actionPrimary,
-        }}>
-          ${Number(product.display_price)?.toFixed(2)}
-        </span>
+          <span style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: theme.semantic.actionPrimary,
+          }}>
+            ${Number(product.display_price)?.toFixed(2)}
+          </span>
+          {(product.variants?.length ?? 0) > 1 && (
+            <span style={{
+              fontSize: '10px',
+              color: theme.semantic.textMuted,
+              background: theme.semantic.bgPage,
+              padding: '2px 7px',
+              borderRadius: '20px',
+            }}>
+              {product.variants.length} presentaciones
+            </span>
+          )}
+        </div>
+
       </div>
     </div>
+
+
+
+
   )
 }

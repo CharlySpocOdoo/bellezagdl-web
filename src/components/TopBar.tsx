@@ -13,14 +13,13 @@ export function TopBar() {
   }
 
   const firstName = (displayName || user?.email || '?').split(' ')[0].split('@')[0]
-  const initial = firstName[0].toUpperCase()
 
   return (
     <div style={{
       width: '100%',
       background: theme.colors.secondary[800],
       padding: '0 16px',
-      height: '56px',
+      height: '60px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -30,19 +29,19 @@ export function TopBar() {
       zIndex: 50,
     }}>
 
-      {/* Logo */}
+      {/* Logo más grande */}
       <div
         onClick={() => navigate(user?.role === 'vendor' ? '/vendor' : '/catalog')}
         style={{
-          width: '36px',
-          height: '36px',
+          width: '46px',
+          height: '46px',
           borderRadius: '50%',
           background: 'white',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          border: '1.5px solid rgba(232,99,122,0.4)',
+          border: '2px solid rgba(232,99,122,0.4)',
           cursor: 'pointer',
           flexShrink: 0,
         }}
@@ -50,33 +49,34 @@ export function TopBar() {
         <img
           src={logoRosaLima}
           alt="Rosa de Lima"
-          style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+          style={{ width: '42px', height: '42px', objectFit: 'contain' }}
         />
       </div>
 
-      {/* Derecha: avatar + nombre + cerrar sesión */}
+      {/* Derecha: ícono persona + nombre + cerrar sesión */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
-        {/* Avatar + nombre */}
+        {/* Ícono persona + nombre */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
           <div style={{
-            width: '28px',
-            height: '28px',
+            width: '32px',
+            height: '32px',
             borderRadius: '50%',
-            background: 'rgba(232,99,122,0.2)',
+            background: 'rgba(232,99,122,0.15)',
+            border: '1.5px solid rgba(232,99,122,0.35)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '11px',
-            fontWeight: 700,
-            color: theme.semantic.actionPrimary,
             flexShrink: 0,
           }}>
-            {initial}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8637A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
           </div>
           <span style={{
             fontSize: '13px',
-            color: 'rgba(255,255,255,0.8)',
+            color: 'rgba(255,255,255,0.85)',
             fontWeight: 500,
           }}>
             {firstName}
@@ -87,7 +87,7 @@ export function TopBar() {
         <button
           onClick={handleLogout}
           style={{
-            padding: '5px 10px',
+            padding: '5px 12px',
             fontSize: '12px',
             color: 'rgba(255,255,255,0.65)',
             background: 'transparent',
