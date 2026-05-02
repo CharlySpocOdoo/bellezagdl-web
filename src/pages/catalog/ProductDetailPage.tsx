@@ -123,6 +123,7 @@ export function ProductDetailPage() {
             <img
               src={selectedVariant?.image_url || product.image_url || undefined}
               alt={product.name}
+              loading="lazy"
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
           ) : (
