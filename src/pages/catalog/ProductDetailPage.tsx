@@ -53,10 +53,7 @@ export function ProductDetailPage() {
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
-
-  const getVariantLabel = (variant: ProductVariant) =>
-    variant.variant_name || variant.sku || 'Única'
-
+  
   if (isLoading) {
     return (
       <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>

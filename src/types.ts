@@ -70,6 +70,7 @@ export interface Product {
   id: string
   name: string
   slug: string
+  description: string | null
   category_id: string
   brand_id: string
   brand_name: string | null
@@ -79,6 +80,7 @@ export interface Product {
   variants: ProductVariant[]
   images: ProductImage[]
   image_url: string | null
+  active: boolean
 }
 
 export interface ProductImage {
