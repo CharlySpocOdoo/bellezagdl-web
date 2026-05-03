@@ -8,13 +8,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { formatShortDate, formatMonthRange } from '../../utils/date'
 
-
 type Tab = 'clientes' | 'pedidos' | 'comisiones' | 'perfil'
 
 export function VendorPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<Tab>('clientes')
+
   useEffect(() => {
     const tab = searchParams.get('tab') as Tab
     if (tab) setActiveTab(tab)
@@ -81,8 +81,6 @@ export function VendorPage() {
     setIsSavingNote(true)
     try {
       const updatedOrder = await addOrderNote(orderId, noteText)
-
-      // Actualizar solo el pedido modificado en el estado local
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, vendor_notes: updatedOrder.vendor_notes } : o))
       setNoteOrderId(null)
       setNoteText('')
@@ -96,9 +94,7 @@ export function VendorPage() {
   }
 
   const handleSaveProfile = async () => {
-
     setProfileError('')
-
     if (!profileForm.first_name.trim()) {
       setProfileError('El nombre es requerido.')
       return
@@ -111,9 +107,7 @@ export function VendorPage() {
       setProfileError('El teléfono debe tener exactamente 10 dígitos.')
       return
     }
-
     setIsSavingProfile(true)
-    setProfileError('')
     try {
       const res = await apiClient.patch('/vendors/me', profileForm)
       setVendor(res.data)
@@ -136,7 +130,7 @@ export function VendorPage() {
     delivery_failed: 'Entrega fallida',
     delivered_to_vendor: 'Entregado al vendedor',
     delivered_to_client: 'Entregado',
-    return_requested: 'Devolucion solicitada',
+    return_requested: 'Devolución solicitada',
     cancelled: 'Cancelado',
   }
 
@@ -154,41 +148,122 @@ export function VendorPage() {
   return (
     <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
       <TopBar />
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px 16px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '16px' }}>
 
-        {/* Header */}
-        <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '22px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 4px' }}>
-            Hola, {vendor?.first_name} 👋
-          </h1>
-          <p style={{ fontSize: '14px', color: theme.semantic.textMuted, margin: 0 }}>
-            Codigo de invitacion: <strong>{vendor?.invitation_code}</strong>
-          </p>
+{/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          marginBottom: '20px',
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: '20px',
+              fontWeight: 600,
+              color: theme.semantic.textPrimary,
+              margin: '0 0 6px',
+            }}>
+              Hola, {vendor?.first_name} 👋
+            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <p style={{ fontSize: '13px', color: theme.semantic.textMuted, margin: 0 }}>
+                Código de invitación:
+              </p>
+              <span style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: theme.colors.secondary[800],
+                background: theme.colors.secondary[50],
+                padding: '2px 10px',
+                borderRadius: '20px',
+                letterSpacing: '1px',
+                fontFamily: 'monospace',
+              }}>
+                {vendor?.invitation_code}
+              </span>
+            </div>
+          </div>
+
+          {/* Acceso directo a Mi Perfil */}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('perfil')
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px',
+              background: activeTab === 'perfil' ? theme.colors.secondary[50] : 'transparent',
+              border: `1.5px solid ${activeTab === 'perfil' ? theme.colors.secondary[800] : theme.semantic.border}`,
+              borderRadius: '12px',
+              padding: '8px 12px',
+              cursor: 'pointer',
+            }}
+          >
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'rgba(232,99,122,0.15)',
+              border: '1.5px solid rgba(232,99,122,0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8637A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <span style={{
+              fontSize: '10px',
+              color: activeTab === 'perfil' ? theme.colors.secondary[800] : theme.semantic.textMuted,
+              fontWeight: activeTab === 'perfil' ? 600 : 400,
+              whiteSpace: 'nowrap',
+            }}>
+              Mi Perfil
+            </span>
+          </button>
         </div>
 
         {/* Tarjetas de resumen */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '12px',
-          marginBottom: '28px',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '10px',
+          marginBottom: '20px',
         }}>
           {[
-            { label: 'Clientes en mi red', value: clients.length.toString() },
-            { label: 'Comision esta semana', value: '$' + Number(commissions?.current_week_commission || 0).toFixed(2) },
-            { label: 'Pendiente de cobro', value: '$' + Number(commissions?.pending_payment || 0).toFixed(2) },
-            { label: 'Mi comision', value: (vendor?.commission_percentage || 0) + '%' },
+            { label: 'Clientes en mi red', value: clients.length.toString(), accent: false },
+            { label: 'Comisión esta semana', value: '$' + Number(commissions?.current_week_commission || 0).toFixed(2), accent: true },
+            { label: 'Pendiente de cobro', value: '$' + Number(commissions?.pending_payment || 0).toFixed(2), accent: true },
+            { label: 'Mi comisión', value: (vendor?.commission_percentage || 0) + '%', accent: false },
           ].map((card) => (
             <div key={card.label} style={{
               background: theme.semantic.bgCard,
               borderRadius: '12px',
-              border: '1px solid ' + theme.semantic.border,
-              padding: '16px 20px',
+              border: `0.5px solid ${theme.semantic.border}`,
+              padding: '14px 16px',
             }}>
-              <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 6px' }}>
+              <p style={{
+                fontSize: '11px',
+                color: theme.semantic.textMuted,
+                margin: '0 0 6px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}>
                 {card.label}
               </p>
-              <p style={{ fontSize: '22px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
+              <p style={{
+                fontSize: '22px',
+                fontWeight: 600,
+                color: card.accent ? theme.semantic.actionPrimary : theme.colors.secondary[800],
+                margin: 0,
+              }}>
                 {card.value}
               </p>
             </div>
@@ -198,28 +273,33 @@ export function VendorPage() {
         {/* Tabs */}
         <div style={{
           display: 'flex',
-          gap: '4px',
-          borderBottom: '1px solid ' + theme.semantic.border,
-          marginBottom: '24px',
+          gap: '6px',
+          marginBottom: '20px',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          paddingBottom: '2px',
         }}>
-          {(['clientes', 'pedidos', 'comisiones', 'perfil'] as Tab[]).map((tab) => (
+          {(['clientes', 'pedidos', 'comisiones'] as Tab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               style={{
-                padding: '10px 20px',
+                padding: '7px 16px',
                 fontSize: '13px',
-                fontWeight: activeTab === tab ? 500 : 400,
-                color: activeTab === tab ? theme.semantic.actionPrimary : theme.semantic.textSecondary,
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === tab ? '2px solid ' + theme.semantic.actionPrimary : '2px solid transparent',
+                fontWeight: activeTab === tab ? 600 : 400,
+                color: activeTab === tab ? 'white' : theme.semantic.textSecondary,
+                background: activeTab === tab ? theme.colors.secondary[800] : 'transparent',
+                border: `1.5px solid ${activeTab === tab ? theme.colors.secondary[800] : theme.semantic.border}`,
+                borderRadius: '20px',
                 cursor: 'pointer',
-                textTransform: 'capitalize',
-                marginBottom: '-1px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
-              {tab === 'clientes' ? 'Mis clientes' : tab === 'pedidos' ? 'Pedidos de mi red' : tab === 'comisiones' ? 'Mis comisiones' : 'Mi perfil'}
+              {tab === 'clientes' ? 'Mis Clientes' :
+               tab === 'pedidos' ? 'Pedidos' :
+               tab === 'comisiones' ? 'Mis Comisiones' :
+               'Mi Perfil'}
             </button>
           ))}
         </div>
@@ -228,36 +308,42 @@ export function VendorPage() {
         {activeTab === 'clientes' && (
           <div>
             <div style={{
-              background: theme.colors.primary[50],
-              border: '1px solid ' + theme.colors.primary[100],
+              background: theme.colors.secondary[50],
+              border: `0.5px solid ${theme.colors.secondary[100]}`,
               borderRadius: '12px',
-              padding: '16px 20px',
-              marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '12px',
+              padding: '14px 16px',
+              marginBottom: '16px',
             }}>
-              <div>
-                <p style={{ fontSize: '13px', fontWeight: 500, color: theme.colors.primary[800], margin: '0 0 4px' }}>
-                  Tu link de invitacion
-                </p>
-                <p style={{ fontSize: '12px', color: theme.colors.primary[600], margin: 0, wordBreak: 'break-all', fontFamily: 'monospace' }}>
-                  {vendor?.invitation_link}
-                </p>
-              </div>
+              <p style={{
+                fontSize: '12px',
+                fontWeight: 500,
+                color: theme.colors.secondary[800],
+                margin: '0 0 4px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}>
+                Tu link de invitación
+              </p>
+              <p style={{
+                fontSize: '11px',
+                color: theme.colors.secondary[600],
+                margin: '0 0 10px',
+                wordBreak: 'break-all',
+                fontFamily: 'monospace',
+              }}>
+                {vendor?.invitation_link}
+              </p>
               <button
-                onClick={() => { navigator.clipboard.writeText(vendor?.invitation_link || '') }}
+                onClick={() => navigator.clipboard.writeText(vendor?.invitation_link || '')}
                 style={{
-                  padding: '8px 16px',
-                  background: theme.semantic.actionPrimary,
-                  color: theme.semantic.textOnPrimary,
+                  padding: '7px 16px',
+                  background: theme.colors.secondary[800],
+                  color: 'white',
                   border: 'none',
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontSize: '13px',
-                  whiteSpace: 'nowrap',
+                  fontWeight: 500,
                 }}
               >
                 Copiar link
@@ -267,7 +353,7 @@ export function VendorPage() {
             {clients.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px' }}>
                 <div style={{ fontSize: '40px', marginBottom: '12px' }}>👥</div>
-                <p style={{ color: theme.semantic.textMuted }}>Aun no tienes clientes — comparte tu link de invitacion</p>
+                <p style={{ color: theme.semantic.textMuted }}>Aún no tienes clientes — comparte tu link de invitación</p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -275,27 +361,26 @@ export function VendorPage() {
                   <div key={client.id} style={{
                     background: theme.semantic.bgCard,
                     borderRadius: '12px',
-                    border: '1px solid ' + theme.semantic.border,
-                    padding: '16px 20px',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-                    gap: '8px',
+                    border: `0.5px solid ${theme.semantic.border}`,
+                    padding: '14px 16px',
                   }}>
-                    <div>
-                      <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
-                        {client.first_name} {client.last_name}
-                      </p>
-                      <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
-                        {client.phone}
-                      </p>
-                    </div>
-                    <div>
-                      <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>
-                        Direccion de entrega
-                      </p>
-                      <p style={{ fontSize: '13px', color: theme.semantic.textSecondary, margin: 0 }}>
-                        {client.delivery_address || 'Sin direccion'}
-                      </p>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+                      <div>
+                        <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
+                          {client.first_name} {client.last_name}
+                        </p>
+                        <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
+                          {client.phone}
+                        </p>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>
+                          Dirección de entrega
+                        </p>
+                        <p style={{ fontSize: '12px', color: theme.semantic.textSecondary, margin: 0 }}>
+                          {client.delivery_address || 'Sin dirección'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -310,19 +395,18 @@ export function VendorPage() {
             {orders.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px' }}>
                 <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
-                <p style={{ color: theme.semantic.textMuted }}>No hay pedidos en tu red todavia</p>
+                <p style={{ color: theme.semantic.textMuted }}>No hay pedidos en tu red todavía</p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {orders.map((order) => (
-
                   <div
                     key={order.id}
                     style={{
                       background: theme.semantic.bgCard,
                       borderRadius: '12px',
-                      border: '1px solid ' + theme.semantic.border,
-                      padding: '16px 20px',
+                      border: `0.5px solid ${theme.semantic.border}`,
+                      padding: '14px 16px',
                       cursor: 'pointer',
                     }}
                     onClick={(e) => {
@@ -330,52 +414,66 @@ export function VendorPage() {
                       if ((e.target as HTMLElement).closest('input')) return
                       navigate('/orders/' + order.id)
                     }}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(30,58,95,0.08)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none' }}
                   >
-
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                      gap: '8px',
+                      marginBottom: '10px',
+                    }}>
+                      <div>
+                        <p style={{ fontSize: '13px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
+                          ORD-{order.order_number.split('-').slice(-1)[0]}
+                        </p>
+                        <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 1px' }}>
+                          {order.client_name || 'Cliente'}
+                        </p>
+                        <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
+                          {formatShortDate(order.created_at)}
+                        </p>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: '0 0 3px' }}>Total</p>
+                        <p style={{ fontSize: '15px', fontWeight: 600, color: theme.semantic.actionPrimary, margin: 0 }}>
+                          ${Number(order.total).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
 
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      flexWrap: 'wrap',
+                      borderTop: `0.5px solid ${theme.semantic.border}`,
+                      paddingTop: '10px',
                       gap: '8px',
-                      marginBottom: noteOrderId === order.id ? '12px' : 0,
+                      flexWrap: 'wrap',
                     }}>
-                      <div>
-                        <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
-                          {order.order_number}
-                        </p>
-                        <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>
-                          {order.client_name || 'Cliente'}
-                        </p>
-                        <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
-                          {formatShortDate(order.created_at)}
-                        </p>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{
-                          padding: '4px 12px',
-                          borderRadius: '20px',
-                          fontSize: '12px',
-                          background: theme.colors.neutral[50],
-                          color: theme.colors.neutral[800],
-                        }}>
-                          {statusLabel[order.status] || order.status}
-                        </span>
-                        <span style={{ fontSize: '15px', fontWeight: 500, color: theme.semantic.textPrimary }}>
-                          ${Number(order.total).toFixed(2)}
-                        </span>
+                      <span style={{
+                        padding: '3px 10px',
+                        borderRadius: '20px',
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        background: theme.colors.neutral[50],
+                        color: theme.colors.neutral[800],
+                      }}>
+                        {statusLabel[order.status] || order.status}
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button
                           onClick={() => {
                             setNoteOrderId(noteOrderId === order.id ? null : order.id)
                             setNoteText('')
                           }}
                           style={{
-                            padding: '6px 12px',
+                            padding: '4px 12px',
                             fontSize: '12px',
                             color: theme.semantic.textSecondary,
                             background: 'transparent',
-                            border: '1px solid ' + theme.semantic.border,
+                            border: `1px solid ${theme.semantic.border}`,
                             borderRadius: '8px',
                             cursor: 'pointer',
                           }}
@@ -384,13 +482,13 @@ export function VendorPage() {
                         </button>
                         {noteSavedId === order.id && (
                           <span style={{
-                            fontSize: '12px',
+                            fontSize: '11px',
                             color: '#27500A',
                             background: '#EAF3DE',
-                            padding: '4px 10px',
+                            padding: '3px 10px',
                             borderRadius: '8px',
                           }}>
-                            ✓ Nota guardada
+                            ✓ Guardada
                           </span>
                         )}
                       </div>
@@ -402,10 +500,10 @@ export function VendorPage() {
                         padding: '8px 12px',
                         background: theme.colors.secondary[50],
                         borderRadius: '8px',
-                        border: '1px solid ' + theme.colors.secondary[100],
+                        border: `0.5px solid ${theme.colors.secondary[100]}`,
                       }}>
                         <p style={{ fontSize: '11px', color: theme.colors.secondary[600], margin: '0 0 2px', fontWeight: 500 }}>
-                          Nota guardada
+                          Nota
                         </p>
                         <p style={{ fontSize: '13px', color: theme.colors.secondary[800], margin: 0 }}>
                           {order.vendor_notes}
@@ -414,7 +512,7 @@ export function VendorPage() {
                     )}
 
                     {noteOrderId === order.id && (
-                      <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                         <input
                           type="text"
                           value={noteText}
@@ -424,7 +522,7 @@ export function VendorPage() {
                             flex: 1,
                             padding: '8px 12px',
                             fontSize: '13px',
-                            border: '1px solid ' + theme.semantic.border,
+                            border: `1px solid ${theme.semantic.border}`,
                             borderRadius: '8px',
                             outline: 'none',
                             color: theme.semantic.textPrimary,
@@ -434,9 +532,9 @@ export function VendorPage() {
                           onClick={() => handleSaveNote(order.id)}
                           disabled={isSavingNote || !noteText.trim()}
                           style={{
-                            padding: '8px 16px',
-                            background: theme.semantic.actionPrimary,
-                            color: theme.semantic.textOnPrimary,
+                            padding: '8px 14px',
+                            background: theme.colors.secondary[800],
+                            color: 'white',
                             border: 'none',
                             borderRadius: '8px',
                             cursor: 'pointer',
@@ -444,7 +542,7 @@ export function VendorPage() {
                             opacity: isSavingNote || !noteText.trim() ? 0.6 : 1,
                           }}
                         >
-                          {isSavingNote ? 'Guardando...' : 'Guardar'}
+                          {isSavingNote ? '...' : 'Guardar'}
                         </button>
                       </div>
                     )}
@@ -461,7 +559,7 @@ export function VendorPage() {
             {!commissions?.periods || commissions.periods.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px' }}>
                 <div style={{ fontSize: '40px', marginBottom: '12px' }}>💰</div>
-                <p style={{ color: theme.semantic.textMuted }}>Aun no tienes liquidaciones registradas</p>
+                <p style={{ color: theme.semantic.textMuted }}>Aún no tienes liquidaciones registradas</p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -469,73 +567,75 @@ export function VendorPage() {
                   <div key={period.id} style={{
                     background: theme.semantic.bgCard,
                     borderRadius: '12px',
-                    border: '1px solid ' + theme.semantic.border,
-                    padding: '16px 20px',
+                    border: `0.5px solid ${theme.semantic.border}`,
+                    padding: '14px 16px',
                   }}>
                     <div style={{
                       display: 'flex',
                       alignItems: 'flex-start',
                       justifyContent: 'space-between',
-                      flexWrap: 'wrap',
                       gap: '12px',
                       marginBottom: '12px',
                     }}>
                       <div>
-                        <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
-                          {formatMonthRange(period.week_start, { day: 'numeric', month: 'short' })} al {formatMonthRange(period.week_end, { day: 'numeric', month: 'short', year: 'numeric' })}
+                        <p style={{ fontSize: '13px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
+                          {formatMonthRange(period.week_start, { day: 'numeric', month: 'short' })} — {formatMonthRange(period.week_end, { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
-                        <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
-                          Tu porcentaje: {Number(period.commission_rate).toFixed(0)}%
+                        <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
+                          Comisión: {Number(period.commission_rate).toFixed(0)}%
                         </p>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <span style={{
-                          padding: '4px 12px',
+                          padding: '3px 10px',
                           borderRadius: '20px',
-                          fontSize: '12px',
+                          fontSize: '11px',
                           fontWeight: 500,
-                          background: period.status === 'paid' ? '#EAF3DE' : theme.colors.accent[50],
-                          color: period.status === 'paid' ? '#27500A' : theme.colors.accent[800],
-                          display: 'block',
-                          marginBottom: '4px',
+                          background: period.status === 'paid' ? '#EAF3DE' : '#FAEEDA',
+                          color: period.status === 'paid' ? '#3B6D11' : '#854F0B',
+                          display: 'inline-block',
+                          marginBottom: '3px',
                         }}>
                           {period.status === 'paid' ? 'Pagado' : 'Por pagar'}
                         </span>
                         {period.status === 'paid' && period.paid_at && (
                           <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
-                            {formatShortDate(period.paid_at!)}
+                            {formatShortDate(period.paid_at)}
                           </p>
                         )}
                       </div>
                     </div>
                     <div style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                      gridTemplateColumns: 'repeat(2, 1fr)',
                       gap: '8px',
                     }}>
                       {[
-                        { label: 'Base de cálculo', value: '$' + Number(period.commission_base_amount).toFixed(2) },
-                        { label: 'Comisión bruta', value: '$' + Number(period.commission_amount).toFixed(2) },
-                        { label: 'Costo envío', value: '-$' + Number(period.shipping_charges).toFixed(2) },
-                        { label: 'A cobrar', value: '$' + Number(period.net_commission).toFixed(2) },
+                        { label: 'Base de cálculo', value: '$' + Number(period.commission_base_amount).toFixed(2), highlight: false },
+                        { label: 'Comisión bruta', value: '$' + Number(period.commission_amount).toFixed(2), highlight: false },
+                        { label: 'Costo envío', value: '-$' + Number(period.shipping_charges).toFixed(2), highlight: false },
+                        { label: 'A cobrar', value: '$' + Number(period.net_commission).toFixed(2), highlight: true },
                       ].map((item) => (
                         <div key={item.label} style={{
-                          background: theme.colors.neutral[50],
+                          background: item.highlight ? theme.colors.secondary[50] : theme.colors.neutral[50],
                           borderRadius: '8px',
                           padding: '10px 12px',
+                          border: item.highlight ? `0.5px solid ${theme.colors.secondary[100]}` : 'none',
                         }}>
-                          <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>{item.label}</p>
-                          <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>{item.value}</p>
+                          <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>
+                            {item.label}
+                          </p>
+                          <p style={{
+                            fontSize: '14px',
+                            fontWeight: 500,
+                            color: item.highlight ? theme.colors.secondary[800] : theme.semantic.textPrimary,
+                            margin: 0,
+                          }}>
+                            {item.value}
+                          </p>
                         </div>
                       ))}
                     </div>
-
-
-
-
-
-
-
                   </div>
                 ))}
               </div>
@@ -545,17 +645,17 @@ export function VendorPage() {
 
         {/* Tab — Perfil */}
         {activeTab === 'perfil' && (
-          <div style={{ maxWidth: '560px' }}>
+          <div style={{ maxWidth: '480px' }}>
 
             {profileSuccess && (
               <div style={{
                 background: '#EAF3DE',
-                border: '1px solid #C0DD97',
-                borderRadius: '8px',
-                padding: '12px 16px',
-                marginBottom: '16px',
-                fontSize: '14px',
-                color: '#27500A',
+                border: '0.5px solid #C0DD97',
+                borderRadius: '10px',
+                padding: '10px 16px',
+                marginBottom: '12px',
+                fontSize: '13px',
+                color: '#3B6D11',
               }}>
                 {profileSuccess}
               </div>
@@ -563,13 +663,13 @@ export function VendorPage() {
 
             {profileError && (
               <div style={{
-                background: theme.semantic.statusAlert,
-                border: '1px solid ' + theme.colors.accent[100],
-                borderRadius: '8px',
-                padding: '12px 16px',
-                marginBottom: '16px',
-                fontSize: '14px',
-                color: theme.semantic.statusAlertText,
+                background: '#FCEBEB',
+                border: '0.5px solid #F7C1C1',
+                borderRadius: '10px',
+                padding: '10px 16px',
+                marginBottom: '12px',
+                fontSize: '13px',
+                color: '#A32D2D',
               }}>
                 {profileError}
               </div>
@@ -578,8 +678,8 @@ export function VendorPage() {
             <div style={{
               background: theme.semantic.bgCard,
               borderRadius: '12px',
-              border: '1px solid ' + theme.semantic.border,
-              padding: '24px',
+              border: `0.5px solid ${theme.semantic.border}`,
+              padding: '20px',
             }}>
               <div style={{
                 display: 'flex',
@@ -587,41 +687,98 @@ export function VendorPage() {
                 justifyContent: 'space-between',
                 marginBottom: '20px',
               }}>
-                <h2 style={{ fontSize: '16px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
                   Mis datos
                 </h2>
-
-                {/* Editar perfil — pendiente de endpoint en backend */}
                 {!isEditingProfile && (
                   <button
                     onClick={() => setIsEditingProfile(true)}
                     style={{
-                      padding: '6px 16px',
-                      fontSize: '13px',
-                      color: theme.semantic.actionPrimary,
-                      background: theme.semantic.actionPrimaryLight,
-                      border: 'none',
+                      padding: '5px 14px',
+                      fontSize: '12px',
+                      color: theme.colors.secondary[800],
+                      background: theme.colors.secondary[50],
+                      border: `0.5px solid ${theme.colors.secondary[100]}`,
                       borderRadius: '8px',
                       cursor: 'pointer',
+                      fontWeight: 500,
                     }}
                   >
                     Editar
                   </button>
                 )}
-
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
+                {/* Nombre completo */}
+                <div>
+                  <p style={{
+                    fontSize: '11px',
+                    color: theme.semantic.textMuted,
+                    margin: '0 0 4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
+                    Nombre
+                  </p>
+                  {isEditingProfile ? (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="text"
+                        value={profileForm.first_name}
+                        onChange={(e) => setProfileForm({ ...profileForm, first_name: e.target.value })}
+                        placeholder="Nombre"
+                        style={{
+                          flex: 1,
+                          padding: '8px 12px',
+                          fontSize: '14px',
+                          border: `1.5px solid ${theme.semantic.border}`,
+                          borderRadius: '8px',
+                          outline: 'none',
+                          color: theme.semantic.textPrimary,
+                          boxSizing: 'border-box' as const,
+                          background: theme.semantic.bgInput,
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={profileForm.last_name}
+                        onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })}
+                        placeholder="Apellido"
+                        style={{
+                          flex: 1,
+                          padding: '8px 12px',
+                          fontSize: '14px',
+                          border: `1.5px solid ${theme.semantic.border}`,
+                          borderRadius: '8px',
+                          outline: 'none',
+                          color: theme.semantic.textPrimary,
+                          boxSizing: 'border-box' as const,
+                          background: theme.semantic.bgInput,
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: '14px', color: theme.semantic.textPrimary, margin: 0 }}>
+                      {`${profileForm.first_name} ${profileForm.last_name}`.trim() || '—'}
+                    </p>
+                  )}
+                </div>
+
+                {/* Teléfono y Dirección */}
                 {[
-                  { label: 'Nombre para mostrar', field: 'display_name' as const },
-                  { label: 'Nombre', field: 'first_name' as const },
-                  { label: 'Apellido', field: 'last_name' as const },
                   { label: 'Teléfono', field: 'phone' as const },
                   { label: 'Dirección', field: 'address' as const },
-                  { label: 'Lugar de trabajo', field: 'workplace' as const },
                 ].map((item) => (
                   <div key={item.field}>
-                    <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 4px' }}>
+                    <p style={{
+                      fontSize: '11px',
+                      color: theme.semantic.textMuted,
+                      margin: '0 0 4px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                    }}>
                       {item.label}
                     </p>
                     {isEditingProfile ? (
@@ -633,23 +790,35 @@ export function VendorPage() {
                           width: '100%',
                           padding: '8px 12px',
                           fontSize: '14px',
-                          border: '1px solid ' + theme.semantic.border,
+                          border: `1.5px solid ${theme.semantic.border}`,
                           borderRadius: '8px',
                           outline: 'none',
                           color: theme.semantic.textPrimary,
                           boxSizing: 'border-box' as const,
+                          background: theme.semantic.bgInput,
                         }}
                       />
                     ) : (
-                      <p style={{ fontSize: '14px', color: theme.semantic.textPrimary, margin: 0 }}>
+                      <p style={{
+                        fontSize: '14px',
+                        color: profileForm[item.field] ? theme.semantic.textPrimary : theme.semantic.textMuted,
+                        margin: 0,
+                      }}>
                         {profileForm[item.field] || '—'}
                       </p>
                     )}
                   </div>
                 ))}
 
+                {/* Email */}
                 <div>
-                  <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 4px' }}>
+                  <p style={{
+                    fontSize: '11px',
+                    color: theme.semantic.textMuted,
+                    margin: '0 0 4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
                     Email
                   </p>
                   <p style={{ fontSize: '14px', color: theme.semantic.textSecondary, margin: 0 }}>
@@ -657,42 +826,56 @@ export function VendorPage() {
                   </p>
                 </div>
 
+                {/* Código de invitación */}
                 <div>
-                  <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: '0 0 4px' }}>
+                  <p style={{
+                    fontSize: '11px',
+                    color: theme.semantic.textMuted,
+                    margin: '0 0 4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
                     Código de invitación
                   </p>
-                  <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0, fontFamily: 'monospace' }}>
+                  <span style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: theme.colors.secondary[800],
+                    background: theme.colors.secondary[50],
+                    padding: '3px 10px',
+                    borderRadius: '20px',
+                    fontFamily: 'monospace',
+                    letterSpacing: '1px',
+                  }}>
                     {vendor?.invitation_code || '—'}
-                  </p>
+                  </span>
                 </div>
+
               </div>
 
               {isEditingProfile && (
-                <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                   <button
                     onClick={handleSaveProfile}
                     disabled={isSavingProfile}
                     style={{
-                      padding: '10px 24px',
-                      background: theme.semantic.actionPrimary,
-                      color: theme.semantic.textOnPrimary,
+                      padding: '9px 20px',
+                      background: theme.colors.secondary[800],
+                      color: 'white',
                       border: 'none',
                       borderRadius: '8px',
                       cursor: isSavingProfile ? 'not-allowed' : 'pointer',
-                      fontSize: '14px',
+                      fontSize: '13px',
                       fontWeight: 500,
                       opacity: isSavingProfile ? 0.7 : 1,
                     }}
                   >
                     {isSavingProfile ? 'Guardando...' : 'Guardar cambios'}
                   </button>
-
-
                   <button
                     onClick={() => {
                       setIsEditingProfile(false)
                       setProfileError('')
-                      // Restaurar datos originales
                       setProfileForm({
                         display_name: vendor?.display_name || '',
                         first_name: vendor?.first_name || '',
@@ -702,16 +885,14 @@ export function VendorPage() {
                         workplace: vendor?.workplace || '',
                       })
                     }}
-
-
                     style={{
-                      padding: '10px 24px',
+                      padding: '9px 20px',
                       background: 'transparent',
                       color: theme.semantic.textSecondary,
-                      border: '1px solid ' + theme.semantic.border,
+                      border: `1px solid ${theme.semantic.border}`,
                       borderRadius: '8px',
                       cursor: 'pointer',
-                      fontSize: '14px',
+                      fontSize: '13px',
                     }}
                   >
                     Cancelar
