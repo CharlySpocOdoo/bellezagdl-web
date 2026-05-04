@@ -1,4 +1,3 @@
-import logoRosaLima from '../../assets/logorosalima.png'
 import logoRosa from '../../assets/logorosa.png'
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'

@@ -334,16 +334,20 @@ export function VendorPage() {
                 {vendor?.invitation_link}
               </p>
               <button
-                onClick={() => navigator.clipboard.writeText(vendor?.invitation_link || '')}
-                style={{
-                  padding: '7px 16px',
-                  background: theme.colors.secondary[800],
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: 500,
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(vendor?.invitation_link || '')
+                    alert('¡Link copiado!')
+                  } catch {
+                    // Fallback para navegadores que bloquean clipboard
+                    const input = document.createElement('input')
+                    input.value = vendor?.invitation_link || ''
+                    document.body.appendChild(input)
+                    input.select()
+                    document.execCommand('copy')
+                    document.body.removeChild(input)
+                    alert('¡Link copiado!')
+                  }
                 }}
               >
                 Copiar link
