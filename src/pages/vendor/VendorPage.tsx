@@ -349,6 +349,16 @@ export function VendorPage() {
                     alert('¡Link copiado!')
                   }
                 }}
+                style={{
+                  padding: '7px 16px',
+                  background: theme.colors.secondary[800],
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                }}                
               >
                 Copiar link
               </button>
