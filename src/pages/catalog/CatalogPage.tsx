@@ -267,6 +267,10 @@ export function CatalogPage() {
               color: selectedBrand ? theme.semantic.textPrimary : theme.semantic.textMuted,
               outline: 'none',
               cursor: 'pointer',
+              width: '100%',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             <option value="">Todas las marcas</option>
@@ -287,6 +291,10 @@ export function CatalogPage() {
               color: selectedCategory ? theme.semantic.textPrimary : theme.semantic.textMuted,
               outline: 'none',
               cursor: 'pointer',
+              width: '100%',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             <option value="">Todas las categorías</option>
