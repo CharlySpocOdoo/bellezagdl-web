@@ -1,4 +1,3 @@
-import { VitrinaPage } from './pages/vitrina/VitrinaPage'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
@@ -21,8 +20,6 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <Routes>
-            <Route path="/vitrina/:brand_slug" element={<VitrinaPage />} />
-
             <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
             <Route path="/registro" element={<PublicRoute><RegisterPage /></PublicRoute>} />
             <Route path="/activar" element={<PublicRoute><ActivatePage /></PublicRoute>} />

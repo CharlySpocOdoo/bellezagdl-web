@@ -154,28 +154,3 @@ export interface CartItem {
   unit_price: number
   quantity: number
 }
-
-// ─── Vitrina Pública ──────────────────────────────────────────────────────────
-
-export interface VitrinaVariant {
-  id: string
-  sku: string
-  variant_name: string | null
-  image_url: string | null
-  active: boolean
-  display_order: number
-}
-
-export interface VitrinaProduct {
-  id: string
-  name: string
-  slug: string
-  description: string | null
-  image_url: string | null
-  image_thumb_url: string | null
-  tags: string[]
-  sale_price: string
-  brand_name: string
-  category_name: string | null
-  variants: VitrinaVariant[]
-}
