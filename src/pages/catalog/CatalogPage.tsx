@@ -31,24 +31,40 @@ export function CatalogPage() {
   const [orderError, setOrderError] = useState('')
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [prods, cats, brds] = await Promise.all([
-          getProducts(),
+  const loadData = async () => {
+    try {
+      const prods = await getProducts()
+      setProducts(prods)
+
+      if (user?.role === 'oferta') {
+        // Para oferta — derivar marcas y categorías solo de los productos filtrados
+        const uniqueBrands = Array.from(
+          new Map(prods.map(p => [p.brand_id, { id: p.brand_id, name: p.brand_name || '', active: true }])).values()
+        )
+        setBrands(uniqueBrands)
+
+        const uniqueCategories = Array.from(
+          new Map(prods.map(p => [p.category_id, { id: p.category_id, name: p.category_name || '', slug: '', children: [] }])).values()
+        )
+        setCategories(uniqueCategories)
+      } else {
+        // Para otros roles — cargar todas las marcas y categorías
+        const [cats, brds] = await Promise.all([
           getCategories(),
           getBrands(),
         ])
-        setProducts(prods)
         setCategories(cats)
         setBrands(brds)
-      } catch (err) {
-        console.error('Error cargando catálogo:', err)
-      } finally {
-        setIsLoading(false)
       }
+
+    } catch (err) {
+      console.error('Error cargando catálogo:', err)
+    } finally {
+      setIsLoading(false)
     }
-    loadData()
-  }, [])
+  }
+  loadData()
+}, [])
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
@@ -251,7 +267,7 @@ export function CatalogPage() {
         {/* Filtros Marcas + Categorías */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: user?.role === 'oferta' ? '1fr' : '1fr 1fr',
           gap: '10px',
           marginBottom: '16px',
         }}>
@@ -279,6 +295,7 @@ export function CatalogPage() {
             ))}
           </select>
 
+        {user?.role !== 'oferta' && (
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -302,6 +319,8 @@ export function CatalogPage() {
               <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
+        )}
+
         </div>
 
         {/* Contador */}
@@ -341,8 +360,32 @@ export function CatalogPage() {
             ))}
           </div>
         )}
-
       </div>
+
+      {user?.role === 'oferta' && (
+        <div style={{ borderTop: `1px solid ${theme.semantic.border}`, marginTop: '24px' }}>
+          <p style={{ textAlign: 'center', fontSize: '14px', fontWeight: 600, color: theme.semantic.textSecondary, padding: '16px 16px 8px' }}>
+            Contacta a tu vendedor
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', padding: '0 16px 24px' }}>
+            {[
+              { name: 'Diana Larios', number: '523332507661' },
+              { name: 'Judith Trujillo', number: '523334882895' },
+              { name: 'Victor Yuya', number: '523331794362' },
+            ].map((contact) => (
+              
+              <a key={contact.number}
+                href={`https://wa.me/${contact.number}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ background: '#25D366', color: 'white', padding: '12px 20px', borderRadius: '24px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                💬 {contact.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       <CartDrawer
         isOpen={isCartOpen}
@@ -411,6 +454,17 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           textAlign: 'center',
         }}>
           {product.name}
+          {product.sku_template && (
+            <span style={{
+              display: 'block',
+              fontSize: '11px',
+              color: theme.semantic.textMuted,
+              margin: '2px 0 0',
+            }}>
+              SKU: {product.sku_template}
+            </span>
+          )}
+          
         </p>
       </div>
 

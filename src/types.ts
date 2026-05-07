@@ -9,7 +9,7 @@ export interface LoginResponse {
 export interface User {
   id: string
   email: string
-  role: 'admin' | 'vendor' | 'client'
+  role: 'admin' | 'vendor' | 'client' | 'oferta'
   active: boolean
   profile_id: string | null
 }
@@ -70,6 +70,7 @@ export interface Product {
   id: string
   name: string
   slug: string
+  sku_template: string | null
   description: string | null
   category_id: string
   brand_id: string

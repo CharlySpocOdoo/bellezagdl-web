@@ -24,8 +24,10 @@ function App() {
             <Route path="/registro" element={<PublicRoute><RegisterPage /></PublicRoute>} />
             <Route path="/activar" element={<PublicRoute><ActivatePage /></PublicRoute>} />
 
-            <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><CatalogPage /></ProtectedRoute>} />
-            <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><ProductDetailPage /></ProtectedRoute>} />
+
+
+            <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta']}><CatalogPage /></ProtectedRoute>} />
+            <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta']}><ProductDetailPage /></ProtectedRoute>} />
 
             <Route path="/orders" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrdersPage /></ProtectedRoute>} />
             <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><OrderDetailPage /></ProtectedRoute>} />
