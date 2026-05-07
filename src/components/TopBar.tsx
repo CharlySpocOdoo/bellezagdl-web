@@ -38,6 +38,8 @@ export function TopBar() {
           cursor: 'pointer',
         }}
       >
+
+
         <span style={{
           fontSize: '15px',
           fontWeight: 800,
@@ -46,7 +48,7 @@ export function TopBar() {
           textTransform: 'uppercase',
           lineHeight: 1.2,
         }}>
-          Rosa de Lima
+          {user?.role === 'oferta' ? 'CELAVI' : 'Rosa de Lima'}
         </span>
         {/* Línea coral */}
         <div style={{
@@ -55,15 +57,19 @@ export function TopBar() {
           background: theme.semantic.actionPrimary,
           margin: '2px 0',
         }} />
-        <span style={{
-          fontSize: '9px',
-          color: 'rgba(255,255,255,0.7)',
-          letterSpacing: '4px',
-          textTransform: 'uppercase',
-          fontWeight: 400,
-        }}>
-          Cosméticos
-        </span>
+        {user?.role !== 'oferta' && (
+          <span style={{
+            fontSize: '9px',
+            color: 'rgba(255,255,255,0.7)',
+            letterSpacing: '4px',
+            textTransform: 'uppercase',
+            fontWeight: 400,
+          }}>
+            Cosméticos
+          </span>
+        )}
+
+
       </div>
       {/* Derecha: ícono persona + nombre + cerrar sesión */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

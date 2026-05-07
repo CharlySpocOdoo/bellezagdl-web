@@ -371,7 +371,7 @@ export function CatalogPage() {
             {[
               { name: 'Diana Larios', number: '523332507661' },
               { name: 'Judith Trujillo', number: '523334882895' },
-              { name: 'Victor Yuya', number: '523331794362' },
+              { name: 'Victor Corona', number: '523331794362' },
             ].map((contact) => (
               
               <a key={contact.number}
@@ -560,13 +560,21 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
 
         {/* Footer: precio + variantes */}
         <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
           borderTop: `0.5px solid ${theme.semantic.border}`,
           paddingTop: '8px',
           marginTop: 'auto',
+          textAlign: 'center',
         }}>
+          {(product.variants?.length ?? 0) > 1 && (
+            <span style={{
+              fontSize: '10px',
+              color: theme.semantic.textMuted,
+              display: 'block',
+              marginBottom: '2px',
+            }}>
+              {product.variants.length} variantes
+            </span>
+          )}
           <span style={{
             fontSize: '14px',
             fontWeight: 600,
@@ -574,17 +582,6 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           }}>
             ${Number(product.display_price)?.toFixed(2)}
           </span>
-          {(product.variants?.length ?? 0) > 1 && (
-            <span style={{
-              fontSize: '10px',
-              color: theme.semantic.textMuted,
-              background: theme.semantic.bgPage,
-              padding: '2px 7px',
-              borderRadius: '20px',
-            }}>
-              {product.variants.length} presentaciones
-            </span>
-          )}
         </div>
 
       </div>
