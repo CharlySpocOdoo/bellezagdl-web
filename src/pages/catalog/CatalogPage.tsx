@@ -363,22 +363,31 @@ export function CatalogPage() {
       </div>
 
       {user?.role === 'oferta' && (
-        <div style={{ borderTop: `1px solid ${theme.semantic.border}`, marginTop: '24px' }}>
-          <p style={{ textAlign: 'center', fontSize: '14px', fontWeight: 600, color: theme.semantic.textSecondary, padding: '16px 16px 8px' }}>
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'white',
+          borderTop: `1px solid ${theme.semantic.border}`,
+          padding: '12px 16px',
+          zIndex: 50,
+        }}>
+          <p style={{ textAlign: 'center', fontSize: '13px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
             Contacta a tu vendedor
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', padding: '0 16px 24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'nowrap' }}>
             {[
               { name: 'Diana Larios', number: '523332507661' },
               { name: 'Judith Trujillo', number: '523334882895' },
-              { name: 'Victor Corona', number: '523331794362' },
+              { name: 'Victor Yuya', number: '523331794362' },
             ].map((contact) => (
               
               <a key={contact.number}
                 href={`https://wa.me/${contact.number}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ background: '#25D366', color: 'white', padding: '12px 20px', borderRadius: '24px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ background: '#25D366', color: 'white', padding: '8px 10px', borderRadius: '24px', fontSize: '11px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 💬 {contact.name}
               </a>
@@ -490,22 +499,6 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           />
         ) : (
           <span style={{ fontSize: '32px' }}>🌸</span>
-        )}
-        {product.brand_name && (
-          <span style={{
-            position: 'absolute',
-            top: '7px',
-            left: '7px',
-            background: theme.colors.secondary[800],
-            color: 'white',
-            fontSize: '10px',
-            padding: '2px 7px',
-            borderRadius: '20px',
-            fontWeight: 500,
-            letterSpacing: '0.3px',
-          }}>
-            {product.brand_name}
-          </span>
         )}
       </div>
 
