@@ -376,7 +376,7 @@ export function CatalogPage() {
           <p style={{ textAlign: 'center', fontSize: '13px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
             Contacta a tu vendedor
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'nowrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '7px', flexWrap: 'nowrap' }}>
             {[
               { name: 'Diana Larios', number: '523332507661' },
               { name: 'Judith Trujillo', number: '523334882895' },
