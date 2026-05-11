@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
 import { theme } from '../../theme'
-import logoRosaLima from '../../assets/logorosalima.png'
+import logoRosaArios from '../../assets/LogoArios.jpg'
 
 export function LoginPage() {
   const { login } = useAuth()
@@ -86,7 +86,7 @@ export function LoginPage() {
             border: `2px solid ${theme.colors.primary[100]}`,
           }}>
             <img
-              src={logoRosaLima}
+              src={logoRosaArios}
               alt="Rosa de Lima Cosméticos"
               style={{ width: '185px', height: '185px', objectFit: 'contain' }}
             />
@@ -96,7 +96,7 @@ export function LoginPage() {
             color: theme.semantic.textSecondary,
             margin: 0,
           }}>
-            Inicia sesión para continuar
+            Inicia sesión para continuar...
           </p>
         </div>
 

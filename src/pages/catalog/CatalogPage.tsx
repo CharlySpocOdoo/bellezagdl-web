@@ -380,7 +380,7 @@ export function CatalogPage() {
             {[
               { name: 'Diana Larios', number: '523332507661' },
               { name: 'Judith Trujillo', number: '523334882895' },
-              { name: 'Victor Yuya', number: '523331794362' },
+              { name: 'Victor Corona', number: '523331794362' },
             ].map((contact) => (
               
               <a key={contact.number}
