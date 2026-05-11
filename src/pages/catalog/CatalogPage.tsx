@@ -373,7 +373,7 @@ export function CatalogPage() {
           padding: '12px 16px',
           zIndex: 50,
         }}>
-          <p style={{ textAlign: 'center', fontSize: '13px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
+          <p style={{ textAlign: 'center', fontSize: '12px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
             Contacta a tu vendedor
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '7px', flexWrap: 'nowrap' }}>

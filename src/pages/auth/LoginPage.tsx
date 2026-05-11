@@ -71,32 +71,20 @@ export function LoginPage() {
         padding: '40px 36px',
       }}>
 
-{/* Logo / Título */}
+        {/* Logo / Título */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{
-            width: '200px',
-            height: '200px',
-            borderRadius: '50%',
-            background: theme.colors.primary[50],
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 24px',
-            overflow: 'hidden',
-            border: `2px solid ${theme.colors.primary[100]}`,
-          }}>
-            <img
-              src={logoRosaArios}
-              alt="Rosa de Lima Cosméticos"
-              style={{ width: '185px', height: '185px', objectFit: 'contain' }}
-            />
+          <img
+            src={logoRosaArios}
+            alt="Rosa de Lima Cosméticos"
+            style={{ width: '185px', height: '185px', objectFit: 'contain' }}
+          />
           </div>
           <p style={{
             fontSize: '14px',
             color: theme.semantic.textSecondary,
             margin: 0,
           }}>
-            Inicia sesión para continuar...
+            Inicia sesión para continuar
           </p>
         </div>
 
