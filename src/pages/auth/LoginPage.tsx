@@ -71,13 +71,15 @@ export function LoginPage() {
         padding: '40px 36px',
       }}>
 
-{/* Logo / Título */}
+        {/* Logo / Título */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <img
-            src={logoRosaArios}
-            alt="Rosa de Lima Cosméticos"
-            style={{ width: '185px', height: '185px', objectFit: 'contain' }}
-          />
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+            <img
+              src={logoRosaArios}
+              alt="Rosa de Lima Cosméticos"
+              style={{ width: '185px', height: '185px', objectFit: 'contain' }}
+            />
+          </div>
           <p style={{
             fontSize: '14px',
             color: theme.semantic.textSecondary,

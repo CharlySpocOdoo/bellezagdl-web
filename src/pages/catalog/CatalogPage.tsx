@@ -373,10 +373,10 @@ export function CatalogPage() {
           padding: '12px 16px',
           zIndex: 50,
         }}>
-          <p style={{ textAlign: 'center', fontSize: '12px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
+          <p style={{ textAlign: 'center', fontSize: '13px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
             Contacta a tu vendedor
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '7px', flexWrap: 'nowrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', flexWrap: 'nowrap' }}>
             {[
               { name: 'Diana Larios', number: '523332507661' },
               { name: 'Judith Trujillo', number: '523334882895' },
@@ -387,7 +387,7 @@ export function CatalogPage() {
                 href={`https://wa.me/${contact.number}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ background: '#25D366', color: 'white', padding: '8px 10px', borderRadius: '24px', fontSize: '11px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{ background: '#25D366', color: 'white', padding: '7px 9px', borderRadius: '24px', fontSize: '10px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 💬 {contact.name}
               </a>
