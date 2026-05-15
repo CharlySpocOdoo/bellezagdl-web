@@ -102,7 +102,6 @@ export type OrderStatus =
   | 'delivery_failed'
   | 'delivered_to_vendor'
   | 'delivered_to_client'
-  | 'return_requested'
   | 'cancelled'
 
 export interface OrderItem {

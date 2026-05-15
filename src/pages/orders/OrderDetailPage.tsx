@@ -1,37 +1,12 @@
+import { statusLabel, statusColors } from '../../utils/orderStatus'
 import { formatDateTime } from '../../utils/date'
-import { getOrder, acceptPartialOrder, requestReturn, cancelOrder } from '../../api/orders'
+import { getOrder, acceptPartialOrder, cancelOrder } from '../../api/orders'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { theme } from '../../theme'
-import type { Order, OrderStatus } from '../../types'
+import type { Order } from '../../types'
 import { useAuth } from '../../contexts/AuthContext'
-
-const statusLabel: Record<OrderStatus, string> = {
-  pending: 'Pendiente',
-  partially_available: 'Revisar disponibilidad',
-  confirmed: 'Confirmado',
-  preparing: 'Preparando',
-  in_delivery: 'En camino',
-  delivery_failed: 'Entrega fallida',
-  delivered_to_vendor: 'Entregado al vendedor',
-  delivered_to_client: 'Entregado',
-  return_requested: 'Devolución solicitada',
-  cancelled: 'Cancelado',
-}
-
-const statusColors: Record<OrderStatus, { bg: string; text: string }> = {
-  pending:              { bg: '#E6F1FB', text: '#185FA5' },
-  partially_available:  { bg: '#FAEEDA', text: '#854F0B' },
-  confirmed:            { bg: '#E6F1FB', text: '#185FA5' },
-  preparing:            { bg: '#E6F1FB', text: '#185FA5' },
-  in_delivery:          { bg: '#FBEAF0', text: '#993556' },
-  delivery_failed:      { bg: '#FCEBEB', text: '#A32D2D' },
-  delivered_to_vendor:  { bg: '#FBEAF0', text: '#993556' },
-  delivered_to_client:  { bg: '#EAF3DE', text: '#3B6D11' },
-  return_requested:     { bg: '#FAEEDA', text: '#854F0B' },
-  cancelled:            { bg: '#F1EFE8', text: '#5F5E5A' },
-}
 
 const shortOrderNumber = (orderNumber: string) =>
   `ORD-${orderNumber.split('-').slice(-1)[0]}`
@@ -75,21 +50,6 @@ export function OrderDetailPage() {
       )
     } catch (err: any) {
       setActionError(err.response?.data?.detail || 'No se pudo procesar la acción. Intenta de nuevo.')
-    } finally {
-      setIsActing(false)
-    }
-  }
-
-  const handleRequestReturn = async () => {
-    if (!order) return
-    setIsActing(true)
-    setActionError('')
-    try {
-      const updated = await requestReturn(order.id)
-      setOrder(updated)
-      setActionSuccess('Devolución solicitada correctamente.')
-    } catch (err: any) {
-      setActionError(err.response?.data?.detail || 'No se pudo solicitar la devolución. Intenta de nuevo.')
     } finally {
       setIsActing(false)
     }
@@ -437,44 +397,6 @@ export function OrderDetailPage() {
               <span style={{ color: theme.semantic.actionPrimary }}>${Number(order.total).toFixed(2)}</span>
             </div>
           </div>
-
-                  {/* Acción — devolución */}
-        {(order.status === 'delivered_to_client' || order.status === 'delivered_to_vendor') && user?.role === 'client' && (
-          <div style={{
-            background: theme.semantic.bgCard,
-            border: `0.5px solid ${theme.semantic.border}`,
-            borderRadius: '12px',
-            padding: '14px 20px',
-            marginBottom: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '10px',
-          }}>
-            <p style={{ fontSize: '13px', color: theme.semantic.textSecondary, margin: 0 }}>
-              ¿Necesitas devolver este pedido?
-            </p>
-            <button
-              onClick={handleRequestReturn}
-              disabled={isActing}
-              style={{
-                padding: '7px 16px',
-                background: 'transparent',
-                color: theme.semantic.actionPrimary,
-                border: `1px solid ${theme.semantic.actionPrimary}`,
-                borderRadius: '8px',
-                cursor: isActing ? 'not-allowed' : 'pointer',
-                fontSize: '13px',
-                opacity: isActing ? 0.7 : 1,
-              }}
-            >
-              {isActing ? 'Procesando...' : 'Solicitar devolución'}
-            </button>
-          </div>
-        )}
-
-
 
       </div>
     </div>
