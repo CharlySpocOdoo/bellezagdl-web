@@ -9,7 +9,6 @@ export const statusLabel: Record<OrderStatus, string> = {
   delivery_failed:      'Entrega fallida',
   delivered_to_vendor:  'Entregado al vendedor',
   delivered_to_client:  'Entregado al cliente',
-  return_requested:     'Devolución solicitada',
   cancelled:            'Cancelado',
 }
 
@@ -22,6 +21,5 @@ export const statusColors: Record<OrderStatus, { bg: string; text: string }> = {
   delivery_failed:      { bg: '#FCEBEB', text: '#A32D2D' },
   delivered_to_vendor:  { bg: '#FBEAF0', text: '#993556' },
   delivered_to_client:  { bg: '#EAF3DE', text: '#3B6D11' },
-  return_requested:     { bg: '#FAEEDA', text: '#854F0B' },
   cancelled:            { bg: '#F1EFE8', text: '#5F5E5A' },
 }
