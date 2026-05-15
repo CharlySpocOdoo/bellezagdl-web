@@ -5,10 +5,10 @@ import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { getProducts, getCategories, getBrands } from '../../api/catalog'
+import { useCatalog } from '../../contexts/CatalogContext'
 import { createOrder } from '../../api/orders'
 import { theme } from '../../theme'
-import type { Product, Category, Brand } from '../../types'
+import type { Product } from '../../types'
 
 export function CatalogPage() {
   const navigate = useNavigate()
@@ -16,55 +16,27 @@ export function CatalogPage() {
   const { itemCount, clearCart, items } = useCart()
   const { user } = useAuth()
 
-  const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [brands, setBrands] = useState<Brand[]>([])
+  const { products, categories, brands, isLoading, scrollPosition, setScrollPosition, loadIfEmpty } = useCatalog()
 
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedBrand, setSelectedBrand] = useState('')
 
   const [isCartOpen, setIsCartOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  
   const [isOrdering, setIsOrdering] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
   const [orderError, setOrderError] = useState('')
 
-  useEffect(() => {
-  const loadData = async () => {
-    try {
-      const prods = await getProducts()
-      setProducts(prods)
+useEffect(() => {
+  if (user?.role) loadIfEmpty(user.role)
+}, [user?.role])
 
-      if (user?.role === 'oferta') {
-        // Para oferta — derivar marcas y categorías solo de los productos filtrados
-        const uniqueBrands = Array.from(
-          new Map(prods.map(p => [p.brand_id, { id: p.brand_id, name: p.brand_name || '', active: true }])).values()
-        )
-        setBrands(uniqueBrands)
-
-        const uniqueCategories = Array.from(
-          new Map(prods.map(p => [p.category_id, { id: p.category_id, name: p.category_name || '', slug: '', children: [] }])).values()
-        )
-        setCategories(uniqueCategories)
-      } else {
-        // Para otros roles — cargar todas las marcas y categorías
-        const [cats, brds] = await Promise.all([
-          getCategories(),
-          getBrands(),
-        ])
-        setCategories(cats)
-        setBrands(brds)
-      }
-
-    } catch (err) {
-      console.error('Error cargando catálogo:', err)
-    } finally {
-      setIsLoading(false)
-    }
+useEffect(() => {
+  if (!isLoading && scrollPosition > 0) {
+    window.scrollTo({ top: scrollPosition, behavior: 'instant' })
   }
-  loadData()
-}, [])
+}, [isLoading])
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
@@ -73,6 +45,11 @@ export function CatalogPage() {
     return matchSearch && matchCat && matchBrand
   })
 
+  const handleProductClick = (id: string) => {
+  setScrollPosition(window.scrollY)
+  navigate(`/catalog/${id}`)
+  }
+  
   const handleCheckout = async () => {
     setIsOrdering(true)
     setOrderError('')
@@ -355,7 +332,7 @@ export function CatalogPage() {
               <ProductCard
                 key={product.id}
                 product={product}
-                onClick={() => navigate(`/catalog/${product.id}`)}
+                onClick={() => handleProductClick(product.id)}
               />
             ))}
           </div>

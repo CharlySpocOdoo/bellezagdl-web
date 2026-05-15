@@ -1,36 +1,11 @@
+import { statusLabel, statusColors } from '../../utils/orderStatus'
 import { formatShortDate } from '../../utils/date'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { getOrders } from '../../api/orders'
 import { theme } from '../../theme'
-import type { Order, OrderStatus } from '../../types'
-
-const statusLabel: Record<OrderStatus, string> = {
-  pending: 'Pendiente',
-  partially_available: 'Revisar disponibilidad',
-  confirmed: 'Confirmado',
-  preparing: 'Preparando',
-  in_delivery: 'En camino',
-  delivery_failed: 'Entrega fallida',
-  delivered_to_vendor: 'Entregado al vendedor',
-  delivered_to_client: 'Entregado',
-  return_requested: 'Devolución solicitada',
-  cancelled: 'Cancelado',
-}
-
-const statusColors: Record<OrderStatus, { bg: string; text: string }> = {
-  pending:              { bg: '#E6F1FB', text: '#185FA5' },
-  partially_available:  { bg: '#FAEEDA', text: '#854F0B' },
-  confirmed:            { bg: '#E6F1FB', text: '#185FA5' },
-  preparing:            { bg: '#E6F1FB', text: '#185FA5' },
-  in_delivery:          { bg: '#FBEAF0', text: '#993556' },
-  delivery_failed:      { bg: '#FCEBEB', text: '#A32D2D' },
-  delivered_to_vendor:  { bg: '#FBEAF0', text: '#993556' },
-  delivered_to_client:  { bg: '#EAF3DE', text: '#3B6D11' },
-  return_requested:     { bg: '#FAEEDA', text: '#854F0B' },
-  cancelled:            { bg: '#F1EFE8', text: '#5F5E5A' },
-}
+import type { Order } from '../../types'
 
 const shortOrderNumber = (orderNumber: string) =>
   `ORD-${orderNumber.split('-').slice(-1)[0]}`
