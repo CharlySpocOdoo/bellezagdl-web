@@ -49,3 +49,8 @@ export const cancelOrder = async (id: string): Promise<Order> => {
   })
   return res.data
 }
+
+export async function updateOrderStatus(id: string, status: string): Promise<Order> {
+  const res = await apiClient.patch<Order>(`/orders/${id}/status`, { status })
+  return res.data
+}

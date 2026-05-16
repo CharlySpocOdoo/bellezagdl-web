@@ -1,6 +1,6 @@
 import { statusLabel, statusColors } from '../../utils/orderStatus'
 import { formatDateTime } from '../../utils/date'
-import { getOrder, acceptPartialOrder, cancelOrder } from '../../api/orders'
+import { getOrder, acceptPartialOrder, cancelOrder, updateOrderStatus } from '../../api/orders'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
@@ -69,6 +69,23 @@ export function OrderDetailPage() {
       setIsActing(false)
     }
   }
+
+  
+  const handleDeliverToClient = async () => {
+    if (!order) return
+    setIsActing(true)
+    setActionError('')
+    try {
+      const updated = await updateOrderStatus(order.id, 'delivered_to_client')
+      setOrder(updated)
+      setActionSuccess('Pedido marcado como entregado al cliente.')
+    } catch (err: any) {
+      setActionError(err.response?.data?.detail || 'No se pudo actualizar el estado. Intenta de nuevo.')
+    } finally {
+      setIsActing(false)
+    }
+  }
+
 
   if (isLoading) {
     return (
@@ -278,6 +295,42 @@ export function OrderDetailPage() {
           </div>
         )}
 
+
+        {/* Acción — entregar al cliente */}
+        {order.status === 'delivered_to_vendor' && user?.role === 'vendor' && (
+          <div style={{
+            background: theme.semantic.bgCard,
+            border: `0.5px solid ${theme.semantic.border}`,
+            borderRadius: '12px',
+            padding: '14px 20px',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '10px',
+          }}>
+            <p style={{ fontSize: '13px', color: theme.semantic.textSecondary, margin: 0 }}>
+              ¿Ya entregaste este pedido al cliente?
+            </p>
+            <button
+              onClick={handleDeliverToClient}
+              disabled={isActing}
+              style={{
+                padding: '7px 16px',
+                background: theme.colors.secondary[800],
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: isActing ? 'not-allowed' : 'pointer',
+                fontSize: '13px',
+                opacity: isActing ? 0.7 : 1,
+              }}
+            >
+              {isActing ? 'Procesando...' : 'Marcar como entregado'}
+            </button>
+          </div>
+        )}
 
         {/* Productos */}
         <div style={{
