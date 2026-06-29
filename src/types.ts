@@ -9,7 +9,7 @@ export interface LoginResponse {
 export interface User {
   id: string
   email: string
-  role: 'admin' | 'vendor' | 'client' | 'oferta'
+  role: 'admin' | 'vendor' | 'client' | 'oferta' | 'wholesale'
   active: boolean
   profile_id: string | null
 }
@@ -82,6 +82,10 @@ export interface Product {
   images: ProductImage[]
   image_url: string | null
   active: boolean
+  modo_de_uso: string | null
+  beneficios: string | null
+  ingredientes: string | null
+  atributos: Record<string, string> | null
 }
 
 export interface ProductImage {
@@ -119,8 +123,8 @@ export interface Order {
   id: string
   order_number: string
   status: OrderStatus
+  sale_type: 'retail' | 'wholesale'
   subtotal: number
-  shipping_cost: number
   total: number
   created_at: string
   items: OrderItem[]

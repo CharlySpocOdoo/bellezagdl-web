@@ -12,6 +12,15 @@ export const statusLabel: Record<OrderStatus, string> = {
   cancelled:            'Cancelado',
 }
 
+// Usar esta función cuando se tiene el pedido completo (con sale_type).
+// in_delivery muestra etiqueta diferente según el canal de venta.
+export function getStatusLabel(status: OrderStatus, saleType?: string): string {
+  if (status === 'in_delivery' && saleType === 'wholesale') {
+    return 'Pedido en camino'
+  }
+  return statusLabel[status]
+}
+
 export const statusColors: Record<OrderStatus, { bg: string; text: string }> = {
   pending:              { bg: '#E6F1FB', text: '#185FA5' },
   partially_available:  { bg: '#FAEEDA', text: '#854F0B' },

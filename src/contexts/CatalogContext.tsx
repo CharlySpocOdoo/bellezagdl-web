@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useRef } from 'react'
+import { createContext, useContext, useState, useRef, useEffect } from 'react'
 import type { Product, Category, Brand } from '../types'
 import { getProducts, getCategories, getBrands } from '../api/catalog'
+import { useAuth } from './AuthContext'
 
 interface CatalogContextType {
   products: Product[]
@@ -21,6 +22,18 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0)
   const loadedRef = useRef(false)
+  const { user } = useAuth()
+
+  // Limpiar catálogo al cerrar sesión — evita que el próximo usuario
+  // vea precios calculados para el rol anterior
+  useEffect(() => {
+    if (!user) {
+      loadedRef.current = false
+      setProducts([])
+      setCategories([])
+      setBrands([])
+    }
+  }, [user])
 
   const loadIfEmpty = async (role: string) => {
     if (loadedRef.current) return

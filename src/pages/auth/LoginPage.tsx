@@ -33,13 +33,10 @@ export function LoginPage() {
     setIsLoading(true)
 
     try {
-      await login(email, password)
-      const user = JSON.parse(atob(localStorage.getItem('refresh_token')?.split('.')[1] || '{}'))
-      if (user.role === 'vendor') {
-        navigate('/vendor')
-      } else {
-        navigate('/catalog')
-      }
+      const me = await login(email, password)
+      if (me.role === 'vendor') navigate('/vendor')
+      else if (me.role === 'wholesale') navigate('/wholesale')
+      else navigate('/catalog')
     } catch (err: any) {
       if (err.response?.status === 401) {
         setError('Email o contraseña incorrectos.')

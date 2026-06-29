@@ -30,7 +30,11 @@ export function TopBar() {
 
       {/* Marca */}
       <div
-        onClick={() => navigate(user?.role === 'vendor' ? '/vendor' : '/catalog')}
+        onClick={() => {
+          if (user?.role === 'vendor') navigate('/vendor')
+          else if (user?.role === 'wholesale') navigate('/wholesale')
+          else navigate('/catalog')
+        }}
         style={{
           display: 'flex',
           flexDirection: 'column',

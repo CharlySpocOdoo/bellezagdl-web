@@ -10,7 +10,7 @@ import { createOrder } from '../../api/orders'
 import { theme } from '../../theme'
 import type { Product } from '../../types'
 
-export function CatalogPage() {
+export function WholesalePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { itemCount, clearCart, items } = useCart()
@@ -23,20 +23,19 @@ export function CatalogPage() {
   const [selectedBrand, setSelectedBrand] = useState('')
 
   const [isCartOpen, setIsCartOpen] = useState(false)
-  
   const [isOrdering, setIsOrdering] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
   const [orderError, setOrderError] = useState('')
 
-useEffect(() => {
-  if (user?.role) loadIfEmpty(user.role)
-}, [user?.role])
+  useEffect(() => {
+    if (user?.role) loadIfEmpty(user.role)
+  }, [user?.role])
 
-useEffect(() => {
-  if (!isLoading && scrollPosition > 0) {
-    window.scrollTo({ top: scrollPosition, behavior: 'instant' })
-  }
-}, [isLoading])
+  useEffect(() => {
+    if (!isLoading && scrollPosition > 0) {
+      window.scrollTo({ top: scrollPosition, behavior: 'instant' })
+    }
+  }, [isLoading])
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
@@ -46,10 +45,10 @@ useEffect(() => {
   })
 
   const handleProductClick = (id: string) => {
-  setScrollPosition(window.scrollY)
-  navigate(`/catalog/${id}`)
+    setScrollPosition(window.scrollY)
+    navigate(`/catalog/${id}`)
   }
-  
+
   const handleCheckout = async () => {
     setIsOrdering(true)
     setOrderError('')
@@ -60,7 +59,7 @@ useEffect(() => {
       setOrderSuccess(true)
       setTimeout(() => {
         setOrderSuccess(false)
-        navigate('/orders')
+        navigate('/wholesale/orders')
       }, 2000)
     } catch (err: any) {
       if (err.response?.data?.detail) {
@@ -171,80 +170,78 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Nav + Carrito */}
-        {user?.role === 'client' && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '10px',
-          }}>
-            {[
-              { label: 'Catálogo', path: '/catalog' },
-              { label: 'Mis pedidos', path: '/orders' },
-            ].map((item) => (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                style={{
-                  padding: '7px 16px',
-                  fontSize: '13px',
-                  fontWeight: location.pathname.startsWith(item.path) ? 600 : 400,
-                  background: location.pathname.startsWith(item.path) ? theme.colors.secondary[800] : 'transparent',
-                  color: location.pathname.startsWith(item.path) ? 'white' : theme.semantic.textSecondary,
-                  border: `1.5px solid ${location.pathname.startsWith(item.path) ? theme.colors.secondary[800] : theme.semantic.border}`,
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
-
-            {/* Carrito al extremo derecho */}
+        {/* Nav tabs + Carrito */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '10px',
+        }}>
+          {[
+            { label: 'Catálogo', path: '/wholesale' },
+            { label: 'Mis pedidos', path: '/wholesale/orders' },
+          ].map((item) => (
             <button
-              onClick={() => setIsCartOpen(true)}
+              key={item.path}
+              onClick={() => navigate(item.path)}
               style={{
-                marginLeft: 'auto',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '7px 14px',
-                background: itemCount > 0 ? theme.colors.secondary[800] : 'transparent',
-                color: itemCount > 0 ? 'white' : theme.semantic.textSecondary,
-                border: `1.5px solid ${itemCount > 0 ? theme.colors.secondary[800] : theme.semantic.border}`,
+                padding: '7px 16px',
+                fontSize: '13px',
+                fontWeight: location.pathname === item.path ? 600 : 400,
+                background: location.pathname === item.path ? theme.colors.secondary[800] : 'transparent',
+                color: location.pathname === item.path ? 'white' : theme.semantic.textSecondary,
+                border: `1.5px solid ${location.pathname === item.path ? theme.colors.secondary[800] : theme.semantic.border}`,
                 borderRadius: '20px',
                 cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: 500,
               }}
             >
-              🛍️ Carrito
-              {itemCount > 0 && (
-                <span style={{
-                  background: theme.semantic.actionPrimary,
-                  color: 'white',
-                  borderRadius: '10px',
-                  minWidth: '16px',
-                  height: '16px',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0 4px',
-                }}>
-                  {itemCount}
-                </span>
-              )}
+              {item.label}
             </button>
-          </div>
-        )}
+          ))}
+
+          {/* Carrito al extremo derecho */}
+          <button
+            onClick={() => setIsCartOpen(true)}
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '7px 14px',
+              background: itemCount > 0 ? theme.colors.secondary[800] : 'transparent',
+              color: itemCount > 0 ? 'white' : theme.semantic.textSecondary,
+              border: `1.5px solid ${itemCount > 0 ? theme.colors.secondary[800] : theme.semantic.border}`,
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 500,
+            }}
+          >
+            🛍️ Carrito
+            {itemCount > 0 && (
+              <span style={{
+                background: theme.semantic.actionPrimary,
+                color: 'white',
+                borderRadius: '10px',
+                minWidth: '16px',
+                height: '16px',
+                fontSize: '10px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 4px',
+              }}>
+                {itemCount}
+              </span>
+            )}
+          </button>
+        </div>
 
         {/* Filtros Marcas + Categorías */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: user?.role === 'oferta' ? '1fr' : '1fr 1fr',
+          gridTemplateColumns: '1fr 1fr',
           gap: '10px',
           marginBottom: '16px',
         }}>
@@ -272,7 +269,6 @@ useEffect(() => {
             ))}
           </select>
 
-        {user?.role !== 'oferta' && (
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -296,8 +292,6 @@ useEffect(() => {
               <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
-        )}
-
         </div>
 
         {/* Contador */}
@@ -338,40 +332,6 @@ useEffect(() => {
           </div>
         )}
       </div>
-
-      {user?.role === 'oferta' && (
-        <div style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'white',
-          borderTop: `1px solid ${theme.semantic.border}`,
-          padding: '12px 16px',
-          zIndex: 50,
-        }}>
-          <p style={{ textAlign: 'center', fontSize: '13px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
-            Contacta a tu vendedor
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', flexWrap: 'nowrap' }}>
-            {[
-              { name: 'Diana Larios', number: '523332507661' },
-              { name: 'Judith Trujillo', number: '523334882895' },
-              { name: 'Victor Corona', number: '523331794362' },
-            ].map((contact) => (
-              
-              <a key={contact.number}
-                href={`https://wa.me/${contact.number}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ background: '#25D366', color: 'white', padding: '7px 9px', borderRadius: '24px', fontSize: '10px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
-              >
-                💬 {contact.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
 
       <CartDrawer
         isOpen={isCartOpen}
@@ -416,7 +376,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
   const showFallback = !showPrimary && !!fallbackSrc && !failedFallback
 
   return (
-<div
+    <div
       onClick={onClick}
       style={{
         background: '#FFFFFF',
@@ -458,11 +418,10 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
               SKU: {product.sku_template}
             </span>
           )}
-          
         </p>
       </div>
 
-      {/* Imagen con badge de marca */}
+      {/* Imagen */}
       <div style={{
         height: '120px',
         background: '#F9F5F7',
@@ -573,9 +532,5 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
 
       </div>
     </div>
-
-
-
-
   )
 }

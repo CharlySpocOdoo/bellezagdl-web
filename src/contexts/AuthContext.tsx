@@ -11,7 +11,7 @@ interface AuthContextType {
   displayName: string
   isLoading: boolean
   isAuthenticated: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<User>
   logout: () => Promise<void>
 }
 
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ─── Login ────────────────────────────────────────────────────────────────
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     const data = await loginApi(email, password)
 
     // JWT en memoria — nunca en localStorage
@@ -93,7 +93,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const me = await getMe()
     setUser(me)
 
-    
     // Obtener nombre según rol
     if (me.role === 'vendor' && me.profile_id) {
       try {
@@ -106,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setDisplayName(me.email)
     }
 
+    return me
   }
 
   // ─── Logout ───────────────────────────────────────────────────────────────

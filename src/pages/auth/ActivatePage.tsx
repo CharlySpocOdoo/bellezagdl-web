@@ -69,9 +69,10 @@ export function ActivatePage() {
         password,
       })
 
-      // Login automático con el email del vendedor
-      await login(res.data.email || vendorEmail, password)
-      navigate('/vendor')
+      // Login automático — navegar al home según rol
+      const me = await login(res.data.email || vendorEmail, password)
+      if (me.role === 'wholesale') navigate('/wholesale')
+      else navigate('/vendor')
     } catch (err: any) {
       if (err.response?.data?.detail) {
         const detail = err.response.data.detail
@@ -175,10 +176,20 @@ export function ActivatePage() {
           <p style={{
             fontSize: '14px',
             color: theme.semantic.textMuted,
-            margin: 0,
+            margin: '0 0 4px',
           }}>
             Elige una contraseña para comenzar
           </p>
+          {vendorEmail && (
+            <p style={{
+              fontSize: '13px',
+              fontWeight: 500,
+              color: theme.semantic.textSecondary,
+              margin: 0,
+            }}>
+              {vendorEmail}
+            </p>
+          )}
         </div>
 
         <Input

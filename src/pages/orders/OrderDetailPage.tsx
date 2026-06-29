@@ -1,4 +1,4 @@
-import { statusLabel, statusColors } from '../../utils/orderStatus'
+import { statusColors, getStatusLabel } from '../../utils/orderStatus'
 import { formatDateTime } from '../../utils/date'
 import { getOrder, acceptPartialOrder, cancelOrder, updateOrderStatus } from '../../api/orders'
 import { useState, useEffect } from 'react'
@@ -29,7 +29,7 @@ export function OrderDetailPage() {
         const data = await getOrder(id)
         setOrder(data)
       } catch {
-        navigate('/orders')
+        navigate(user?.role === 'wholesale' ? '/wholesale/orders' : '/orders')
       } finally {
         setIsLoading(false)
       }
@@ -109,7 +109,11 @@ export function OrderDetailPage() {
 
         {/* Volver */}
         <button
-          onClick={() => navigate(user?.role === 'vendor' ? '/vendor?tab=pedidos' : '/orders')}
+          onClick={() => navigate(
+            user?.role === 'vendor'    ? '/vendor?tab=pedidos' :
+            user?.role === 'wholesale' ? '/wholesale/orders'   :
+            '/orders'
+          )}
           style={{
             background: 'transparent',
             border: 'none',
@@ -156,7 +160,7 @@ export function OrderDetailPage() {
               background: colors.bg,
               color: colors.text,
             }}>
-              {statusLabel[order.status]}
+              {getStatusLabel(order.status, order.sale_type)}
             </span>
           </div>
 
@@ -205,7 +209,8 @@ export function OrderDetailPage() {
         )}
 
         {/* Acción — parcialmente disponible */}
-        {order.status === 'partially_available' && user?.role === 'client' && (
+        {order.status === 'partially_available' &&
+          (user?.role === 'client' || user?.role === 'wholesale') && (
           <div style={{
             background: '#FAEEDA',
             border: '0.5px solid #FAC775',
@@ -260,7 +265,8 @@ export function OrderDetailPage() {
         )}
 
         {/* Acción — cancelar */}
-        {(order.status === 'pending' || order.status === 'confirmed') && user?.role === 'client' && (
+        {(order.status === 'pending' || order.status === 'confirmed') &&
+          (user?.role === 'client' || user?.role === 'wholesale') && (
           <div style={{
             background: theme.semantic.bgCard,
             border: `0.5px solid ${theme.semantic.border}`,
@@ -430,12 +436,6 @@ export function OrderDetailPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
               <span style={{ color: theme.semantic.textMuted }}>Subtotal</span>
               <span style={{ color: theme.semantic.textPrimary }}>${Number(order.subtotal).toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-              <span style={{ color: theme.semantic.textMuted }}>Envío</span>
-              <span style={{ color: theme.semantic.textPrimary }}>
-                {Number(order.shipping_cost) === 0 ? 'Gratis' : `$${Number(order.shipping_cost).toFixed(2)}`}
-              </span>
             </div>
             <div style={{
               display: 'flex',

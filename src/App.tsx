@@ -12,6 +12,8 @@ import { OrderDetailPage } from './pages/orders/OrderDetailPage'
 import { VendorPage } from './pages/vendor/VendorPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
 import { ActivatePage } from './pages/auth/ActivatePage'
+import { WholesalePage } from './pages/wholesale/WholesalePage'
+import { WholesaleOrdersPage } from './pages/wholesale/WholesaleOrdersPage'
 
 
 function App() {
@@ -27,12 +29,16 @@ function App() {
               <Route path="/activar" element={<PublicRoute><ActivatePage /></PublicRoute>} />
 
               <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta']}><CatalogPage /></ProtectedRoute>} />
-              <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta']}><ProductDetailPage /></ProtectedRoute>} />
+              <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta', 'wholesale']}><ProductDetailPage /></ProtectedRoute>} />
 
               <Route path="/orders" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrdersPage /></ProtectedRoute>} />
               <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><OrderDetailPage /></ProtectedRoute>} />
 
               <Route path="/vendor" element={<ProtectedRoute allowedRoles={['vendor']}><VendorPage /></ProtectedRoute>} />
+
+              <Route path="/wholesale" element={<ProtectedRoute allowedRoles={['wholesale']}><WholesalePage /></ProtectedRoute>} />
+              <Route path="/wholesale/orders" element={<ProtectedRoute allowedRoles={['wholesale']}><WholesaleOrdersPage /></ProtectedRoute>} />
+              <Route path="/wholesale/orders/:id" element={<ProtectedRoute allowedRoles={['wholesale', 'admin']}><OrderDetailPage /></ProtectedRoute>} />
 
               <Route path="/" element={<Navigate to="/login" replace />} />
               <Route path="*" element={<Navigate to="/login" replace />} />

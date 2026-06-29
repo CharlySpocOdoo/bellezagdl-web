@@ -1,4 +1,4 @@
-import { statusLabel, statusColors, getStatusLabel } from '../../utils/orderStatus'
+import { statusColors, getStatusLabel } from '../../utils/orderStatus'
 import { formatShortDate } from '../../utils/date'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -12,7 +12,7 @@ const shortOrderNumber = (orderNumber: string) =>
 
 const ALL_FILTER = 'all'
 
-export function OrdersPage() {
+export function WholesaleOrdersPage() {
   const navigate = useNavigate()
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -53,7 +53,7 @@ export function OrdersPage() {
           marginBottom: '16px',
         }}>
           <button
-            onClick={() => navigate('/catalog')}
+            onClick={() => navigate('/wholesale')}
             style={{
               background: 'transparent',
               border: 'none',
@@ -122,7 +122,7 @@ export function OrdersPage() {
               Todos
             </button>
 
-            {/* Pills por estado */}
+            {/* Pills por estado — etiqueta dinámica wholesale */}
             {availableStatuses.map((status) => {
               const isActive = activeFilter === status
               const colors = statusColors[status]
@@ -143,7 +143,7 @@ export function OrdersPage() {
                     flexShrink: 0,
                   }}
                 >
-                  {statusLabel[status]}
+                  {getStatusLabel(status, 'wholesale')}
                 </button>
               )
             })}
@@ -160,7 +160,7 @@ export function OrdersPage() {
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
             <p style={{ color: theme.semantic.textMuted }}>Aún no tienes pedidos</p>
             <button
-              onClick={() => navigate('/catalog')}
+              onClick={() => navigate('/wholesale')}
               style={{
                 marginTop: '16px',
                 padding: '10px 24px',
@@ -184,7 +184,7 @@ export function OrdersPage() {
             {filtered.map((order) => (
               <div
                 key={order.id}
-                onClick={() => navigate('/orders/' + order.id)}
+                onClick={() => navigate('/wholesale/orders/' + order.id)}
                 style={{
                   background: theme.semantic.bgCard,
                   borderRadius: '12px',

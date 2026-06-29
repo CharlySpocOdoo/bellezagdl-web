@@ -1,3 +1,4 @@
+import { statusLabel } from '../../utils/orderStatus'
 import { TopBar } from '../../components/TopBar'
 import { getVendorProfile, getVendorClients, getVendorCommissions } from '../../api/vendor'
 import { getOrders, addOrderNote } from '../../api/orders'
@@ -119,19 +120,6 @@ export function VendorPage() {
     } finally {
       setIsSavingProfile(false)
     }
-  }
-
-  const statusLabel: Record<string, string> = {
-    pending: 'Pendiente',
-    partially_available: 'Revisar disponibilidad',
-    confirmed: 'Confirmado',
-    preparing: 'Preparando',
-    in_delivery: 'En camino',
-    delivery_failed: 'Entrega fallida',
-    delivered_to_vendor: 'Entregado al vendedor',
-    delivered_to_client: 'Entregado',
-    return_requested: 'Devolución solicitada',
-    cancelled: 'Cancelado',
   }
 
   if (isLoading) {

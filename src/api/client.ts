@@ -56,10 +56,14 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config
 
     // Si no es 401 o ya reintentamos — propagar el error
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    if (
+      error.response?.status !== 401 ||
+      originalRequest._retry ||
+      originalRequest.url?.includes('/auth/login')
+    ) {
       return Promise.reject(error)
     }
-
+    
     // Si ya estamos renovando el token — encolar el request
     if (isRefreshing) {
       return new Promise((resolve, reject) => {

@@ -22,6 +22,7 @@ export function PublicRoute({ children }: PublicRouteProps) {
     if (user.role === 'client') return <Navigate to="/catalog" replace />
     if (user.role === 'admin') return <Navigate to="/catalog" replace />
     if (user.role === 'oferta') return <Navigate to="/catalog" replace />
+    if (user.role === 'wholesale') return <Navigate to="/wholesale" replace />
   }
 
   return <>{children}</>

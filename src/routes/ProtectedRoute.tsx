@@ -26,8 +26,10 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
   // Con sesión pero sin el rol correcto — ir a su home
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    if (user.role === 'vendor') return <Navigate to="/vendor" replace />
-    if (user.role === 'client') return <Navigate to="/catalog" replace />
+    if (user.role === 'vendor')    return <Navigate to="/vendor" replace />
+    if (user.role === 'client')    return <Navigate to="/catalog" replace />
+    if (user.role === 'oferta')    return <Navigate to="/catalog" replace />
+    if (user.role === 'wholesale') return <Navigate to="/wholesale" replace />
     return <Navigate to="/login" replace />
   }
 

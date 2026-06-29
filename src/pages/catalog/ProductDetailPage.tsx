@@ -18,6 +18,17 @@ export function ProductDetailPage() {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
+  const [failedPrimary, setFailedPrimary] = useState(false)
+  const [failedFallback, setFailedFallback] = useState(false)
+
+  const backPath = user?.role === 'wholesale' ? '/wholesale' : '/catalog'
+
+  // Reiniciar el estado de error de imagen al cambiar de variante —
+  // cada variante tiene su propia URL, un fallo anterior no debe persistir
+  useEffect(() => {
+    setFailedPrimary(false)
+    setFailedFallback(false)
+  }, [selectedVariant?.id])
 
   useEffect(() => {
     if (!id) return
@@ -25,15 +36,12 @@ export function ProductDetailPage() {
       try {
         const data = await getProduct(id)
         setProduct(data)
+        // Siempre seleccionar la primera variante activa — el stock no es
+        // un campo confiable ni bloqueante (el sistema no controla stock)
         const activeOnes = data.variants?.filter((v) => v.active) || []
-        const firstAvailable = activeOnes.find(
-          (v) => (v.stock_qty + v.returned_stock_qty) > 0
-        )
-        // Si solo hay una variante activa, seleccionarla automáticamente
-        const autoSelect = activeOnes.length === 1 ? activeOnes[0] : firstAvailable || null
-        setSelectedVariant(autoSelect)
+        setSelectedVariant(activeOnes[0] || null)
       } catch {
-        navigate('/catalog')
+        navigate(backPath)
       } finally {
         setIsLoading(false)
       }
@@ -77,7 +85,7 @@ export function ProductDetailPage() {
 
         {/* Volver */}
         <button
-          onClick={() => navigate('/catalog')}
+          onClick={() => navigate(backPath)}
           style={{
             background: 'transparent',
             border: 'none',
@@ -119,23 +127,43 @@ export function ProductDetailPage() {
           boxSizing: 'border-box',
           marginBottom: '12px',
         }}>
-          {(selectedVariant?.image_url || product.image_url) ? (
-            <img
-              src={selectedVariant?.image_url || product.image_url || undefined}
-              alt={product.name}
-              loading="lazy"
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            />
-          ) : (
-            <span style={{ fontSize: '80px' }}>🌸</span>
-          )}
+          {(() => {
+            const primarySrc = selectedVariant?.image_url || null
+            const fallbackSrc = product.image_url
+            const showPrimary = !!primarySrc && !failedPrimary
+            const showFallback = !showPrimary && !!fallbackSrc && !failedFallback
+
+            if (showPrimary) {
+              return (
+                <img
+                  src={primarySrc!}
+                  alt={product.name}
+                  loading="lazy"
+                  onError={() => setFailedPrimary(true)}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
+              )
+            }
+            if (showFallback) {
+              return (
+                <img
+                  src={fallbackSrc!}
+                  alt={product.name}
+                  loading="lazy"
+                  onError={() => setFailedFallback(true)}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
+              )
+            }
+            return <span style={{ fontSize: '80px' }}>🌸</span>
+          })()}
         </div>
 
         {/* Info */}
         <div>
 
           {/* Descripción */}
-          {(product as any).description && (
+          {product.description && (
             <p style={{
               fontSize: '13px',
               color: theme.semantic.textSecondary,
@@ -143,7 +171,7 @@ export function ProductDetailPage() {
               lineHeight: 1.5,
               textAlign: 'center',
             }}>
-              {(product as any).description}
+              {product.description}
             </p>
           )}
 
@@ -174,6 +202,108 @@ export function ProductDetailPage() {
           }}>
             ${Number(product.display_price).toFixed(2)}
           </p>
+
+          {/* Modo de uso */}
+          {product.modo_de_uso && (
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: theme.semantic.textSecondary,
+                margin: '0 0 6px',
+              }}>
+                Modo de uso
+              </p>
+              <p style={{
+                fontSize: '13px',
+                color: theme.semantic.textSecondary,
+                margin: 0,
+                lineHeight: 1.5,
+              }}>
+                {product.modo_de_uso}
+              </p>
+            </div>
+          )}
+
+          {/* Beneficios */}
+          {product.beneficios && (
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: theme.semantic.textSecondary,
+                margin: '0 0 6px',
+              }}>
+                Beneficios
+              </p>
+              <p style={{
+                fontSize: '13px',
+                color: theme.semantic.textSecondary,
+                margin: 0,
+                lineHeight: 1.5,
+              }}>
+                {product.beneficios}
+              </p>
+            </div>
+          )}
+
+          {/* Ingredientes */}
+          {product.ingredientes && (
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: theme.semantic.textSecondary,
+                margin: '0 0 6px',
+              }}>
+                Ingredientes
+              </p>
+              <p style={{
+                fontSize: '13px',
+                color: theme.semantic.textSecondary,
+                margin: 0,
+                lineHeight: 1.5,
+              }}>
+                {product.ingredientes}
+              </p>
+            </div>
+          )}
+
+          {/* Atributos */}
+          {product.atributos && Object.keys(product.atributos).length > 0 && (
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: theme.semantic.textSecondary,
+                margin: '0 0 6px',
+              }}>
+                Detalles
+              </p>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                border: `1px solid ${theme.semantic.border}`,
+                borderRadius: '10px',
+                padding: '10px 14px',
+              }}>
+                {Object.entries(product.atributos).map(([key, value]) => (
+                  <div
+                    key={key}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '13px',
+                    }}
+                  >
+                    <span style={{ color: theme.semantic.textMuted }}>{key}</span>
+                    <span style={{ color: theme.semantic.textPrimary, fontWeight: 500 }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Variantes */}
           {activeVariants.length > 0 && activeVariants.some(v => v.variant_name) && (
@@ -213,7 +343,7 @@ export function ProductDetailPage() {
           )}
 
           {/* Cantidad */}
-          {selectedVariant && user?.role === 'client' && (
+          {selectedVariant && (user?.role === 'client' || user?.role === 'wholesale') && (
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <p style={{
                 fontSize: '13px',
@@ -286,7 +416,7 @@ export function ProductDetailPage() {
 
           {/* Botón agregar */}
           <div style={{ borderTop: `1px solid ${theme.semantic.border}`, marginBottom: '16px' }} />
-          {user?.role === 'client' && (
+          {(user?.role === 'client' || user?.role === 'wholesale') && (
             <button
               onClick={handleAddToCart}
               disabled={!selectedVariant}
