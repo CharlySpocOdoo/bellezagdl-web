@@ -154,23 +154,6 @@ export function VendorPage() {
             }}>
               Hola, {vendor?.first_name} 👋
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <p style={{ fontSize: '13px', color: theme.semantic.textMuted, margin: 0 }}>
-                Código de invitación:
-              </p>
-              <span style={{
-                fontSize: '13px',
-                fontWeight: 600,
-                color: theme.colors.secondary[800],
-                background: theme.colors.secondary[50],
-                padding: '2px 10px',
-                borderRadius: '20px',
-                letterSpacing: '1px',
-                fontFamily: 'monospace',
-              }}>
-                {vendor?.invitation_code}
-              </span>
-            </div>
           </div>
 
           {/* Acceso directo a Mi Perfil */}
@@ -828,30 +811,6 @@ export function VendorPage() {
                   </p>
                 </div>
 
-                {/* Código de invitación */}
-                <div>
-                  <p style={{
-                    fontSize: '11px',
-                    color: theme.semantic.textMuted,
-                    margin: '0 0 4px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                  }}>
-                    Código de invitación
-                  </p>
-                  <span style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: theme.colors.secondary[800],
-                    background: theme.colors.secondary[50],
-                    padding: '3px 10px',
-                    borderRadius: '20px',
-                    fontFamily: 'monospace',
-                    letterSpacing: '1px',
-                  }}>
-                    {vendor?.invitation_code || '—'}
-                  </span>
-                </div>
 
               </div>
 
