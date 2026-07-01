@@ -111,7 +111,7 @@ export function VendorPage() {
     setIsSavingProfile(true)
     try {
       const res = await apiClient.patch('/vendors/me', profileForm)
-      setVendor(res.data)
+      setVendor(prev => ({ ...prev!, ...res.data }))
       setIsEditingProfile(false)
       setProfileSuccess('Perfil actualizado correctamente.')
       setTimeout(() => setProfileSuccess(''), 3000)
