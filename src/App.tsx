@@ -14,6 +14,7 @@ import { RegisterPage } from './pages/auth/RegisterPage'
 import { ActivatePage } from './pages/auth/ActivatePage'
 import { WholesalePage } from './pages/wholesale/WholesalePage'
 import { WholesaleOrdersPage } from './pages/wholesale/WholesaleOrdersPage'
+import { ClientProfilePage } from './pages/client/ClientProfilePage'
 
 
 function App() {
@@ -35,6 +36,8 @@ function App() {
               <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><OrderDetailPage /></ProtectedRoute>} />
 
               <Route path="/vendor" element={<ProtectedRoute allowedRoles={['vendor']}><VendorPage /></ProtectedRoute>} />
+
+              <Route path="/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfilePage /></ProtectedRoute>} />
 
               <Route path="/wholesale" element={<ProtectedRoute allowedRoles={['wholesale']}><WholesalePage /></ProtectedRoute>} />
               <Route path="/wholesale/orders" element={<ProtectedRoute allowedRoles={['wholesale']}><WholesaleOrdersPage /></ProtectedRoute>} />

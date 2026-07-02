@@ -77,7 +77,10 @@ export function TopBar() {
       </div>
       {/* Derecha: ícono persona + nombre + cerrar sesión */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <div
+          onClick={() => { if (user?.role === 'client') navigate('/profile') }}
+          style={{ display: 'flex', alignItems: 'center', gap: '7px', cursor: user?.role === 'client' ? 'pointer' : 'default' }}
+        >
           <div style={{
             width: '32px',
             height: '32px',
