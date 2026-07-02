@@ -17,6 +17,7 @@ import { WholesaleOrdersPage } from './pages/wholesale/WholesaleOrdersPage'
 import { ClientProfilePage } from './pages/client/ClientProfilePage'
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage'
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage'
+import { CommissionDetailPage } from './pages/vendor/CommissionDetailPage'
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><OrderDetailPage /></ProtectedRoute>} />
 
               <Route path="/vendor" element={<ProtectedRoute allowedRoles={['vendor']}><VendorPage /></ProtectedRoute>} />
+              <Route path="/commissions/:periodId" element={<ProtectedRoute allowedRoles={['vendor']}><CommissionDetailPage /></ProtectedRoute>} />
 
               <Route path="/profile" element={<ProtectedRoute allowedRoles={['client']}><ClientProfilePage /></ProtectedRoute>} />
 

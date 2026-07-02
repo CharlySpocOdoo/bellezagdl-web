@@ -135,6 +135,21 @@ export interface Order {
 
 // ─── Commissions ─────────────────────────────────────────────────────────────
 
+export interface CommissionOrder {
+  order_number: string
+  delivered_at: string
+  order_total: string
+  commission_generated: string
+}
+
+export interface CommissionPeriodDetail {
+  period_id: string
+  week_start: string
+  week_end: string
+  commission_rate: string
+  orders: CommissionOrder[]
+}
+
 export interface CommissionPeriod {
   id: string
   week_start: string

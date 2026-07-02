@@ -549,12 +549,19 @@ export function VendorPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {commissions.periods.map((period) => (
-                  <div key={period.id} style={{
-                    background: theme.semantic.bgCard,
-                    borderRadius: '12px',
-                    border: `0.5px solid ${theme.semantic.border}`,
-                    padding: '14px 16px',
-                  }}>
+                  <div
+                    key={period.id}
+                    onClick={() => navigate('/commissions/' + period.id)}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(30,58,95,0.08)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none' }}
+                    style={{
+                      background: theme.semantic.bgCard,
+                      borderRadius: '12px',
+                      border: `0.5px solid ${theme.semantic.border}`,
+                      padding: '14px 16px',
+                      cursor: 'pointer',
+                    }}
+                  >
                     <div style={{
                       display: 'flex',
                       alignItems: 'flex-start',

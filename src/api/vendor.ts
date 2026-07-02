@@ -1,5 +1,5 @@
 import apiClient from './client'
-import type { Vendor, Client, CommissionPeriod } from '../types'
+import type { Vendor, Client, CommissionPeriod, CommissionPeriodDetail } from '../types'
 
 export const getVendorProfile = async (): Promise<Vendor> => {
   const res = await apiClient.get<Vendor>('/vendors/me')
@@ -8,6 +8,11 @@ export const getVendorProfile = async (): Promise<Vendor> => {
 
 export const getVendorClients = async (): Promise<Client[]> => {
   const res = await apiClient.get<Client[]>('/vendors/me/clients')
+  return res.data
+}
+
+export const getCommissionOrders = async (periodId: string): Promise<CommissionPeriodDetail> => {
+  const res = await apiClient.get<CommissionPeriodDetail>(`/vendors/me/commissions/${periodId}/orders`)
   return res.data
 }
 
