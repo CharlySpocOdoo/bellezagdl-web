@@ -449,10 +449,27 @@ export function OrderDetailPage() {
                       No disponible
                     </span>
                   )}
+                  {item.original_quantity != null && !item.cancelled_in_partial && (
+                    <span style={{
+                      fontSize: '10px',
+                      padding: '2px 7px',
+                      borderRadius: '12px',
+                      background: '#FAEEDA',
+                      color: '#854F0B',
+                      fontWeight: 500,
+                    }}>
+                      Ajustado
+                    </span>
+                  )}
                 </div>
                 <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
                   {item.quantity} × ${Number(item.unit_price).toFixed(2)}
                 </p>
+                {item.original_quantity != null && !item.cancelled_in_partial && (
+                  <p style={{ fontSize: '11px', color: '#854F0B', margin: '2px 0 0' }}>
+                    Pediste {item.original_quantity} — Solo hay {item.quantity} disponibles
+                  </p>
+                )}
               </div>
               <p style={{
                 fontSize: '14px',

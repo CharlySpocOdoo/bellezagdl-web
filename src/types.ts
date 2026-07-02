@@ -117,6 +117,7 @@ export interface OrderItem {
   product_name_snapshot: string | null
   variant_name_snapshot: string | null
   cancelled_in_partial: boolean
+  original_quantity: number | null
 }
 
 export interface Order {
