@@ -1,4 +1,7 @@
 const toUTC = (dateStr: string) => {
+  // Solo fechas con hora (contienen 'T') necesitan el sufijo Z
+  // "2026-06-29" (solo fecha) es válido para new Date() sin modificar
+  if (!dateStr.includes('T')) return dateStr
   return dateStr.endsWith('Z') ? dateStr : dateStr + 'Z'
 }
 

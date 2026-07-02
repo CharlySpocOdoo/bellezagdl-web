@@ -144,6 +144,58 @@ export function CommissionDetailPage() {
                 </div>
               </div>
             ))}
+
+            {/* Fila de totales */}
+            {(() => {
+              const totalVentas = detail.orders.reduce((sum, o) => sum + Number(o.order_total), 0)
+              const totalComision = detail.orders.reduce((sum, o) => sum + Number(o.commission_generated), 0)
+              return (
+                <div style={{
+                  background: theme.colors.secondary[50],
+                  borderRadius: '12px',
+                  border: `0.5px solid ${theme.colors.secondary[100]}`,
+                  padding: '14px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '12px',
+                  flexWrap: 'wrap',
+                }}>
+                  <p style={{
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: theme.colors.secondary[800],
+                    margin: 0,
+                  }}>
+                    Total del período
+                  </p>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>
+                      Total de ventas
+                    </p>
+                    <p style={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: theme.semantic.textPrimary,
+                      margin: '0 0 6px',
+                    }}>
+                      ${totalVentas.toFixed(2)}
+                    </p>
+                    <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: '0 0 2px' }}>
+                      Comisión total
+                    </p>
+                    <p style={{
+                      fontSize: '16px',
+                      fontWeight: 700,
+                      color: theme.colors.secondary[800],
+                      margin: 0,
+                    }}>
+                      ${totalComision.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         )}
 
