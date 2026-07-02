@@ -22,6 +22,14 @@ export const getMe = async (): Promise<User> => {
   return res.data
 }
 
+export const forgotPassword = async (email: string): Promise<void> => {
+  await apiClient.post('/auth/forgot-password', { email })
+}
+
+export const resetPassword = async (token: string, new_password: string): Promise<void> => {
+  await apiClient.post('/auth/reset-password', { token, new_password })
+}
+
 export const validateInviteToken = async (token: string) => {
   const encoded = encodeURIComponent(token)
   const res = await apiClient.get(`/auth/invite/${encoded}`)

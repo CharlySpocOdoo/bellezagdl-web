@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
@@ -9,6 +9,8 @@ import logoRosaArios from '../../assets/LogoArios.jpg'
 export function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const resetSuccess = (location.state as any)?.resetSuccess === true
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -86,6 +88,20 @@ export function LoginPage() {
           </p>
         </div>
 
+        {resetSuccess && (
+          <div style={{
+            background: '#EAF3DE',
+            border: '0.5px solid #C0DD97',
+            borderRadius: '10px',
+            padding: '10px 16px',
+            marginBottom: '16px',
+            fontSize: '13px',
+            color: '#3B6D11',
+          }}>
+            Contraseña actualizada correctamente. Ya puedes iniciar sesión.
+          </div>
+        )}
+
 
 
         {/* Formulario */}
@@ -127,6 +143,15 @@ export function LoginPage() {
           isLoading={isLoading}
           fullWidth
         />
+
+        <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: theme.semantic.textMuted, margin: '16px 0 0' }}>
+          <span
+            onClick={() => navigate('/forgot-password')}
+            style={{ color: theme.semantic.actionPrimary, cursor: 'pointer' }}
+          >
+            ¿Olvidaste tu contraseña?
+          </span>
+        </p>
 
       </div>
     </div>

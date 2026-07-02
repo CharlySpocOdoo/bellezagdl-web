@@ -15,6 +15,8 @@ import { ActivatePage } from './pages/auth/ActivatePage'
 import { WholesalePage } from './pages/wholesale/WholesalePage'
 import { WholesaleOrdersPage } from './pages/wholesale/WholesaleOrdersPage'
 import { ClientProfilePage } from './pages/client/ClientProfilePage'
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage'
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage'
 
 
 function App() {
@@ -28,6 +30,8 @@ function App() {
               <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
               <Route path="/registro" element={<PublicRoute><RegisterPage /></PublicRoute>} />
               <Route path="/activar" element={<PublicRoute><ActivatePage /></PublicRoute>} />
+              <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+              <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
 
               <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta']}><CatalogPage /></ProtectedRoute>} />
               <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta', 'wholesale']}><ProductDetailPage /></ProtectedRoute>} />
