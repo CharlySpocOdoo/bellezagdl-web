@@ -463,6 +463,11 @@ export function OrderDetailPage() {
                   )}
                 </div>
                 <p style={{ fontSize: '11px', color: theme.semantic.textMuted, margin: 0 }}>
+                  {item.original_quantity != null && !item.cancelled_in_partial && (
+                    <span style={{ color: '#9CA3AF', textDecoration: 'line-through', marginRight: '4px' }}>
+                      {item.original_quantity}
+                    </span>
+                  )}
                   {item.quantity} × ${Number(item.unit_price).toFixed(2)}
                 </p>
                 {item.original_quantity != null && !item.cancelled_in_partial && (
