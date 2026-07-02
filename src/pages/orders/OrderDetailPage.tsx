@@ -71,6 +71,21 @@ export function OrderDetailPage() {
   }
 
   
+  const handleDeliverToVendor = async () => {
+    if (!order) return
+    setIsActing(true)
+    setActionError('')
+    try {
+      const updated = await updateOrderStatus(order.id, 'delivered_to_vendor')
+      setOrder(updated)
+      setActionSuccess('Pedido marcado como recibido.')
+    } catch (err: any) {
+      setActionError(err.response?.data?.detail || 'No se pudo actualizar el estado. Intenta de nuevo.')
+    } finally {
+      setIsActing(false)
+    }
+  }
+
   const handleDeliverToClient = async () => {
     if (!order) return
     setIsActing(true)
@@ -301,6 +316,42 @@ export function OrderDetailPage() {
           </div>
         )}
 
+
+        {/* Acción — confirmar recepción del pedido */}
+        {order.status === 'in_delivery' && user?.role === 'vendor' && (
+          <div style={{
+            background: theme.semantic.bgCard,
+            border: `0.5px solid ${theme.semantic.border}`,
+            borderRadius: '12px',
+            padding: '14px 20px',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '10px',
+          }}>
+            <p style={{ fontSize: '13px', color: theme.semantic.textSecondary, margin: 0 }}>
+              ¿Ya recibiste este pedido?
+            </p>
+            <button
+              onClick={handleDeliverToVendor}
+              disabled={isActing}
+              style={{
+                padding: '7px 16px',
+                background: theme.colors.secondary[800],
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: isActing ? 'not-allowed' : 'pointer',
+                fontSize: '13px',
+                opacity: isActing ? 0.7 : 1,
+              }}
+            >
+              {isActing ? 'Procesando...' : 'Marcar como recibido'}
+            </button>
+          </div>
+        )}
 
         {/* Acción — entregar al cliente */}
         {order.status === 'delivered_to_vendor' && user?.role === 'vendor' && (
