@@ -25,6 +25,8 @@ export function RegisterPage() {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
   const [error, setError] = useState('')
@@ -78,6 +80,10 @@ export function RegisterPage() {
     }
     if (password.length < 8) {
       setError('La contraseña debe tener al menos 8 caracteres.')
+      return
+    }
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Las contraseñas no coinciden')
       return
     }
     if (!email.includes('@')) {
@@ -320,6 +326,17 @@ export function RegisterPage() {
         </div>
         <Input label="Email" type="email" value={email} onChange={setEmail} placeholder="tu@email.com" />
         <Input label="Contraseña" type="password" value={password} onChange={setPassword} placeholder="••••••••" />
+        <Input
+          label="Confirmar contraseña"
+          type="password"
+          value={confirmPassword}
+          onChange={(v) => {
+            setConfirmPassword(v)
+            if (confirmPasswordError) setConfirmPasswordError('')
+          }}
+          placeholder="••••••••"
+          error={confirmPasswordError}
+        />
         <Input label="Teléfono" value={phone} onChange={setPhone} placeholder="33 1234 5678" />
         <Input label="Dirección de entrega" value={address} onChange={setAddress} placeholder="Calle, número, colonia" />
 
@@ -342,6 +359,7 @@ export function RegisterPage() {
           onClick={handleRegister}
           isLoading={isLoading}
           fullWidth
+          disabled={!!confirmPassword && password !== confirmPassword}
         />
 
         <p style={{
