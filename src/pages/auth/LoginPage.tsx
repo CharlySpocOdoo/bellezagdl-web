@@ -41,7 +41,7 @@ export function LoginPage() {
       else navigate('/catalog')
     } catch (err: any) {
       if (err.response?.status === 401) {
-        setError('Email o contraseña incorrectos.')
+        setError('Credenciales incorrectas. Si te registraste recientemente, es posible que tu cuenta esté pendiente de aprobación por tu vendedor.')
       } else if (err.response?.status === 422) {
         setError('Por favor ingresa un email válido y una contraseña.')
       } else {

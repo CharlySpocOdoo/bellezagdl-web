@@ -1,6 +1,6 @@
 import { statusLabel } from '../../utils/orderStatus'
 import { TopBar } from '../../components/TopBar'
-import { getVendorProfile, getVendorClients, getVendorCommissions } from '../../api/vendor'
+import { getVendorProfile, getVendorClients, getVendorCommissions, approveClient } from '../../api/vendor'
 import { getOrders, addOrderNote } from '../../api/orders'
 import apiClient from '../../api/client'
 import { theme } from '../../theme'
@@ -46,6 +46,7 @@ export function VendorPage() {
   const [isSavingProfile, setIsSavingProfile] = useState(false)
   const [profileSuccess, setProfileSuccess] = useState('')
   const [profileError, setProfileError] = useState('')
+  const [approvingId, setApprovingId] = useState<string | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -76,6 +77,18 @@ export function VendorPage() {
     }
     load()
   }, [])
+
+  const handleApproveClient = async (clientId: string) => {
+    setApprovingId(clientId)
+    try {
+      await approveClient(clientId)
+      setClients(prev => prev.map(c => c.id === clientId ? { ...c, active: true } : c))
+    } catch {
+      // silencioso — el botón simplemente vuelve a estar disponible
+    } finally {
+      setApprovingId(null)
+    }
+  }
 
   const handleSaveNote = async (orderId: string) => {
     if (!noteText.trim()) return
@@ -346,14 +359,28 @@ export function VendorPage() {
                   <div key={client.id} style={{
                     background: theme.semantic.bgCard,
                     borderRadius: '12px',
-                    border: `0.5px solid ${theme.semantic.border}`,
+                    border: `0.5px solid ${client.active ? theme.semantic.border : '#F5A623'}`,
                     padding: '14px 16px',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                       <div>
-                        <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 2px' }}>
-                          {client.first_name} {client.last_name}
-                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                          <p style={{ fontSize: '14px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
+                            {client.first_name} {client.last_name}
+                          </p>
+                          {!client.active && (
+                            <span style={{
+                              fontSize: '10px',
+                              padding: '2px 7px',
+                              borderRadius: '12px',
+                              background: '#FEF3C7',
+                              color: '#92400E',
+                              fontWeight: 500,
+                            }}>
+                              Pendiente
+                            </span>
+                          )}
+                        </div>
                         <p style={{ fontSize: '12px', color: theme.semantic.textMuted, margin: 0 }}>
                           {client.phone}
                         </p>
@@ -367,6 +394,26 @@ export function VendorPage() {
                         </p>
                       </div>
                     </div>
+                    {!client.active && (
+                      <div style={{ marginTop: '12px' }}>
+                        <button
+                          onClick={() => handleApproveClient(client.id)}
+                          disabled={approvingId === client.id}
+                          style={{
+                            background: approvingId === client.id ? theme.semantic.textMuted : theme.colors.secondary[800],
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '7px 16px',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            cursor: approvingId === client.id ? 'default' : 'pointer',
+                          }}
+                        >
+                          {approvingId === client.id ? 'Aprobando...' : 'Aprobar'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

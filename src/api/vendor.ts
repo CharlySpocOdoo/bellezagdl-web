@@ -16,6 +16,10 @@ export const getCommissionOrders = async (periodId: string): Promise<CommissionP
   return res.data
 }
 
+export const approveClient = async (clientId: string): Promise<void> => {
+  await apiClient.patch(`/vendors/me/clients/${clientId}/approve`)
+}
+
 export const getVendorCommissions = async (): Promise<{
   current_week_commission: number
   pending_payment: number
