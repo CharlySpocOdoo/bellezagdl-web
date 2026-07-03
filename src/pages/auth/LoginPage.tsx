@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
+import { PasswordInput } from '../../components/PasswordInput'
 import { theme } from '../../theme'
 import logoRosaArios from '../../assets/LogoArios.jpg'
 
@@ -128,12 +129,10 @@ export function LoginPage() {
           placeholder="tu@email.com"
           
         />
-        <Input
+        <PasswordInput
           label="Contraseña"
-          type="password"
           value={password}
           onChange={setPassword}
-          placeholder="••••••••"
         />
 
         {/* Error */}

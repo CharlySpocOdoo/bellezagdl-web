@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { validateInviteToken, registerClient } from '../../api/auth'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
+import { PasswordInput } from '../../components/PasswordInput'
 import { theme } from '../../theme'
 
 export function RegisterPage() {
@@ -325,16 +326,14 @@ export function RegisterPage() {
           <Input label="Apellido" value={lastName} onChange={setLastName} placeholder="García" />
         </div>
         <Input label="Email" type="email" value={email} onChange={setEmail} placeholder="tu@email.com" />
-        <Input label="Contraseña" type="password" value={password} onChange={setPassword} placeholder="••••••••" />
-        <Input
+        <PasswordInput label="Contraseña" value={password} onChange={setPassword} />
+        <PasswordInput
           label="Confirmar contraseña"
-          type="password"
           value={confirmPassword}
           onChange={(v) => {
             setConfirmPassword(v)
             if (confirmPasswordError) setConfirmPasswordError('')
           }}
-          placeholder="••••••••"
           error={confirmPasswordError}
         />
         <Input label="Teléfono" value={phone} onChange={setPhone} placeholder="33 1234 5678" />

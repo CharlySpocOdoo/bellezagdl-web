@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { resetPassword } from '../../api/auth'
 import { theme } from '../../theme'
+import { PasswordInput } from '../../components/PasswordInput'
 
 export function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -108,40 +109,18 @@ export function ResetPasswordPage() {
           </div>
         )}
 
-        {[
-          { label: 'Nueva contraseña', value: newPassword, setter: setNewPassword },
-          { label: 'Confirmar contraseña', value: confirmPassword, setter: setConfirmPassword },
-        ].map((field) => (
-          <div key={field.label} style={{ marginBottom: '16px' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: theme.semantic.textSecondary,
-              marginBottom: '6px',
-            }}>
-              {field.label}
-            </label>
-            <input
-              type="password"
-              value={field.value}
-              onChange={(e) => field.setter(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
-              placeholder="••••••••"
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                fontSize: '14px',
-                border: `1.5px solid ${theme.semantic.border}`,
-                borderRadius: '8px',
-                outline: 'none',
-                color: theme.semantic.textPrimary,
-                boxSizing: 'border-box',
-                background: theme.semantic.bgInput,
-              }}
-            />
-          </div>
-        ))}
+        <PasswordInput
+          label="Nueva contraseña"
+          value={newPassword}
+          onChange={setNewPassword}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
+        />
+        <PasswordInput
+          label="Confirmar contraseña"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
+        />
 
         <button
           onClick={handleSubmit}
