@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
 import { validateInviteToken, registerClient } from '../../api/auth'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
 import { theme } from '../../theme'
 
 export function RegisterPage() {
-  const { login } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const tokenFromUrl = searchParams.get('token') || ''
@@ -98,8 +96,7 @@ export function RegisterPage() {
         phone,
         delivery_address: address,
       })
-      await login(email, password)
-      navigate('/catalog')
+      navigate('/login', { state: { registroExitoso: true } })
     } catch (err: any) {
       if (err.response?.data?.detail) {
         const detail = err.response.data.detail

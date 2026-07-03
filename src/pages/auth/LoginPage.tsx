@@ -11,6 +11,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const resetSuccess = (location.state as any)?.resetSuccess === true
+  const registroExitoso = (location.state as any)?.registroExitoso === true
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -99,6 +100,20 @@ export function LoginPage() {
             color: '#3B6D11',
           }}>
             Contraseña actualizada correctamente. Ya puedes iniciar sesión.
+          </div>
+        )}
+
+        {registroExitoso && (
+          <div style={{
+            background: '#EAF3DE',
+            border: '0.5px solid #C0DD97',
+            borderRadius: '10px',
+            padding: '10px 16px',
+            marginBottom: '16px',
+            fontSize: '13px',
+            color: '#3B6D11',
+          }}>
+            Tu cuenta fue creada correctamente. Te avisaremos por email cuando tu vendedor la apruebe.
           </div>
         )}
 
