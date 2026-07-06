@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
+import { BrandFilterTrigger, BrandFilterSheet } from '../../components/BrandFilterSheet'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCatalog } from '../../contexts/CatalogContext'
@@ -23,6 +24,7 @@ export function WholesalePage() {
   const [selectedBrand, setSelectedBrand] = useState('')
 
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isBrandSheetOpen, setIsBrandSheetOpen] = useState(false)
   const [isOrdering, setIsOrdering] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
   const [orderError, setOrderError] = useState('')
@@ -239,61 +241,19 @@ export function WholesalePage() {
         </div>
 
         {/* Filtros Marcas + Categorías */}
-
-        {/* Chips de marcas */}
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-          overflowX: 'auto',
-          marginBottom: '10px',
-          paddingBottom: '2px',
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
-        } as React.CSSProperties}>
-          {[{ id: '', name: 'Todas', logo_url: null, active: true }, ...brands].map((brand) => {
-            const active = selectedBrand === brand.id
-            return (
-              <button
-                key={brand.id}
-                onClick={() => setSelectedBrand(brand.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 12px',
-                  borderRadius: '20px',
-                  border: `1.5px solid ${active ? theme.colors.secondary[800] : theme.semantic.border}`,
-                  background: active ? theme.colors.secondary[800] : theme.semantic.bgCard,
-                  color: active ? 'white' : theme.semantic.textSecondary,
-                  fontSize: '12px',
-                  fontWeight: active ? 600 : 400,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                }}
-              >
-                {brand.logo_url && (
-                  <img
-                    src={brand.logo_url}
-                    alt={brand.name}
-                    width={24}
-                    height={24}
-                    style={{ objectFit: 'contain', borderRadius: '3px' }}
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-                  />
-                )}
-                {brand.name}
-              </button>
-            )
-          })}
-        </div>
-
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr',
+          gridTemplateColumns: '1fr 1fr',
           gap: '10px',
           marginBottom: '16px',
         }}>
+
+          <BrandFilterTrigger
+            brands={brands}
+            selectedBrand={selectedBrand}
+            onClick={() => setIsBrandSheetOpen(true)}
+          />
+
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -362,6 +322,14 @@ export function WholesalePage() {
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         onCheckout={handleCheckout}
+      />
+
+      <BrandFilterSheet
+        isOpen={isBrandSheetOpen}
+        onClose={() => setIsBrandSheetOpen(false)}
+        brands={brands}
+        selectedBrand={selectedBrand}
+        onSelect={setSelectedBrand}
       />
 
       {isOrdering && (
