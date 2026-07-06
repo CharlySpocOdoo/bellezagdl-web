@@ -54,6 +54,7 @@ export interface Brand {
   id: string
   name: string
   active: boolean
+  logo_url?: string | null
 }
 
 export interface ProductVariant {

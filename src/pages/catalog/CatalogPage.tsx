@@ -242,35 +242,61 @@ useEffect(() => {
         )}
 
         {/* Filtros Marcas + Categorías */}
+
+        {/* Chips de marcas */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: 'auto',
+          marginBottom: '10px',
+          paddingBottom: '2px',
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+        } as React.CSSProperties}>
+          {[{ id: '', name: 'Todas', logo_url: null, active: true }, ...brands].map((brand) => {
+            const active = selectedBrand === brand.id
+            return (
+              <button
+                key={brand.id}
+                onClick={() => setSelectedBrand(brand.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  border: `1.5px solid ${active ? theme.colors.secondary[800] : theme.semantic.border}`,
+                  background: active ? theme.colors.secondary[800] : theme.semantic.bgCard,
+                  color: active ? 'white' : theme.semantic.textSecondary,
+                  fontSize: '12px',
+                  fontWeight: active ? 600 : 400,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                {brand.logo_url && (
+                  <img
+                    src={brand.logo_url}
+                    alt={brand.name}
+                    width={24}
+                    height={24}
+                    style={{ objectFit: 'contain', borderRadius: '3px' }}
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                  />
+                )}
+                {brand.name}
+              </button>
+            )
+          })}
+        </div>
+
         <div style={{
           display: 'grid',
-          gridTemplateColumns: user?.role === 'oferta' ? '1fr' : '1fr 1fr',
+          gridTemplateColumns: user?.role === 'oferta' ? '1fr' : '1fr',
           gap: '10px',
           marginBottom: '16px',
         }}>
-          <select
-            value={selectedBrand}
-            onChange={(e) => setSelectedBrand(e.target.value)}
-            style={{
-              padding: '9px 10px',
-              fontSize: '13px',
-              border: `1.5px solid ${theme.semantic.border}`,
-              borderRadius: '10px',
-              background: theme.semantic.bgCard,
-              color: selectedBrand ? theme.semantic.textPrimary : theme.semantic.textMuted,
-              outline: 'none',
-              cursor: 'pointer',
-              width: '100%',
-              boxSizing: 'border-box',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            <option value="">Todas las marcas</option>
-            {brands.map((brand) => (
-              <option key={brand.id} value={brand.id}>{brand.name}</option>
-            ))}
-          </select>
 
         {user?.role !== 'oferta' && (
           <select
