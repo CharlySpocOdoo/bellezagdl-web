@@ -278,9 +278,10 @@ export function WholesalePage() {
             }}
           >
             <option value="">Todas las categorías</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
+            {categories.map((cat) => {
+              const label = cat.name.includes(' / ') ? cat.name.split(' / ').slice(1).join(' / ') : cat.name
+              return <option key={cat.id} value={cat.id}>{label}</option>
+            })}
           </select>
         </div>
 
