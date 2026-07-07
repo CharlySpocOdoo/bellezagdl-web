@@ -44,9 +44,11 @@ export function WholesalePage() {
     }
   }, [isLoading])
 
+  const subcategoryLabel = (name: string) => name.split(' / ').slice(-1)[0]
+
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
-    const matchCat = selectedCategory ? p.category_id === selectedCategory : true
+    const matchCat = selectedCategory ? subcategoryLabel(p.category_name || '') === selectedCategory : true
     const matchBrand = selectedBrand ? p.brand_id === selectedBrand : true
     return matchSearch && matchCat && matchBrand
   })
@@ -278,10 +280,9 @@ export function WholesalePage() {
             }}
           >
             <option value="">Todas las categorías</option>
-            {categories.map((cat) => {
-              const label = cat.name.includes(' / ') ? cat.name.split(' / ').slice(1).join(' / ') : cat.name
-              return <option key={cat.id} value={cat.id}>{label}</option>
-            })}
+            {Array.from(new Set(categories.map((cat) => subcategoryLabel(cat.name)))).map((label) => (
+              <option key={label} value={label}>{label}</option>
+            ))}
           </select>
         </div>
 
