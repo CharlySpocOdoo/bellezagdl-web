@@ -427,12 +427,9 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
       }}
     >
       {/* Nombre arriba centrado */}
-      <div style={{
-        padding: '10px 10px 6px',
-        borderBottom: `0.5px solid ${theme.semantic.border}`,
-      }}>
+      <div style={{ padding: '12px 10px 8px' }}>
         <p style={{
-          fontSize: '12px',
+          fontSize: '13px',
           fontWeight: 500,
           color: theme.semantic.textPrimary,
           margin: 0,
@@ -440,17 +437,6 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           textAlign: 'center',
         }}>
           {product.name}
-          {product.sku_template && (
-            <span style={{
-              display: 'block',
-              fontSize: '11px',
-              color: theme.semantic.textMuted,
-              margin: '2px 0 0',
-            }}>
-              SKU: {product.sku_template}
-            </span>
-          )}
-          
         </p>
       </div>
 
@@ -537,22 +523,23 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           </div>
         )}
 
-        {/* Footer: precio + variantes */}
+        {/* Footer: SKU/variantes + precio */}
         <div style={{
-          borderTop: `0.5px solid ${theme.semantic.border}`,
-          paddingTop: '8px',
           marginTop: 'auto',
+          paddingTop: '6px',
           textAlign: 'center',
         }}>
-          {(product.variants?.length ?? 0) > 1 && (
-            <span style={{
-              fontSize: '10px',
+          {(product.sku_template || (product.variants?.length ?? 0) > 1) && (
+            <p style={{
+              fontSize: '9px',
               color: theme.semantic.textMuted,
-              display: 'block',
-              marginBottom: '2px',
+              margin: '0 0 4px',
             }}>
-              {product.variants.length} variantes
-            </span>
+              {[
+                product.sku_template ? `SKU ${product.sku_template}` : null,
+                (product.variants?.length ?? 0) > 1 ? `${product.variants.length} variantes` : null,
+              ].filter(Boolean).join(' · ')}
+            </p>
           )}
           <span style={{
             fontSize: '14px',
