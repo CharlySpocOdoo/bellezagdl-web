@@ -39,7 +39,7 @@ export function Input({
         style={{
           width: '100%',
           padding: '10px 14px',
-          fontSize: '15px',
+          fontSize: '16px',
           color: theme.semantic.textPrimary,
           background: theme.semantic.bgInput,
           border: `1px solid ${error ? theme.semantic.statusAlertText : theme.semantic.border}`,

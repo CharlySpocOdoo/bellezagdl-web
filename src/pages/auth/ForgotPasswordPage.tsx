@@ -99,7 +99,7 @@ export function ForgotPasswordPage() {
                 style={{
                   width: '100%',
                   padding: '10px 14px',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   border: `1.5px solid ${theme.semantic.border}`,
                   borderRadius: '8px',
                   outline: 'none',

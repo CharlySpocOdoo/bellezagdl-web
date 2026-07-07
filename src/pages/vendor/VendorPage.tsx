@@ -1,4 +1,4 @@
-import { statusLabel } from '../../utils/orderStatus'
+import { statusColors, getStatusLabel } from '../../utils/orderStatus'
 import { TopBar } from '../../components/TopBar'
 import { getVendorProfile, getVendorClients, getVendorCommissions, approveClient } from '../../api/vendor'
 import { getOrders, addOrderNote } from '../../api/orders'
@@ -489,10 +489,10 @@ export function VendorPage() {
                         borderRadius: '20px',
                         fontSize: '11px',
                         fontWeight: 500,
-                        background: theme.colors.neutral[50],
-                        color: theme.colors.neutral[800],
+                        background: statusColors[order.status]?.bg,
+                        color: statusColors[order.status]?.text,
                       }}>
-                        {statusLabel[order.status] || order.status}
+                        {getStatusLabel(order.status, order.sale_type)}
                       </span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button
@@ -553,7 +553,7 @@ export function VendorPage() {
                           style={{
                             flex: 1,
                             padding: '8px 12px',
-                            fontSize: '13px',
+                            fontSize: '16px',
                             border: `1px solid ${theme.semantic.border}`,
                             borderRadius: '8px',
                             outline: 'none',
@@ -771,7 +771,7 @@ export function VendorPage() {
                         style={{
                           flex: 1,
                           padding: '8px 12px',
-                          fontSize: '14px',
+                          fontSize: '16px',
                           border: `1.5px solid ${theme.semantic.border}`,
                           borderRadius: '8px',
                           outline: 'none',
@@ -788,7 +788,7 @@ export function VendorPage() {
                         style={{
                           flex: 1,
                           padding: '8px 12px',
-                          fontSize: '14px',
+                          fontSize: '16px',
                           border: `1.5px solid ${theme.semantic.border}`,
                           borderRadius: '8px',
                           outline: 'none',
@@ -828,7 +828,7 @@ export function VendorPage() {
                         style={{
                           width: '100%',
                           padding: '8px 12px',
-                          fontSize: '14px',
+                          fontSize: '16px',
                           border: `1.5px solid ${theme.semantic.border}`,
                           borderRadius: '8px',
                           outline: 'none',

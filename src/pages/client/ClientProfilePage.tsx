@@ -204,7 +204,7 @@ export function ClientProfilePage() {
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    fontSize: '14px',
+                    fontSize: '16px',
                     border: `1.5px solid ${theme.semantic.border}`,
                     borderRadius: '8px',
                     outline: 'none',
@@ -244,7 +244,7 @@ export function ClientProfilePage() {
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    fontSize: '14px',
+                    fontSize: '16px',
                     border: `1.5px solid ${theme.semantic.border}`,
                     borderRadius: '8px',
                     outline: 'none',

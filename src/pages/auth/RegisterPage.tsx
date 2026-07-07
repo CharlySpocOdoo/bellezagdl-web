@@ -5,6 +5,7 @@ import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
 import { PasswordInput } from '../../components/PasswordInput'
 import { theme } from '../../theme'
+import logoRosaArios from '../../assets/LogoArios.jpg'
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -149,7 +150,13 @@ export function RegisterPage() {
           padding: '40px 36px',
         }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{ fontSize: '36px', marginBottom: '12px' }}>🌸</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+              <img
+                src={logoRosaArios}
+                alt="Rosa de Lima Cosméticos"
+                style={{ width: '120px', height: '120px', objectFit: 'contain' }}
+              />
+            </div>
             <h1 style={{
               fontSize: '22px',
               fontWeight: 500,
@@ -304,7 +311,13 @@ export function RegisterPage() {
         padding: '40px 36px',
       }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>🌸</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+            <img
+              src={logoRosaArios}
+              alt="Rosa de Lima Cosméticos"
+              style={{ width: '120px', height: '120px', objectFit: 'contain' }}
+            />
+          </div>
           <h1 style={{
             fontSize: '22px',
             fontWeight: 500,

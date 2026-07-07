@@ -81,7 +81,12 @@ export function ProductDetailPage() {
     <div style={{ minHeight: '100vh', background: '#FFFFFF' }}>
       <TopBar />
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
+      <div style={{
+        maxWidth: '480px',
+        margin: '0 auto',
+        padding: '16px',
+        paddingBottom: (user?.role === 'client' || user?.role === 'wholesale') ? '90px' : '16px',
+      }}>
 
         {/* Volver */}
         <button
@@ -414,9 +419,22 @@ export function ProductDetailPage() {
           )}
 
 
-          {/* Botón agregar */}
-          <div style={{ borderTop: `1px solid ${theme.semantic.border}`, marginBottom: '16px' }} />
-          {(user?.role === 'client' || user?.role === 'wholesale') && (
+        </div>
+      </div>
+
+      {/* Botón agregar — fijo, siempre visible sin necesidad de scrollear */}
+      {(user?.role === 'client' || user?.role === 'wholesale') && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: theme.semantic.bgCard,
+          borderTop: `1px solid ${theme.semantic.border}`,
+          padding: '12px 16px',
+          zIndex: 50,
+        }}>
+          <div style={{ maxWidth: '480px', margin: '0 auto' }}>
             <button
               onClick={handleAddToCart}
               disabled={!selectedVariant}
@@ -443,13 +461,9 @@ export function ProductDetailPage() {
             >
               {added ? '¡Agregado al carrito! ✓' : 'Agregar al carrito'}
             </button>
-          )}
-
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
-
-
-
 }

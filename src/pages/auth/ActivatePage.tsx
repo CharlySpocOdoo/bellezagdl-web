@@ -6,6 +6,7 @@ import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
 import { theme } from '../../theme'
 import apiClient from '../../api/client'
+import logoRosaArios from '../../assets/LogoArios.jpg'
 
 
 export function ActivatePage() {
@@ -164,7 +165,13 @@ export function ActivatePage() {
       }}>
 
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>🌸</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+            <img
+              src={logoRosaArios}
+              alt="Rosa de Lima Cosméticos"
+              style={{ width: '120px', height: '120px', objectFit: 'contain' }}
+            />
+          </div>
           <h1 style={{
             fontSize: '22px',
             fontWeight: 500,
