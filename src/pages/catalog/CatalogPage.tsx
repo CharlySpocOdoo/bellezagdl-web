@@ -100,7 +100,7 @@ useEffect(() => {
           fontSize: '14px',
           fontWeight: 500,
         }}>
-          ¡Pedido creado exitosamente! Redirigiendo a tus pedidos...
+          ¡Recibimos tu pedido! Te avisaremos cuando se confirme la disponibilidad. Redirigiendo a tus pedidos...
         </div>
       )}
 

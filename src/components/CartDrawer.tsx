@@ -236,6 +236,15 @@ export function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
                 ${total.toFixed(2)}
               </span>
             </div>
+            <p style={{
+              fontSize: '11px',
+              color: theme.semantic.textMuted,
+              textAlign: 'center',
+              lineHeight: 1.4,
+              margin: '0 0 12px',
+            }}>
+              Tu vendedor confirmará la disponibilidad antes de preparar tu pedido
+            </p>
             <button
               onClick={onCheckout}
               style={{
