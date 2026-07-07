@@ -115,7 +115,7 @@ export function ActivatePage() {
           width: '100%',
         }}>
           <div style={{ fontSize: '40px', marginBottom: '16px' }}>🔗</div>
-          <h2 style={{ color: theme.semantic.textPrimary, margin: '0 0 8px' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 500, color: theme.semantic.textPrimary, margin: '0 0 8px' }}>
             Link inválido
           </h2>
           <p style={{ color: theme.semantic.textMuted, margin: '0 0 24px' }}>
@@ -173,8 +173,8 @@ export function ActivatePage() {
             />
           </div>
           <h1 style={{
-            fontSize: '22px',
-            fontWeight: 500,
+            fontSize: '20px',
+            fontWeight: 600,
             color: theme.semantic.textPrimary,
             margin: '0 0 8px',
           }}>

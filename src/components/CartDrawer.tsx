@@ -52,7 +52,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
         }}>
           <div>
             <h2 style={{
-              fontSize: '18px',
+              fontSize: '15px',
               fontWeight: 500,
               color: theme.semantic.textPrimary,
               margin: 0,

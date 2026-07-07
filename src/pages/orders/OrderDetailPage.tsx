@@ -401,7 +401,7 @@ export function OrderDetailPage() {
             borderBottom: `0.5px solid ${theme.semantic.border}`,
           }}>
             <h2 style={{
-              fontSize: '14px',
+              fontSize: '15px',
               fontWeight: 500,
               color: theme.semantic.textPrimary,
               margin: 0,

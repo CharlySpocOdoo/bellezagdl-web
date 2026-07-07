@@ -130,7 +130,7 @@ export function BrandSelectPage() {
         >
           ←
         </button>
-        <h1 style={{ fontSize: '16px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
+        <h1 style={{ fontSize: '18px', fontWeight: 500, color: theme.semantic.textPrimary, margin: 0 }}>
           Seleccionar marca
         </h1>
       </div>
