@@ -1,9 +1,9 @@
 import logoRosa from '../../assets/logorosa.png'
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
-import { BrandFilterTrigger, BrandFilterSheet } from '../../components/BrandFilterSheet'
+import { BrandFilterTrigger } from '../../components/BrandFilterTrigger'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCatalog } from '../../contexts/CatalogContext'
@@ -14,6 +14,7 @@ import type { Product } from '../../types'
 export function CatalogPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const { itemCount, clearCart, items } = useCart()
   const { user } = useAuth()
 
@@ -24,7 +25,6 @@ export function CatalogPage() {
   const [selectedBrand, setSelectedBrand] = useState('')
 
   const [isCartOpen, setIsCartOpen] = useState(false)
-  const [isBrandSheetOpen, setIsBrandSheetOpen] = useState(false)
 
   const [isOrdering, setIsOrdering] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
@@ -33,6 +33,11 @@ export function CatalogPage() {
 useEffect(() => {
   if (user?.role) loadIfEmpty(user.role)
 }, [user?.role])
+
+useEffect(() => {
+  const brandFromUrl = searchParams.get('brand')
+  if (brandFromUrl !== null) setSelectedBrand(brandFromUrl)
+}, [searchParams])
 
 useEffect(() => {
   if (!isLoading && scrollPosition > 0) {
@@ -254,7 +259,7 @@ useEffect(() => {
           <BrandFilterTrigger
             brands={brands}
             selectedBrand={selectedBrand}
-            onClick={() => setIsBrandSheetOpen(true)}
+            onClick={() => navigate(`/catalog/marcas?brand=${selectedBrand}`)}
           />
 
           {user?.role !== 'oferta' && (
@@ -362,14 +367,6 @@ useEffect(() => {
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         onCheckout={handleCheckout}
-      />
-
-      <BrandFilterSheet
-        isOpen={isBrandSheetOpen}
-        onClose={() => setIsBrandSheetOpen(false)}
-        brands={brands}
-        selectedBrand={selectedBrand}
-        onSelect={setSelectedBrand}
       />
 
       {isOrdering && (

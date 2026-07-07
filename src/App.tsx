@@ -7,6 +7,7 @@ import { PublicRoute } from './routes/PublicRoute'
 import { LoginPage } from './pages/auth/LoginPage'
 import { CatalogPage } from './pages/catalog/CatalogPage'
 import { ProductDetailPage } from './pages/catalog/ProductDetailPage'
+import { BrandSelectPage } from './pages/catalog/BrandSelectPage'
 import { OrdersPage } from './pages/orders/OrdersPage'
 import { OrderDetailPage } from './pages/orders/OrderDetailPage'
 import { VendorPage } from './pages/vendor/VendorPage'
@@ -35,6 +36,7 @@ function App() {
               <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
 
               <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta']}><CatalogPage /></ProtectedRoute>} />
+              <Route path="/catalog/marcas" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta', 'wholesale']}><BrandSelectPage /></ProtectedRoute>} />
               <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta', 'wholesale']}><ProductDetailPage /></ProtectedRoute>} />
 
               <Route path="/orders" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrdersPage /></ProtectedRoute>} />
