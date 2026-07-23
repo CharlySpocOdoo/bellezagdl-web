@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
+import { BrandImageBackground } from '../../components/BrandImageBackground'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getProduct } from '../../api/catalog'
 import { theme } from '../../theme'
 import type { Product, ProductVariant } from '../../types'
+
+const probeImage = (url: string): Promise<string | null> =>
+  new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve(url)
+    img.onerror = () => resolve(null)
+    img.src = url
+  })
 
 export function ProductDetailPage() {
   const { id } = useParams()
@@ -18,17 +27,38 @@ export function ProductDetailPage() {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
-  const [failedPrimary, setFailedPrimary] = useState(false)
-  const [failedFallback, setFailedFallback] = useState(false)
+  const [galleryIndex, setGalleryIndex] = useState(0)
+  const [validGallery, setValidGallery] = useState<string[] | null>(null)
 
   const backPath = user?.role === 'wholesale' ? '/wholesale' : '/catalog'
 
-  // Reiniciar el estado de error de imagen al cambiar de variante —
-  // cada variante tiene su propia URL, un fallo anterior no debe persistir
+  // Galería por variante — hasta 4 imágenes con SKU_2/_3/_4, verificadas
+  // antes de mostrarse para saber cuántas existen realmente (necesario
+  // para decidir si se muestran flechas/puntos de navegación)
   useEffect(() => {
-    setFailedPrimary(false)
-    setFailedFallback(false)
-  }, [selectedVariant?.id])
+    let cancelled = false
+    setGalleryIndex(0)
+    setValidGallery(null)
+
+    if (!selectedVariant) {
+      setValidGallery(product?.image_url ? [product.image_url] : [])
+      return
+    }
+
+    const sku = selectedVariant.sku
+    const candidates = [1, 2, 3, 4].map((n) =>
+      n === 1
+        ? `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}.png`
+        : `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}_${n}.png`
+    )
+
+    Promise.all(candidates.map(probeImage)).then((results) => {
+      if (cancelled) return
+      setValidGallery(results.filter((url): url is string => url !== null))
+    })
+
+    return () => { cancelled = true }
+  }, [selectedVariant?.id, product?.id])
 
   useEffect(() => {
     if (!id) return
@@ -118,50 +148,113 @@ export function ProductDetailPage() {
           {product.name}
         </h1>
 
-        {/* Imagen grande */}
-        <div style={{
-          height: '280px',
-          background: '#FFFFFF',
-          borderRadius: '16px',
-          border: `1px solid ${theme.semantic.border}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          padding: '12px',
-          boxSizing: 'border-box',
-          marginBottom: '12px',
-        }}>
-          {(() => {
-            const primarySrc = selectedVariant?.image_url || null
-            const fallbackSrc = product.image_url
-            const showPrimary = !!primarySrc && !failedPrimary
-            const showFallback = !showPrimary && !!fallbackSrc && !failedFallback
+        {/* Imagen grande con galería por variante */}
+        <div style={{ marginBottom: '12px' }}>
+          <BrandImageBackground
+            brandName={product.brand_name}
+            style={{
+              height: '280px',
+              borderRadius: '16px',
+              border: `1px solid ${theme.semantic.border}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              padding: '12px',
+              boxSizing: 'border-box',
+            }}
+          >
+            {validGallery === null ? (
+              <span style={{ fontSize: '13px', color: theme.semantic.textMuted, position: 'relative' }}>
+                Cargando imagen...
+              </span>
+            ) : validGallery.length > 0 ? (
+              <img
+                src={validGallery[galleryIndex]}
+                alt={product.name}
+                loading="lazy"
+                style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
+              />
+            ) : (
+              <span style={{ fontSize: '80px', position: 'relative' }}>🌸</span>
+            )}
 
-            if (showPrimary) {
-              return (
-                <img
-                  src={primarySrc!}
-                  alt={product.name}
-                  loading="lazy"
-                  onError={() => setFailedPrimary(true)}
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            {validGallery && validGallery.length > 1 && (
+              <>
+                <button
+                  onClick={() => setGalleryIndex((i) => (i - 1 + validGallery.length) % validGallery.length)}
+                  aria-label="Imagen anterior"
+                  style={{
+                    position: 'absolute',
+                    left: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: 'rgba(255,255,255,0.85)',
+                    color: theme.semantic.textPrimary,
+                    fontSize: '18px',
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => setGalleryIndex((i) => (i + 1) % validGallery.length)}
+                  aria-label="Imagen siguiente"
+                  style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: 'rgba(255,255,255,0.85)',
+                    color: theme.semantic.textPrimary,
+                    fontSize: '18px',
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  ›
+                </button>
+              </>
+            )}
+          </BrandImageBackground>
+
+          {validGallery && validGallery.length > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '8px' }}>
+              {validGallery.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setGalleryIndex(i)}
+                  aria-label={`Ir a imagen ${i + 1}`}
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                    background: i === galleryIndex ? theme.semantic.actionPrimary : theme.semantic.border,
+                  }}
                 />
-              )
-            }
-            if (showFallback) {
-              return (
-                <img
-                  src={fallbackSrc!}
-                  alt={product.name}
-                  loading="lazy"
-                  onError={() => setFailedFallback(true)}
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                />
-              )
-            }
-            return <span style={{ fontSize: '80px' }}>🌸</span>
-          })()}
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}

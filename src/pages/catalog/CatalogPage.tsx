@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
 import { BrandFilterTrigger } from '../../components/BrandFilterTrigger'
+import { BrandImageBackground } from '../../components/BrandImageBackground'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCatalog } from '../../contexts/CatalogContext'
@@ -441,25 +442,26 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
       </div>
 
       {/* Imagen con badge de marca */}
-      <div style={{
-        height: '120px',
-        background: '#F9F5F7',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        padding: '8px',
-        boxSizing: 'border-box',
-        position: 'relative',
-        flexShrink: 0,
-      }}>
+      <BrandImageBackground
+        brandName={product.brand_name}
+        style={{
+          height: '120px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          padding: '8px',
+          boxSizing: 'border-box',
+          flexShrink: 0,
+        }}
+      >
         {showPrimary ? (
           <img
             src={primarySrc!}
             alt={product.name}
             loading="lazy"
             onError={() => setFailedPrimary(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
           />
         ) : showFallback ? (
           <img
@@ -467,12 +469,12 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
             alt={product.name}
             loading="lazy"
             onError={() => setFailedFallback(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
           />
         ) : (
-          <span style={{ fontSize: '32px' }}>🌸</span>
+          <span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>
         )}
-      </div>
+      </BrandImageBackground>
 
       {/* Cuerpo */}
       <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', flex: 1 }}>
