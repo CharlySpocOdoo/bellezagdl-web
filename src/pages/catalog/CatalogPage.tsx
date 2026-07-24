@@ -69,12 +69,35 @@ useEffect(() => {
 
   const availableCategoryLabels = getCategoryLabelsForBrand(selectedBrand)
 
+  // Búsqueda inteligente: con texto en el buscador se ignoran los filtros de
+  // marca/categoría y se busca en todo el catálogo por nombre, marca,
+  // categoría o SKU (del producto o de cualquiera de sus variantes) — basta
+  // con que coincida uno de los criterios.
+  const searchLower = search.toLowerCase().trim()
+
+  const matchingBrandIds = searchLower
+    ? brands.filter((b) => b.name.toLowerCase().includes(searchLower)).map((b) => b.id)
+    : []
+
+  const allCategoryLabels = Array.from(new Set(
+    products.map((p) => subcategoryLabel(p.category_name || '')).filter(Boolean)
+  ))
+  const matchingCategoryLabels = searchLower
+    ? allCategoryLabels.filter((label) => label.toLowerCase().includes(searchLower))
+    : []
+
   const filtered = products.filter((p) => {
-    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
+    if (searchLower) {
+      const matchName = p.name.toLowerCase().includes(searchLower)
+      const matchBrand = matchingBrandIds.includes(p.brand_id)
+      const matchCategory = matchingCategoryLabels.includes(subcategoryLabel(p.category_name || ''))
+      const matchSku = (p.sku_template || '').toLowerCase().includes(searchLower)
+        || (p.variants || []).some((v) => v.sku.toLowerCase().includes(searchLower))
+      return matchName || matchBrand || matchCategory || matchSku
+    }
     const matchCat = selectedCategory ? subcategoryLabel(p.category_name || '') === selectedCategory : true
-    // Con texto en el buscador, la marca deja de aplicar — busca en todo el catálogo
-    const matchBrand = search ? true : (selectedBrand ? p.brand_id === selectedBrand : true)
-    return matchSearch && matchCat && matchBrand
+    const matchBrand = selectedBrand ? p.brand_id === selectedBrand : true
+    return matchCat && matchBrand
   })
 
   const handleProductClick = (id: string) => {
