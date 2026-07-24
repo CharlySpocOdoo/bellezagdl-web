@@ -445,22 +445,6 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         {/* Cuerpo */}
         <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
 
-          {/* Descripción */}
-          {product.description && (
-            <p style={{
-              fontSize: '11px',
-              color: theme.semantic.textSecondary,
-              margin: '0 0 6px',
-              lineHeight: 1.4,
-              overflow: 'hidden',
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-            }}>
-              {product.description}
-            </p>
-          )}
-
           {/* Tags */}
           {product.tags && product.tags.length > 0 && (
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
@@ -478,36 +462,39 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
             </div>
           )}
 
-          {/* Footer: SKU/variantes + precio */}
+          {/* Footer: SKU/variantes + precio — halo compartido, no rectangular */}
           <div style={{
             marginTop: 'auto',
             paddingTop: '6px',
             textAlign: 'center',
           }}>
-            {(product.sku_template || (product.variants?.length ?? 0) > 1) && (
-              <p style={{
-                display: 'inline-block',
-                fontSize: '9px',
-                color: theme.semantic.textMuted,
-                background: 'rgba(255,255,255,0.8)',
-                padding: '2px 8px',
-                borderRadius: '10px',
-                margin: '0 0 4px',
-              }}>
-                {[
-                  product.sku_template ? `SKU ${product.sku_template}` : null,
-                  (product.variants?.length ?? 0) > 1 ? `${product.variants.length} variantes` : null,
-                ].filter(Boolean).join(' · ')}
-              </p>
-            )}
-            <span style={{
-              display: 'block',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: theme.semantic.actionPrimary,
+            <div style={{
+              display: 'inline-block',
+              padding: '10px 22px',
+              position: 'relative',
+              background: 'radial-gradient(ellipse 100% 90% at center, rgba(30,58,95,0.16) 0%, rgba(30,58,95,0.16) 40%, rgba(30,58,95,0) 75%)',
             }}>
-              ${Number(product.display_price)?.toFixed(2)}
-            </span>
+              {(product.sku_template || (product.variants?.length ?? 0) > 1) && (
+                <p style={{
+                  fontSize: '9px',
+                  color: theme.semantic.textMuted,
+                  margin: '0 0 4px',
+                }}>
+                  {[
+                    product.sku_template ? `SKU ${product.sku_template}` : null,
+                    (product.variants?.length ?? 0) > 1 ? `${product.variants.length} variantes` : null,
+                  ].filter(Boolean).join(' · ')}
+                </p>
+              )}
+              <span style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: theme.semantic.actionPrimary,
+              }}>
+                ${Number(product.display_price)?.toFixed(2)}
+              </span>
+            </div>
           </div>
 
         </div>
