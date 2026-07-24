@@ -42,8 +42,8 @@ export function TopBar({ cartItemCount, onCartClick }: TopBarProps) {
       zIndex: 50,
     }}>
 
-      {/* Izquierda: hamburguesa */}
-      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+      {/* Izquierda: hamburguesa + WhatsApp */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px' }}>
         <button
           onClick={() => setIsMenuOpen((v) => !v)}
           aria-label="Menú"
@@ -63,6 +63,27 @@ export function TopBar({ cartItemCount, onCartClick }: TopBarProps) {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </button>
+
+        <a
+          href="https://wa.me/523318657712"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="WhatsApp"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            background: '#25D366',
+            fontSize: '15px',
+            textDecoration: 'none',
+            flexShrink: 0,
+          }}
+        >
+          💬
+        </a>
 
         {isMenuOpen && (
           <>

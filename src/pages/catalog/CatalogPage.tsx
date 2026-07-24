@@ -19,7 +19,7 @@ export function CatalogPage() {
   const { itemCount, clearCart, items } = useCart()
   const { user } = useAuth()
 
-  const { products, categories, brands, isLoading, scrollPosition, setScrollPosition, loadIfEmpty } = useCatalog()
+  const { products, brands, isLoading, scrollPosition, setScrollPosition, loadIfEmpty } = useCatalog()
 
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -46,7 +46,28 @@ useEffect(() => {
   }
 }, [isLoading])
 
+useEffect(() => {
+  const labels = new Set(
+    products
+      .filter((p) => (selectedBrand ? p.brand_id === selectedBrand : true))
+      .map((p) => subcategoryLabel(p.category_name || ''))
+  )
+  if (selectedCategory && !labels.has(selectedCategory)) {
+    setSelectedCategory('')
+  }
+}, [selectedBrand, products])
+
   const subcategoryLabel = (name: string) => name.split(' / ').slice(-1)[0]
+
+  const getCategoryLabelsForBrand = (brandId: string) =>
+    Array.from(new Set(
+      products
+        .filter((p) => (brandId ? p.brand_id === brandId : true))
+        .map((p) => subcategoryLabel(p.category_name || ''))
+        .filter(Boolean)
+    ))
+
+  const availableCategoryLabels = getCategoryLabelsForBrand(selectedBrand)
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
@@ -219,7 +240,7 @@ useEffect(() => {
               }}
             >
               <option value="">Todas las categorías</option>
-              {Array.from(new Set(categories.map((cat) => subcategoryLabel(cat.name)))).map((label) => (
+              {availableCategoryLabels.map((label) => (
                 <option key={label} value={label}>{label}</option>
               ))}
             </select>
@@ -448,7 +469,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
               </p>
             )}
             <div style={{
-              width: '100%',
+              width: 'calc(100% + 12px)',
               boxSizing: 'border-box',
               margin: '0 -6px',
               background: theme.colors.secondary[800],
@@ -477,7 +498,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
               <span style={{
                 fontSize: '12px',
                 fontWeight: 700,
-                color: theme.semantic.actionPrimary,
+                color: theme.semantic.textOnPrimary,
                 flexShrink: 0,
                 marginLeft: 'auto',
               }}>
