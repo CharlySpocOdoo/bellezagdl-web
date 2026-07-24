@@ -1,17 +1,31 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { theme } from '../theme'
 
-export function TopBar() {
-  const { user, logout, displayName } = useAuth()
+interface TopBarProps {
+  cartItemCount?: number
+  onCartClick?: () => void
+}
+
+export function TopBar({ cartItemCount, onCartClick }: TopBarProps) {
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleLogout = async () => {
+    setIsMenuOpen(false)
     await logout()
     navigate('/login')
   }
 
-  const firstName = (displayName || user?.email || '?').split(' ')[0].split('@')[0]
+  const handleUserClick = () => {
+    if (user?.role === 'client') navigate('/profile')
+    else if (user?.role === 'vendor') navigate('/vendor?tab=perfil')
+    // wholesale / oferta / admin: sin pantalla de perfil todavía
+  }
+
+  const showMisPedidos = user?.role === 'client' || user?.role === 'wholesale'
 
   return (
     <div style={{
@@ -19,16 +33,96 @@ export function TopBar() {
       background: theme.colors.secondary[800],
       padding: '0 16px',
       height: '60px',
-      display: 'flex',
+      display: 'grid',
+      gridTemplateColumns: '1fr auto 1fr',
       alignItems: 'center',
-      justifyContent: 'space-between',
       boxSizing: 'border-box',
       position: 'sticky',
       top: 0,
       zIndex: 50,
     }}>
 
-      {/* Marca */}
+      {/* Izquierda: hamburguesa */}
+      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+        <button
+          onClick={() => setIsMenuOpen((v) => !v)}
+          aria-label="Menú"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+
+        {isMenuOpen && (
+          <>
+            <div
+              onClick={() => setIsMenuOpen(false)}
+              style={{ position: 'fixed', inset: 0, zIndex: 59 }}
+            />
+            <div style={{
+              position: 'absolute',
+              top: '60px',
+              left: '16px',
+              background: theme.semantic.bgCard,
+              borderRadius: '10px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+              minWidth: '170px',
+              overflow: 'hidden',
+              zIndex: 60,
+            }}>
+              {showMisPedidos && (
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    navigate(user?.role === 'wholesale' ? '/wholesale/orders' : '/orders')
+                  }}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '12px 16px',
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: `1px solid ${theme.semantic.border}`,
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    color: theme.semantic.textPrimary,
+                  }}
+                >
+                  Mis pedidos
+                </button>
+              )}
+              <button
+                onClick={handleLogout}
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '12px 16px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  color: theme.semantic.textPrimary,
+                }}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Centro: marca */}
       <div
         onClick={() => {
           if (user?.role === 'vendor') navigate('/vendor')
@@ -42,8 +136,6 @@ export function TopBar() {
           cursor: 'pointer',
         }}
       >
-
-
         <span style={{
           fontSize: '15px',
           fontWeight: 800,
@@ -72,16 +164,14 @@ export function TopBar() {
             Cosméticos
           </span>
         )}
-
-
       </div>
-      {/* Derecha: ícono persona + nombre + cerrar sesión */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div
-          onClick={() => { if (user?.role === 'client') navigate('/profile') }}
-          style={{ display: 'flex', alignItems: 'center', gap: '7px', cursor: user?.role === 'client' ? 'pointer' : 'default' }}
-        >
-          <div style={{
+
+      {/* Derecha: usuario + carrito */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+        <button
+          onClick={handleUserClick}
+          aria-label="Perfil"
+          style={{
             width: '32px',
             height: '32px',
             borderRadius: '50%',
@@ -91,44 +181,56 @@ export function TopBar() {
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8637A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-          </div>
-          <span style={{
-            fontSize: '13px',
-            color: 'rgba(255,255,255,0.85)',
-            fontWeight: 500,
-          }}>
-            {firstName}
-          </span>
-        </div>
-
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '5px 12px',
-            fontSize: '12px',
-            color: 'rgba(255,255,255,0.65)',
-            background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = theme.semantic.actionPrimary
-            e.currentTarget.style.color = theme.semantic.actionPrimary
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
-            e.currentTarget.style.color = 'rgba(255,255,255,0.65)'
+            cursor: user?.role === 'client' || user?.role === 'vendor' ? 'pointer' : 'default',
+            padding: 0,
           }}
         >
-          Cerrar sesión
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8637A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
         </button>
+
+        {onCartClick && (
+          <button
+            onClick={onCartClick}
+            aria-label="Carrito"
+            style={{
+              position: 'relative',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '20px',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              lineHeight: 1,
+            }}
+          >
+            🛍️
+            {!!cartItemCount && (
+              <span style={{
+                position: 'absolute',
+                top: '-2px',
+                right: '-2px',
+                background: theme.semantic.actionPrimary,
+                color: 'white',
+                borderRadius: '10px',
+                minWidth: '16px',
+                height: '16px',
+                fontSize: '10px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 3px',
+              }}>
+                {cartItemCount}
+              </span>
+            )}
+          </button>
+        )}
       </div>
 
     </div>

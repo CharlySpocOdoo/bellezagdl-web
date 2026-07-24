@@ -1,6 +1,6 @@
 import logoRosa from '../../assets/logorosa.png'
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
 import { BrandFilterTrigger } from '../../components/BrandFilterTrigger'
@@ -15,7 +15,6 @@ import type { Product } from '../../types'
 
 export function WholesalePage() {
   const navigate = useNavigate()
-  const location = useLocation()
   const [searchParams] = useSearchParams()
   const { itemCount, clearCart, items } = useCart()
   const { user } = useAuth()
@@ -90,7 +89,7 @@ export function WholesalePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
-      <TopBar />
+      <TopBar cartItemCount={itemCount} onCartClick={() => setIsCartOpen(true)} />
 
       {orderSuccess && (
         <div style={{
@@ -179,74 +178,6 @@ export function WholesalePage() {
               />
             )}
           </div>
-        </div>
-
-        {/* Nav tabs + Carrito */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '10px',
-        }}>
-          {[
-            { label: 'Catálogo', path: '/wholesale' },
-            { label: 'Mis pedidos', path: '/wholesale/orders' },
-          ].map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              style={{
-                padding: '7px 16px',
-                fontSize: '13px',
-                fontWeight: location.pathname === item.path ? 600 : 400,
-                background: location.pathname === item.path ? theme.colors.secondary[800] : 'transparent',
-                color: location.pathname === item.path ? 'white' : theme.semantic.textSecondary,
-                border: `1.5px solid ${location.pathname === item.path ? theme.colors.secondary[800] : theme.semantic.border}`,
-                borderRadius: '20px',
-                cursor: 'pointer',
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-
-          {/* Carrito al extremo derecho */}
-          <button
-            onClick={() => setIsCartOpen(true)}
-            style={{
-              marginLeft: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '7px 14px',
-              background: itemCount > 0 ? theme.colors.secondary[800] : 'transparent',
-              color: itemCount > 0 ? 'white' : theme.semantic.textSecondary,
-              border: `1.5px solid ${itemCount > 0 ? theme.colors.secondary[800] : theme.semantic.border}`,
-              borderRadius: '20px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 500,
-            }}
-          >
-            🛍️ Carrito
-            {itemCount > 0 && (
-              <span style={{
-                background: theme.semantic.actionPrimary,
-                color: 'white',
-                borderRadius: '10px',
-                minWidth: '16px',
-                height: '16px',
-                fontSize: '10px',
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0 4px',
-              }}>
-                {itemCount}
-              </span>
-            )}
-          </button>
         </div>
 
         {/* Filtros Marcas + Categorías */}
@@ -462,21 +393,32 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
             </div>
           )}
 
-          {/* Footer: SKU/variantes + precio — barra sólida, extremo a extremo */}
+          {/* Footer: variantes (texto normal) + barra sólida con SKU/precio */}
           <div style={{ marginTop: 'auto', paddingTop: '6px' }}>
+            {(product.variants?.length ?? 0) > 1 && (
+              <p style={{
+                fontSize: '9px',
+                color: theme.semantic.textMuted,
+                margin: '0 0 4px',
+                textAlign: 'center',
+              }}>
+                {product.variants.length} variantes
+              </p>
+            )}
             <div style={{
               width: '100%',
               boxSizing: 'border-box',
+              margin: '0 -6px',
               background: theme.colors.secondary[800],
               borderRadius: '8px',
-              padding: '8px 10px',
+              padding: '5px 10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: '8px',
               position: 'relative',
             }}>
-              {(product.sku_template || (product.variants?.length ?? 0) > 1) && (
+              {product.sku_template && (
                 <p style={{
                   fontSize: '10px',
                   color: 'rgba(255,255,255,0.85)',
@@ -487,14 +429,11 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
                   flex: 1,
                   minWidth: 0,
                 }}>
-                  {[
-                    product.sku_template || null,
-                    (product.variants?.length ?? 0) > 1 ? `${product.variants.length} variantes` : null,
-                  ].filter(Boolean).join(' · ')}
+                  {product.sku_template}
                 </p>
               )}
               <span style={{
-                fontSize: '14px',
+                fontSize: '12px',
                 fontWeight: 700,
                 color: theme.semantic.actionPrimary,
                 flexShrink: 0,
