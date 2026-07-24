@@ -502,35 +502,43 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
             </div>
           )}
 
-          {/* Footer: SKU/variantes + precio — halo compartido, no rectangular */}
-          <div style={{
-            marginTop: 'auto',
-            paddingTop: '6px',
-            textAlign: 'center',
-          }}>
+          {/* Footer: SKU/variantes + precio — barra sólida, extremo a extremo */}
+          <div style={{ marginTop: 'auto', paddingTop: '6px' }}>
             <div style={{
-              display: 'inline-block',
-              padding: '10px 22px',
+              width: '100%',
+              boxSizing: 'border-box',
+              background: theme.colors.secondary[800],
+              borderRadius: '8px',
+              padding: '8px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '8px',
               position: 'relative',
-              background: 'radial-gradient(ellipse 100% 90% at center, rgba(30,58,95,0.16) 0%, rgba(30,58,95,0.16) 40%, rgba(30,58,95,0) 75%)',
             }}>
               {(product.sku_template || (product.variants?.length ?? 0) > 1) && (
                 <p style={{
-                  fontSize: '9px',
-                  color: theme.semantic.textMuted,
-                  margin: '0 0 4px',
+                  fontSize: '10px',
+                  color: 'rgba(255,255,255,0.85)',
+                  margin: 0,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  flex: 1,
+                  minWidth: 0,
                 }}>
                   {[
-                    product.sku_template ? `SKU ${product.sku_template}` : null,
+                    product.sku_template || null,
                     (product.variants?.length ?? 0) > 1 ? `${product.variants.length} variantes` : null,
                   ].filter(Boolean).join(' · ')}
                 </p>
               )}
               <span style={{
-                display: 'block',
                 fontSize: '14px',
-                fontWeight: 600,
+                fontWeight: 700,
                 color: theme.semantic.actionPrimary,
+                flexShrink: 0,
+                marginLeft: 'auto',
               }}>
                 ${Number(product.display_price)?.toFixed(2)}
               </span>
