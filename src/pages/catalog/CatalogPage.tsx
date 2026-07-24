@@ -10,6 +10,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { useCatalog } from '../../contexts/CatalogContext'
 import { createOrder } from '../../api/orders'
 import { theme } from '../../theme'
+import { stripBrandFromName } from '../../utils/productName'
 import type { Product } from '../../types'
 
 export function CatalogPage() {
@@ -408,6 +409,8 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
   const showPrimary = !!primarySrc && !failedPrimary
   const showFallback = !showPrimary && !!fallbackSrc && !failedFallback
 
+  const displayName = stripBrandFromName(product.name, product.brand_name)
+
   return (
 <div
       onClick={onClick}
@@ -437,7 +440,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           lineHeight: 1.35,
           textAlign: 'center',
         }}>
-          {product.name}
+          {displayName}
         </p>
       </div>
 
@@ -458,7 +461,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         {showPrimary ? (
           <img
             src={primarySrc!}
-            alt={product.name}
+            alt={displayName}
             loading="lazy"
             onError={() => setFailedPrimary(true)}
             style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
@@ -466,7 +469,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         ) : showFallback ? (
           <img
             src={fallbackSrc!}
-            alt={product.name}
+            alt={displayName}
             loading="lazy"
             onError={() => setFailedFallback(true)}
             style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}

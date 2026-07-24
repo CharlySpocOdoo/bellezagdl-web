@@ -6,6 +6,7 @@ import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getProduct } from '../../api/catalog'
 import { theme } from '../../theme'
+import { stripBrandFromName } from '../../utils/productName'
 import type { Product, ProductVariant } from '../../types'
 
 const probeImage = (url: string): Promise<string | null> =>
@@ -83,7 +84,7 @@ export function ProductDetailPage() {
     if (!product || !selectedVariant) return
     addItem({
       variant_id: selectedVariant.id,
-      product_name: product.name,
+      product_name: stripBrandFromName(product.name, product.brand_name),
       variant_name: selectedVariant.variant_name,
       unit_price: Number(product.display_price),
       quantity,
@@ -106,6 +107,7 @@ export function ProductDetailPage() {
   if (!product) return null
 
   const activeVariants = product.variants?.filter((v) => v.active) || []
+  const displayName = stripBrandFromName(product.name, product.brand_name)
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF' }}>
@@ -145,7 +147,7 @@ export function ProductDetailPage() {
           lineHeight: 1.3,
           textAlign: 'center',
         }}>
-          {product.name}
+          {displayName}
         </h1>
 
         {/* Imagen grande con galería por variante */}
@@ -171,7 +173,7 @@ export function ProductDetailPage() {
             ) : validGallery.length > 0 ? (
               <img
                 src={validGallery[galleryIndex]}
-                alt={product.name}
+                alt={displayName}
                 loading="lazy"
                 style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
               />
