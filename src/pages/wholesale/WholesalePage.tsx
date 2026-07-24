@@ -71,7 +71,8 @@ export function WholesalePage() {
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
     const matchCat = selectedCategory ? subcategoryLabel(p.category_name || '') === selectedCategory : true
-    const matchBrand = selectedBrand ? p.brand_id === selectedBrand : true
+    // Con texto en el buscador, la marca deja de aplicar — busca en todo el catálogo
+    const matchBrand = search ? true : (selectedBrand ? p.brand_id === selectedBrand : true)
     return matchSearch && matchCat && matchBrand
   })
 
