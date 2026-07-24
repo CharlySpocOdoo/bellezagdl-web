@@ -375,39 +375,42 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
     <div
       onClick={onClick}
       style={{
-        background: '#FFFFFF',
         borderRadius: '12px',
-        border: `1px solid ${theme.semantic.border}`,
         overflow: 'hidden',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
+        boxShadow: '0 2px 8px rgba(30,58,95,0.08)',
+        transition: 'box-shadow 0.15s',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = '0 4px 12px rgba(30,58,95,0.10)'
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = 'none'
+        e.currentTarget.style.boxShadow = '0 2px 8px rgba(30,58,95,0.08)'
       }}
     >
-      {/* Nombre arriba centrado */}
-      <div style={{ padding: '12px 10px 8px' }}>
-        <p style={{
-          fontSize: '13px',
-          fontWeight: 500,
-          color: theme.semantic.textPrimary,
-          margin: 0,
-          lineHeight: 1.35,
-          textAlign: 'center',
-        }}>
-          {displayName}
-        </p>
-      </div>
-
-      {/* Imagen */}
+      {/* Fondo de marca — abarca toda la tarjeta */}
       <BrandImageBackground
         brandName={product.brand_name}
-        style={{
+        style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+      >
+        {/* Nombre arriba centrado */}
+        <div style={{ padding: '12px 10px 8px', position: 'relative' }}>
+          <p style={{
+            fontSize: '13px',
+            fontWeight: 500,
+            color: theme.semantic.textPrimary,
+            margin: 0,
+            lineHeight: 1.35,
+            textAlign: 'center',
+          }}>
+            {displayName}
+          </p>
+        </div>
+
+        {/* Imagen */}
+        <div style={{
           height: '120px',
           display: 'flex',
           alignItems: 'center',
@@ -416,106 +419,99 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           padding: '8px',
           boxSizing: 'border-box',
           flexShrink: 0,
-        }}
-      >
-        {showPrimary ? (
-          <img
-            src={primarySrc!}
-            alt={displayName}
-            loading="lazy"
-            onError={() => setFailedPrimary(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
-          />
-        ) : showFallback ? (
-          <img
-            src={fallbackSrc!}
-            alt={displayName}
-            loading="lazy"
-            onError={() => setFailedFallback(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
-          />
-        ) : (
-          <span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>
-        )}
-      </BrandImageBackground>
-
-      {/* Cuerpo */}
-      <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-
-        {/* Categoría */}
-        {product.category_name && (
-          <p style={{
-            fontSize: '10px',
-            color: theme.semantic.textMuted,
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            margin: '0 0 4px',
-          }}>
-            {product.category_name}
-          </p>
-        )}
-
-        {/* Descripción */}
-        {product.description && (
-          <p style={{
-            fontSize: '11px',
-            color: theme.semantic.textSecondary,
-            margin: '0 0 6px',
-            lineHeight: 1.4,
-            overflow: 'hidden',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-          }}>
-            {product.description}
-          </p>
-        )}
-
-        {/* Tags */}
-        {product.tags && product.tags.length > 0 && (
-          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
-            {product.tags.slice(0, 2).map((tag) => (
-              <span key={tag} style={{
-                fontSize: '10px',
-                background: theme.colors.primary[50],
-                color: theme.colors.primary[800],
-                padding: '2px 6px',
-                borderRadius: '20px',
-              }}>
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Footer: SKU/variantes + precio */}
-        <div style={{
-          marginTop: 'auto',
-          paddingTop: '6px',
-          textAlign: 'center',
+          position: 'relative',
         }}>
-          {(product.sku_template || (product.variants?.length ?? 0) > 1) && (
-            <p style={{
-              fontSize: '9px',
-              color: theme.semantic.textMuted,
-              margin: '0 0 4px',
-            }}>
-              {[
-                product.sku_template ? `SKU ${product.sku_template}` : null,
-                (product.variants?.length ?? 0) > 1 ? `${product.variants.length} variantes` : null,
-              ].filter(Boolean).join(' · ')}
-            </p>
+          {showPrimary ? (
+            <img
+              src={primarySrc!}
+              alt={displayName}
+              loading="lazy"
+              onError={() => setFailedPrimary(true)}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
+            />
+          ) : showFallback ? (
+            <img
+              src={fallbackSrc!}
+              alt={displayName}
+              loading="lazy"
+              onError={() => setFailedFallback(true)}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
+            />
+          ) : (
+            <span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>
           )}
-          <span style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            color: theme.semantic.actionPrimary,
-          }}>
-            ${Number(product.display_price)?.toFixed(2)}
-          </span>
         </div>
 
-      </div>
+        {/* Cuerpo */}
+        <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
+
+          {/* Descripción */}
+          {product.description && (
+            <p style={{
+              fontSize: '11px',
+              color: theme.semantic.textSecondary,
+              margin: '0 0 6px',
+              lineHeight: 1.4,
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+            }}>
+              {product.description}
+            </p>
+          )}
+
+          {/* Tags */}
+          {product.tags && product.tags.length > 0 && (
+            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
+              {product.tags.slice(0, 2).map((tag) => (
+                <span key={tag} style={{
+                  fontSize: '10px',
+                  background: theme.colors.primary[50],
+                  color: theme.colors.primary[800],
+                  padding: '2px 6px',
+                  borderRadius: '20px',
+                }}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Footer: SKU/variantes + precio */}
+          <div style={{
+            marginTop: 'auto',
+            paddingTop: '6px',
+            textAlign: 'center',
+          }}>
+            {(product.sku_template || (product.variants?.length ?? 0) > 1) && (
+              <p style={{
+                display: 'inline-block',
+                fontSize: '9px',
+                color: theme.semantic.textMuted,
+                background: 'rgba(255,255,255,0.8)',
+                padding: '2px 8px',
+                borderRadius: '10px',
+                margin: '0 0 4px',
+              }}>
+                {[
+                  product.sku_template ? `SKU ${product.sku_template}` : null,
+                  (product.variants?.length ?? 0) > 1 ? `${product.variants.length} variantes` : null,
+                ].filter(Boolean).join(' · ')}
+              </p>
+            )}
+            <span style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: theme.semantic.actionPrimary,
+            }}>
+              ${Number(product.display_price)?.toFixed(2)}
+            </span>
+          </div>
+
+        </div>
+      </BrandImageBackground>
     </div>
   )
 }
