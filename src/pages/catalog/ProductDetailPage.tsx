@@ -48,8 +48,8 @@ export function ProductDetailPage() {
     const sku = selectedVariant.sku
     const candidates = [1, 2, 3, 4].map((n) =>
       n === 1
-        ? `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}.png`
-        : `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}_${n}.png`
+        ? `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}.webp`
+        : `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}_${n}.webp`
     )
 
     Promise.all(candidates.map(probeImage)).then((results) => {
