@@ -392,7 +392,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          padding: '8px',
+          padding: '2px',
           boxSizing: 'border-box',
           flexShrink: 0,
           position: 'relative',
@@ -403,7 +403,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
               alt={displayName}
               loading="lazy"
               onError={() => setFailedPrimary(true)}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative', transform: 'scale(1.15)' }}
             />
           ) : showFallback ? (
             <img
@@ -411,7 +411,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
               alt={displayName}
               loading="lazy"
               onError={() => setFailedFallback(true)}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative', transform: 'scale(1.15)' }}
             />
           ) : (
             <span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>
