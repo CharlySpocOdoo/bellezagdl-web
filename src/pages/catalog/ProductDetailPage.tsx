@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { getProduct } from '../../api/catalog'
 import { theme } from '../../theme'
 import { stripBrandFromName } from '../../utils/productName'
+import { getThinImageScale } from '../../utils/imageScale'
 import type { Product, ProductVariant } from '../../types'
 
 const probeImage = (url: string): Promise<string | null> =>
@@ -30,6 +31,7 @@ export function ProductDetailPage() {
   const [added, setAdded] = useState(false)
   const [galleryIndex, setGalleryIndex] = useState(0)
   const [validGallery, setValidGallery] = useState<string[] | null>(null)
+  const [imageAspectRatio, setImageAspectRatio] = useState<number | null>(null)
 
   const backPath = user?.role === 'wholesale' ? '/wholesale' : '/catalog'
 
@@ -61,6 +63,12 @@ export function ProductDetailPage() {
 
     return () => { cancelled = true }
   }, [selectedVariant?.id, product?.id])
+
+  // Recalcular la proporción cada vez que cambia la imagen mostrada
+  // (cambio de variante o navegación con flechas/puntos dentro de la galería)
+  useEffect(() => {
+    setImageAspectRatio(null)
+  }, [galleryIndex, validGallery])
 
   useEffect(() => {
     if (!id) return
@@ -176,7 +184,11 @@ export function ProductDetailPage() {
                 src={validGallery[galleryIndex]}
                 alt={displayName}
                 loading="lazy"
-                style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
+                onLoad={(e) => {
+                  const img = e.currentTarget
+                  setImageAspectRatio(img.naturalWidth / img.naturalHeight)
+                }}
+                style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative', transform: `scale(${getThinImageScale(imageAspectRatio)})` }}
               />
             ) : (
               <span style={{ fontSize: '80px', position: 'relative' }}>🌸</span>
