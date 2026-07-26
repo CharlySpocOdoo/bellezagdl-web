@@ -41,16 +41,17 @@ export function ProductDetailPage() {
     setGalleryIndex(0)
     setValidGallery(null)
 
-    if (!selectedVariant) {
+    if (!selectedVariant || !product?.brand_name) {
       setValidGallery(product?.image_url ? [product.image_url] : [])
       return
     }
 
     const sku = selectedVariant.sku
+    const brandFolder = encodeURIComponent(product.brand_name)
     const candidates = [1, 2, 3, 4].map((n) =>
       n === 1
-        ? `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}.webp`
-        : `https://rosadelima-assets.s3.amazonaws.com/productos/${sku}_${n}.webp`
+        ? `https://rosadelima-assets.s3.amazonaws.com/productos/${brandFolder}/${sku}.webp`
+        : `https://rosadelima-assets.s3.amazonaws.com/productos/${brandFolder}/${sku}_${n}.webp`
     )
 
     Promise.all(candidates.map(probeImage)).then((results) => {
