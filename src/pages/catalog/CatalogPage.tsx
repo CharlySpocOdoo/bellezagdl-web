@@ -11,7 +11,6 @@ import { useCatalog } from '../../contexts/CatalogContext'
 import { createOrder } from '../../api/orders'
 import { theme } from '../../theme'
 import { stripBrandFromName } from '../../utils/productName'
-import { getThinImageScale } from '../../utils/imageScale'
 import type { Product } from '../../types'
 
 export function CatalogPage() {
@@ -381,7 +380,6 @@ useEffect(() => {
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
   const [failedPrimary, setFailedPrimary] = useState(false)
   const [failedFallback, setFailedFallback] = useState(false)
-  const [imageAspectRatio, setImageAspectRatio] = useState<number | null>(null)
 
   const primarySrc = product.image_url
   const fallbackSrc = product.variants?.find(v => v.active)?.image_url || null
@@ -390,12 +388,6 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
   const showFallback = !showPrimary && !!fallbackSrc && !failedFallback
 
   const displayName = stripBrandFromName(product.name, product.brand_name)
-  const imageScale = getThinImageScale(imageAspectRatio)
-
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget
-    setImageAspectRatio(img.naturalWidth / img.naturalHeight)
-  }
 
   return (
 <div
@@ -453,8 +445,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
               alt={displayName}
               loading="lazy"
               onError={() => setFailedPrimary(true)}
-              onLoad={handleImageLoad}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative', transform: `scale(${imageScale})` }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
             />
           ) : showFallback ? (
             <img
@@ -462,8 +453,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
               alt={displayName}
               loading="lazy"
               onError={() => setFailedFallback(true)}
-              onLoad={handleImageLoad}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative', transform: `scale(${imageScale})` }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
             />
           ) : (
             <span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>
