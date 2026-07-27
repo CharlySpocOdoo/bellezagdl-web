@@ -5,6 +5,7 @@ import { TopBar } from '../../components/TopBar'
 import { CartDrawer } from '../../components/CartDrawer'
 import { BrandFilterTrigger } from '../../components/BrandFilterTrigger'
 import { BrandImageBackground } from '../../components/BrandImageBackground'
+import { ProductImage } from '../../components/ProductImage'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCatalog } from '../../contexts/CatalogContext'
@@ -378,14 +379,7 @@ useEffect(() => {
 }
 
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
-  const [failedPrimary, setFailedPrimary] = useState(false)
-  const [failedFallback, setFailedFallback] = useState(false)
-
-  const primarySrc = product.image_url
   const fallbackSrc = product.variants?.find(v => v.active)?.image_url || null
-
-  const showPrimary = !!primarySrc && !failedPrimary
-  const showFallback = !showPrimary && !!fallbackSrc && !failedFallback
 
   const displayName = stripBrandFromName(product.name, product.brand_name)
 
@@ -439,25 +433,13 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           flexShrink: 0,
           position: 'relative',
         }}>
-          {showPrimary ? (
-            <img
-              src={primarySrc!}
-              alt={displayName}
-              loading="lazy"
-              onError={() => setFailedPrimary(true)}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative', transform: 'scale(1.15)' }}
-            />
-          ) : showFallback ? (
-            <img
-              src={fallbackSrc!}
-              alt={displayName}
-              loading="lazy"
-              onError={() => setFailedFallback(true)}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative', transform: 'scale(1.15)' }}
-            />
-          ) : (
-            <span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>
-          )}
+          <ProductImage
+            key={product.id}
+            sources={[product.image_url, fallbackSrc]}
+            alt={displayName}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', transform: 'scale(1.15)' }}
+            fallback={<span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>}
+          />
         </div>
 
         {/* Cuerpo */}

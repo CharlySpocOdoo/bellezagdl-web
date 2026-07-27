@@ -20,9 +20,8 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage'
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage'
 import { CommissionDetailPage } from './pages/vendor/CommissionDetailPage'
 
-
 function App() {
-  
+
   return (
     <BrowserRouter>
       <AuthProvider>

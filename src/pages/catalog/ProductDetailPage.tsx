@@ -9,11 +9,24 @@ import { theme } from '../../theme'
 import { stripBrandFromName } from '../../utils/productName'
 import type { Product, ProductVariant } from '../../types'
 
+const PROBE_TIMEOUT_MS = 6000
+
+// Si onload/onerror nunca se disparan (URL que cuelga, CORS, archivo
+// corrupto), el timeout resuelve como fallo — evita que Promise.all()
+// se quede esperando para siempre y la galería nunca salga de "Cargando".
 const probeImage = (url: string): Promise<string | null> =>
   new Promise((resolve) => {
+    let settled = false
+    const settle = (result: string | null) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      resolve(result)
+    }
+    const timer = setTimeout(() => settle(null), PROBE_TIMEOUT_MS)
     const img = new Image()
-    img.onload = () => resolve(url)
-    img.onerror = () => resolve(null)
+    img.onload = () => settle(url)
+    img.onerror = () => settle(null)
     img.src = url
   })
 
