@@ -18,6 +18,12 @@ interface ProductImageProps {
 // No usar loading="lazy": provoca que un <img> con una URL ya cacheada
 // (p.ej. el mismo fallback repetido entre productos) nunca dispare onLoad,
 // dejando el componente colgado hasta el timeout.
+//
+// Tampoco basta con onLoad/onError solos: si el navegador ya tiene la
+// imagen en caché (usuario que ya navegó el catálogo antes), puede
+// completarla antes de que React alcance a adjuntar los listeners, y el
+// evento nunca llega — por eso el ref callback revisa img.complete al
+// montar y resuelve manualmente en ese caso.
 export function ProductImage({ sources, alt, style, fallback }: ProductImageProps) {
   const validSources = sources.filter((s): s is string => !!s)
   const [attemptIndex, setAttemptIndex] = useState(0)
@@ -49,12 +55,22 @@ export function ProductImage({ sources, alt, style, fallback }: ProductImageProp
     setAttemptIndex((i) => i + 1)
   }
 
+  const checkAlreadyDone = (el: HTMLImageElement | null) => {
+    if (!el || !el.complete) return
+    if (el.naturalWidth > 0) {
+      handleLoad()
+    } else {
+      handleError()
+    }
+  }
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {!loaded && fallback}
       {currentSrc && (
         <img
           key={currentSrc}
+          ref={checkAlreadyDone}
           src={currentSrc}
           alt={alt}
           onLoad={handleLoad}
