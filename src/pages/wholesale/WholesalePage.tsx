@@ -389,7 +389,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          padding: '2px',
+          padding: '0 2px',
           boxSizing: 'border-box',
           flexShrink: 0,
           position: 'relative',
@@ -404,7 +404,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         </div>
 
         {/* Nombre del producto debajo de la imagen */}
-        <div style={{ padding: '8px 10px 8px', position: 'relative' }}>
+        <div style={{ padding: '8px 10px 0', position: 'relative' }}>
           <p style={{
             fontSize: '13px',
             fontWeight: 500,
