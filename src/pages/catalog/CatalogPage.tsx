@@ -407,19 +407,22 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         brandName={product.brand_name}
         style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
       >
-        {/* Nombre arriba centrado */}
-        <div style={{ padding: '12px 10px 8px', position: 'relative' }}>
-          <p style={{
-            fontSize: '13px',
-            fontWeight: 500,
-            color: theme.semantic.textPrimary,
-            margin: 0,
-            lineHeight: 1.35,
-            textAlign: 'center',
-          }}>
-            {displayName}
-          </p>
-        </div>
+        {/* Marca arriba de todo */}
+        {product.brand_name && (
+          <div style={{ padding: '10px 10px 0' }}>
+            <p style={{
+              fontSize: '10px',
+              fontWeight: 500,
+              color: theme.semantic.textMuted,
+              margin: 0,
+              textAlign: 'center',
+              textTransform: 'uppercase',
+              letterSpacing: '0.03em',
+            }}>
+              {product.brand_name}
+            </p>
+          </div>
+        )}
 
         {/* Imagen */}
         <div style={{
@@ -440,6 +443,20 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
             style={{ width: '100%', height: '100%', objectFit: 'contain', transform: 'scale(1.15)' }}
             fallback={<span style={{ fontSize: '32px', position: 'relative' }}>🌸</span>}
           />
+        </div>
+
+        {/* Nombre del producto debajo de la imagen */}
+        <div style={{ padding: '8px 10px 8px', position: 'relative' }}>
+          <p style={{
+            fontSize: '13px',
+            fontWeight: 500,
+            color: theme.semantic.textPrimary,
+            margin: 0,
+            lineHeight: 1.35,
+            textAlign: 'center',
+          }}>
+            {displayName}
+          </p>
         </div>
 
         {/* Cuerpo */}
