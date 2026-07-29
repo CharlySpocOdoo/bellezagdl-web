@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { getProduct } from '../../api/catalog'
 import { theme } from '../../theme'
 import { stripBrandFromName } from '../../utils/productName'
+import { stripDiacritics } from '../../utils/text'
 import type { Product, ProductVariant } from '../../types'
 
 const PROBE_TIMEOUT_MS = 6000
@@ -60,7 +61,7 @@ export function ProductDetailPage() {
     }
 
     const sku = selectedVariant.sku
-    const brandFolder = encodeURIComponent(product.brand_name)
+    const brandFolder = encodeURIComponent(stripDiacritics(product.brand_name))
     const candidates = [1, 2, 3, 4].map((n) =>
       n === 1
         ? `https://rosadelima-assets.s3.amazonaws.com/productos/${brandFolder}/${sku}.webp`

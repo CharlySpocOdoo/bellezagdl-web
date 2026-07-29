@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { stripDiacritics } from '../utils/text'
 
 interface BrandImageBackgroundProps {
   brandName: string | null
@@ -6,21 +7,11 @@ interface BrandImageBackgroundProps {
   style?: React.CSSProperties
 }
 
-// Quita acentos/diacríticos antes de mayusculizar, igual que el backend
-// (unicodedata NFD + strip de diacríticos) — evita URLs de fondo de marca
-// inconsistentes entre navegadores/sistemas operativos.
-function normalizeForUrl(str: string): string {
-  return str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toUpperCase()
-}
-
 export function BrandImageBackground({ brandName, children, style }: BrandImageBackgroundProps) {
   const [bgFailed, setBgFailed] = useState(false)
 
   const brandBg = brandName
-    ? `https://rosadelima-assets.s3.amazonaws.com/marcas/fondos/${normalizeForUrl(brandName)}.webp`
+    ? `https://rosadelima-assets.s3.amazonaws.com/marcas/fondos/${stripDiacritics(brandName).toUpperCase()}.webp`
     : null
 
   // Un fallo con una marca anterior no debe persistir si brandBg cambia
