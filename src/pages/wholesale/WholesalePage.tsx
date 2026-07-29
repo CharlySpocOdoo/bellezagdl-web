@@ -384,7 +384,8 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
 
         {/* Imagen */}
         <div style={{
-          height: '120px',
+          aspectRatio: '1',
+          width: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -418,7 +419,7 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
         </div>
 
         {/* Cuerpo */}
-        <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
+        <div style={{ padding: '4px 10px 10px', display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
 
           {/* Tags */}
           {product.tags && product.tags.length > 0 && (
