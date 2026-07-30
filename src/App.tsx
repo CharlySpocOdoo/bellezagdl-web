@@ -19,6 +19,7 @@ import { ClientProfilePage } from './pages/client/ClientProfilePage'
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage'
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage'
 import { CommissionDetailPage } from './pages/vendor/CommissionDetailPage'
+import { NetworkStatusBanner } from './components/NetworkStatusBanner'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <CatalogProvider>
+            <NetworkStatusBanner />
             <Routes>
               <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
               <Route path="/registro" element={<PublicRoute><RegisterPage /></PublicRoute>} />

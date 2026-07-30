@@ -1,4 +1,11 @@
 import axios from 'axios'
+import { registerRequestEnd, registerRequestStart } from '../lib/networkMonitor'
+
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    __networkMonitorId?: number
+  }
+}
 
 // ─── Instancia base ───────────────────────────────────────────────────────────
 
@@ -8,6 +15,32 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+// ─── Monitoreo de red (banner de conexión inestable) ─────────────────────────
+// Se registran ANTES que el interceptor de refresh de token de abajo: así,
+// si una request falla y luego se reintenta (401 -> refresh -> retry), el
+// intento original se marca como terminado de inmediato — el retry es una
+// request nueva e independiente que se registra por su cuenta.
+
+apiClient.interceptors.request.use((config) => {
+  config.__networkMonitorId = registerRequestStart()
+  return config
+})
+
+apiClient.interceptors.response.use(
+  (response) => {
+    if (response.config.__networkMonitorId !== undefined) {
+      registerRequestEnd(response.config.__networkMonitorId)
+    }
+    return response
+  },
+  (error) => {
+    if (error.config?.__networkMonitorId !== undefined) {
+      registerRequestEnd(error.config.__networkMonitorId)
+    }
+    return Promise.reject(error)
+  }
+)
 
 // ─── Token en memoria ────────────────────────────────────────────────────────
 // El JWT nunca toca localStorage — vive solo en memoria
