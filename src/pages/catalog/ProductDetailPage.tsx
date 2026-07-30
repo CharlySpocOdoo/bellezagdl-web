@@ -387,62 +387,6 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            {validGallery && validGallery.length > 1 && (
-              <>
-                <button
-                  onClick={() => goToIndex((galleryIndex - 1 + validGallery.length) % validGallery.length)}
-                  aria-label="Imagen anterior"
-                  style={{
-                    position: 'absolute',
-                    left: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    border: 'none',
-                    background: 'rgba(255,255,255,0.92)',
-                    color: theme.semantic.textPrimary,
-                    fontSize: '24px',
-                    lineHeight: 1,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 1px 6px rgba(0,0,0,0.18)',
-                    zIndex: 1,
-                  }}
-                >
-                  ‹
-                </button>
-                <button
-                  onClick={() => goToIndex((galleryIndex + 1) % validGallery.length)}
-                  aria-label="Imagen siguiente"
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    border: 'none',
-                    background: 'rgba(255,255,255,0.92)',
-                    color: theme.semantic.textPrimary,
-                    fontSize: '24px',
-                    lineHeight: 1,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 1px 6px rgba(0,0,0,0.18)',
-                    zIndex: 1,
-                  }}
-                >
-                  ›
-                </button>
-              </>
-            )}
           </div>
 
           {validGallery && validGallery.length > 1 && (
