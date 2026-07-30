@@ -43,26 +43,130 @@ export function ProductDetailPage() {
   const [added, setAdded] = useState(false)
   const [galleryIndex, setGalleryIndex] = useState(0)
   const [validGallery, setValidGallery] = useState<string[] | null>(null)
-  const touchStartX = useRef<number | null>(null)
+  const [dragPx, setDragPx] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [pendingJump, setPendingJump] = useState<{ index: number; dir: 1 | -1 } | null>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
+  const dragStartX = useRef<number | null>(null)
+  const lastDragPx = useRef(0)
+  const galleryIndexRef = useRef(0)
+  const pendingJumpRef = useRef<{ index: number; dir: 1 | -1 } | null>(null)
+  const animationFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [variantScroll, setVariantScroll] = useState({ canLeft: false, canRight: false })
+  const variantScrollRef = useRef<HTMLDivElement>(null)
 
   const backPath = user?.role === 'wholesale' ? '/wholesale' : '/catalog'
 
-  const SWIPE_THRESHOLD_PX = 40
+  const SWIPE_THRESHOLD_RATIO = 0.35
+  const ANIMATION_MS = 250
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX
+  // Arrastre en tiempo real (translateX 1:1 con el dedo, sin transición) —
+  // al soltar, completeSwipe()/springBack() activan la transición y
+  // animan hasta el destino. finishTransition() confirma el cambio de
+  // índice al terminar — vía onTransitionEnd, con un setTimeout de
+  // respaldo (mismo patrón que PROBE_TIMEOUT_MS) por si el evento no se
+  // dispara (pestaña en segundo plano, navegador que lo omite, etc.).
+  const handleGalleryTouchStart = (e: React.TouchEvent) => {
+    if (!validGallery || validGallery.length <= 1 || isAnimating) return
+    dragStartX.current = e.touches[0].clientX
   }
 
-  const handleTouchEnd = (e: React.TouchEvent, length: number) => {
-    if (touchStartX.current === null) return
-    const delta = e.changedTouches[0].clientX - touchStartX.current
-    touchStartX.current = null
-    if (Math.abs(delta) < SWIPE_THRESHOLD_PX) return
-    if (delta < 0) {
-      setGalleryIndex((i) => (i + 1) % length)
-    } else {
-      setGalleryIndex((i) => (i - 1 + length) % length)
+  const handleGalleryTouchMove = (e: React.TouchEvent) => {
+    if (dragStartX.current === null) return
+    const delta = e.touches[0].clientX - dragStartX.current
+    lastDragPx.current = delta
+    setDragPx(delta)
+  }
+
+  const scheduleAnimationFallback = () => {
+    if (animationFallbackRef.current) clearTimeout(animationFallbackRef.current)
+    animationFallbackRef.current = setTimeout(finishTransition, ANIMATION_MS + 100)
+  }
+
+  const finishTransition = () => {
+    if (animationFallbackRef.current) {
+      clearTimeout(animationFallbackRef.current)
+      animationFallbackRef.current = null
     }
+    setIsAnimating(false)
+    const finalDrag = lastDragPx.current
+    if (finalDrag !== 0 && validGallery) {
+      const length = validGallery.length
+      const pj = pendingJumpRef.current
+      const newIndex = finalDrag < 0
+        ? (pj ? pj.index : (galleryIndexRef.current + 1) % length)
+        : (pj ? pj.index : (galleryIndexRef.current - 1 + length) % length)
+      galleryIndexRef.current = newIndex
+      setGalleryIndex(newIndex)
+      pendingJumpRef.current = null
+      setPendingJump(null)
+    }
+    lastDragPx.current = 0
+    setDragPx(0)
+  }
+
+  const completeSwipe = (dir: 1 | -1) => {
+    const width = galleryRef.current?.clientWidth || 1
+    const target = dir === 1 ? -width : width
+    lastDragPx.current = target
+    setIsAnimating(true)
+    setDragPx(target)
+    scheduleAnimationFallback()
+  }
+
+  const springBack = () => {
+    lastDragPx.current = 0
+    setIsAnimating(true)
+    setDragPx(0)
+    scheduleAnimationFallback()
+  }
+
+  const handleGalleryTouchEnd = () => {
+    if (dragStartX.current === null || !validGallery) return
+    dragStartX.current = null
+    const finalDrag = lastDragPx.current
+    const width = galleryRef.current?.clientWidth || 1
+    if (Math.abs(finalDrag) >= width * SWIPE_THRESHOLD_RATIO) {
+      completeSwipe(finalDrag < 0 ? 1 : -1)
+    } else {
+      springBack()
+    }
+  }
+
+  const handleTrackTransitionEnd = (e: React.TransitionEvent) => {
+    if (e.propertyName !== 'transform') return
+    finishTransition()
+  }
+
+  // Usado por flechas y puntos — misma animación de slide que el swipe.
+  // Si el destino no es el vecino inmediato (ej. saltar del punto 1 al 4),
+  // ese vecino se sustituye temporalmente por la imagen destino para que
+  // la franja anime en la dirección correcta hacia ella.
+  const goToIndex = (targetIndex: number) => {
+    if (!validGallery || isAnimating || targetIndex === galleryIndex) return
+    const length = validGallery.length
+    const nextIndex = (galleryIndex + 1) % length
+    const prevIndex = (galleryIndex - 1 + length) % length
+    const width = galleryRef.current?.clientWidth || 1
+    if (targetIndex !== nextIndex && targetIndex !== prevIndex) {
+      const pj = { index: targetIndex, dir: (targetIndex > galleryIndex ? 1 : -1) as 1 | -1 }
+      pendingJumpRef.current = pj
+      setPendingJump(pj)
+    }
+    const target = targetIndex === prevIndex ? width : -width
+    lastDragPx.current = target
+    setIsAnimating(true)
+    setDragPx(target)
+    scheduleAnimationFallback()
+  }
+
+  const updateVariantScrollState = () => {
+    const el = variantScrollRef.current
+    if (!el) return
+    setVariantScroll({
+      canLeft: el.scrollLeft > 0,
+      canRight: el.scrollLeft + el.clientWidth < el.scrollWidth - 1,
+    })
   }
 
   // Galería por variante — hasta 4 imágenes con SKU_2/_3/_4, verificadas
@@ -70,8 +174,18 @@ export function ProductDetailPage() {
   // para decidir si se muestran flechas/puntos de navegación)
   useEffect(() => {
     let cancelled = false
+    if (animationFallbackRef.current) {
+      clearTimeout(animationFallbackRef.current)
+      animationFallbackRef.current = null
+    }
+    galleryIndexRef.current = 0
+    pendingJumpRef.current = null
+    lastDragPx.current = 0
     setGalleryIndex(0)
     setValidGallery(null)
+    setDragPx(0)
+    setIsAnimating(false)
+    setPendingJump(null)
 
     if (!selectedVariant || !product?.brand_name) {
       setValidGallery(product?.image_url ? [product.image_url] : [])
@@ -112,6 +226,12 @@ export function ProductDetailPage() {
     }
     load()
   }, [id])
+
+  // Estado inicial de los degradados del carrusel de variantes — se
+  // recalcula también en cada scroll (onScroll en el contenedor)
+  useEffect(() => {
+    updateVariantScrollState()
+  }, [product?.id])
 
   const handleAddToCart = () => {
     if (!product || !selectedVariant) return
@@ -186,8 +306,10 @@ export function ProductDetailPage() {
         {/* Imagen grande con galería por variante */}
         <div style={{ marginBottom: '12px' }}>
           <div
-            onTouchStart={validGallery && validGallery.length > 1 ? handleTouchStart : undefined}
-            onTouchEnd={validGallery && validGallery.length > 1 ? (e) => handleTouchEnd(e, validGallery.length) : undefined}
+            ref={galleryRef}
+            onTouchStart={handleGalleryTouchStart}
+            onTouchMove={handleGalleryTouchMove}
+            onTouchEnd={handleGalleryTouchEnd}
             style={{
               position: 'relative',
               width: '100%',
@@ -195,34 +317,80 @@ export function ProductDetailPage() {
               background: '#FFFFFF',
               borderRadius: '16px',
               border: `1px solid ${theme.semantic.border}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               overflow: 'hidden',
-              padding: '12px',
               boxSizing: 'border-box',
               touchAction: 'pan-y',
             }}
           >
             {validGallery === null ? (
-              <span style={{ fontSize: '13px', color: theme.semantic.textMuted, position: 'relative' }}>
-                Cargando imagen...
-              </span>
-            ) : validGallery.length > 0 ? (
-              <img
-                src={validGallery[galleryIndex]}
-                alt={displayName}
-                loading="lazy"
-                style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }}
-              />
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '13px', color: theme.semantic.textMuted }}>
+                  Cargando imagen...
+                </span>
+              </div>
+            ) : validGallery.length > 1 ? (
+              <div
+                onTransitionEnd={handleTrackTransitionEnd}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '300%',
+                  height: '100%',
+                  display: 'flex',
+                  transform: `translateX(calc(-33.3333% + ${dragPx}px))`,
+                  transition: isAnimating ? 'transform 0.25s ease-out' : 'none',
+                }}
+              >
+                {(() => {
+                  const length = validGallery.length
+                  const prevIndex = (galleryIndex - 1 + length) % length
+                  const nextIndex = (galleryIndex + 1) % length
+                  const prevSrc = pendingJump && pendingJump.dir === -1 ? validGallery[pendingJump.index] : validGallery[prevIndex]
+                  const nextSrc = pendingJump && pendingJump.dir === 1 ? validGallery[pendingJump.index] : validGallery[nextIndex]
+                  return [prevSrc, validGallery[galleryIndex], nextSrc].map((src, slot) => (
+                    <div
+                      key={slot}
+                      style={{
+                        width: '33.3333%',
+                        height: '100%',
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <img
+                        src={src}
+                        alt={displayName}
+                        draggable={false}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  ))
+                })()}
+              </div>
+            ) : validGallery.length === 1 ? (
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px', boxSizing: 'border-box' }}>
+                <img
+                  src={validGallery[0]}
+                  alt={displayName}
+                  loading="lazy"
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
+              </div>
             ) : (
-              <span style={{ fontSize: '80px', position: 'relative' }}>🌸</span>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '80px' }}>🌸</span>
+              </div>
             )}
 
             {validGallery && validGallery.length > 1 && (
               <>
                 <button
-                  onClick={() => setGalleryIndex((i) => (i - 1 + validGallery.length) % validGallery.length)}
+                  onClick={() => goToIndex((galleryIndex - 1 + validGallery.length) % validGallery.length)}
                   aria-label="Imagen anterior"
                   style={{
                     position: 'absolute',
@@ -242,12 +410,13 @@ export function ProductDetailPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     boxShadow: '0 1px 6px rgba(0,0,0,0.18)',
+                    zIndex: 1,
                   }}
                 >
                   ‹
                 </button>
                 <button
-                  onClick={() => setGalleryIndex((i) => (i + 1) % validGallery.length)}
+                  onClick={() => goToIndex((galleryIndex + 1) % validGallery.length)}
                   aria-label="Imagen siguiente"
                   style={{
                     position: 'absolute',
@@ -267,6 +436,7 @@ export function ProductDetailPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     boxShadow: '0 1px 6px rgba(0,0,0,0.18)',
+                    zIndex: 1,
                   }}
                 >
                   ›
@@ -280,7 +450,7 @@ export function ProductDetailPage() {
               {validGallery.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => setGalleryIndex(i)}
+                  onClick={() => goToIndex(i)}
                   aria-label={`Ir a imagen ${i + 1}`}
                   style={{
                     width: i === galleryIndex ? '20px' : '8px',
@@ -461,30 +631,50 @@ export function ProductDetailPage() {
               }}>
                 Presentación
               </p>
-              <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: '8px', paddingBottom: '4px' }}>
-                {activeVariants.map((variant) => {
-                  const isSelected = selectedVariant?.id === variant.id
-                  return (
-                      <button
-                        key={variant.id}
-                        onClick={() => setSelectedVariant(variant)}
-                        style={{
-                          flexShrink: 0,
-                          whiteSpace: 'nowrap',
-                          padding: '8px 16px',
-                          borderRadius: '20px',
-                          fontSize: '13px',
-                          cursor: 'pointer',
-                          border: `1.5px solid ${isSelected ? theme.semantic.actionPrimary : theme.semantic.border}`,
-                          background: isSelected ? theme.semantic.actionPrimaryLight : 'transparent',
-                          color: isSelected ? theme.semantic.actionPrimary : theme.semantic.textPrimary,
-                          fontWeight: isSelected ? 500 : 400,
-                        }}
-                      >
-                        {variant.variant_name}
-                      </button>
-                  )
-                })}
+              <div style={{ position: 'relative' }}>
+                <div
+                  ref={variantScrollRef}
+                  onScroll={updateVariantScrollState}
+                  style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: '8px', paddingBottom: '4px' }}
+                >
+                  {activeVariants.map((variant) => {
+                    const isSelected = selectedVariant?.id === variant.id
+                    return (
+                        <button
+                          key={variant.id}
+                          onClick={() => setSelectedVariant(variant)}
+                          style={{
+                            flexShrink: 0,
+                            whiteSpace: 'nowrap',
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            border: `1.5px solid ${isSelected ? theme.semantic.actionPrimary : theme.semantic.border}`,
+                            background: isSelected ? theme.semantic.actionPrimaryLight : 'transparent',
+                            color: isSelected ? theme.semantic.actionPrimary : theme.semantic.textPrimary,
+                            fontWeight: isSelected ? 500 : 400,
+                          }}
+                        >
+                          {variant.variant_name}
+                        </button>
+                    )
+                  })}
+                </div>
+                <div style={{
+                  position: 'absolute', top: 0, bottom: 0, left: 0, width: '28px',
+                  background: 'linear-gradient(to left, transparent, #FFFFFF)',
+                  pointerEvents: 'none',
+                  opacity: variantScroll.canLeft ? 1 : 0,
+                  transition: 'opacity 0.15s',
+                }} />
+                <div style={{
+                  position: 'absolute', top: 0, bottom: 0, right: 0, width: '28px',
+                  background: 'linear-gradient(to right, transparent, #FFFFFF)',
+                  pointerEvents: 'none',
+                  opacity: variantScroll.canRight ? 1 : 0,
+                  transition: 'opacity 0.15s',
+                }} />
               </div>
             </div>
           )}
