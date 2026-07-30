@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
-import { BrandImageBackground } from '../../components/BrandImageBackground'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getProduct } from '../../api/catalog'
@@ -44,8 +43,27 @@ export function ProductDetailPage() {
   const [added, setAdded] = useState(false)
   const [galleryIndex, setGalleryIndex] = useState(0)
   const [validGallery, setValidGallery] = useState<string[] | null>(null)
+  const touchStartX = useRef<number | null>(null)
 
   const backPath = user?.role === 'wholesale' ? '/wholesale' : '/catalog'
+
+  const SWIPE_THRESHOLD_PX = 40
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent, length: number) => {
+    if (touchStartX.current === null) return
+    const delta = e.changedTouches[0].clientX - touchStartX.current
+    touchStartX.current = null
+    if (Math.abs(delta) < SWIPE_THRESHOLD_PX) return
+    if (delta < 0) {
+      setGalleryIndex((i) => (i + 1) % length)
+    } else {
+      setGalleryIndex((i) => (i - 1 + length) % length)
+    }
+  }
 
   // Galería por variante — hasta 4 imágenes con SKU_2/_3/_4, verificadas
   // antes de mostrarse para saber cuántas existen realmente (necesario
@@ -167,10 +185,14 @@ export function ProductDetailPage() {
 
         {/* Imagen grande con galería por variante */}
         <div style={{ marginBottom: '12px' }}>
-          <BrandImageBackground
-            brandName={product.brand_name}
+          <div
+            onTouchStart={validGallery && validGallery.length > 1 ? handleTouchStart : undefined}
+            onTouchEnd={validGallery && validGallery.length > 1 ? (e) => handleTouchEnd(e, validGallery.length) : undefined}
             style={{
-              height: '280px',
+              position: 'relative',
+              width: '100%',
+              aspectRatio: '1',
+              background: '#FFFFFF',
               borderRadius: '16px',
               border: `1px solid ${theme.semantic.border}`,
               display: 'flex',
@@ -179,6 +201,7 @@ export function ProductDetailPage() {
               overflow: 'hidden',
               padding: '12px',
               boxSizing: 'border-box',
+              touchAction: 'pan-y',
             }}
           >
             {validGallery === null ? (
@@ -203,22 +226,22 @@ export function ProductDetailPage() {
                   aria-label="Imagen anterior"
                   style={{
                     position: 'absolute',
-                    left: '8px',
+                    left: '12px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: '32px',
-                    height: '32px',
+                    width: '44px',
+                    height: '44px',
                     borderRadius: '50%',
                     border: 'none',
-                    background: 'rgba(255,255,255,0.85)',
+                    background: 'rgba(255,255,255,0.92)',
                     color: theme.semantic.textPrimary,
-                    fontSize: '18px',
+                    fontSize: '24px',
                     lineHeight: 1,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                    boxShadow: '0 1px 6px rgba(0,0,0,0.18)',
                   }}
                 >
                   ‹
@@ -228,45 +251,46 @@ export function ProductDetailPage() {
                   aria-label="Imagen siguiente"
                   style={{
                     position: 'absolute',
-                    right: '8px',
+                    right: '12px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: '32px',
-                    height: '32px',
+                    width: '44px',
+                    height: '44px',
                     borderRadius: '50%',
                     border: 'none',
-                    background: 'rgba(255,255,255,0.85)',
+                    background: 'rgba(255,255,255,0.92)',
                     color: theme.semantic.textPrimary,
-                    fontSize: '18px',
+                    fontSize: '24px',
                     lineHeight: 1,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                    boxShadow: '0 1px 6px rgba(0,0,0,0.18)',
                   }}
                 >
                   ›
                 </button>
               </>
             )}
-          </BrandImageBackground>
+          </div>
 
           {validGallery && validGallery.length > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '12px' }}>
               {validGallery.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setGalleryIndex(i)}
                   aria-label={`Ir a imagen ${i + 1}`}
                   style={{
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
+                    width: i === galleryIndex ? '20px' : '8px',
+                    height: '8px',
+                    borderRadius: '4px',
                     border: 'none',
                     padding: 0,
                     cursor: 'pointer',
                     background: i === galleryIndex ? theme.semantic.actionPrimary : theme.semantic.border,
+                    transition: 'width 0.15s',
                   }}
                 />
               ))}
@@ -396,24 +420,30 @@ export function ProductDetailPage() {
                 Detalles
               </p>
               <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                border: `1px solid ${theme.semantic.border}`,
-                borderRadius: '10px',
-                padding: '10px 14px',
+                background: theme.semantic.bgPage,
+                borderRadius: '12px',
+                padding: '0 14px',
               }}>
-                {Object.entries(product.atributos).map(([key, value]) => (
+                {Object.entries(product.atributos).map(([key, value], i, arr) => (
                   <div
                     key={key}
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      fontSize: '13px',
+                      alignItems: 'center',
+                      padding: '10px 0',
+                      borderBottom: i < arr.length - 1 ? `1px solid ${theme.semantic.border}` : 'none',
                     }}
                   >
-                    <span style={{ color: theme.semantic.textMuted }}>{key}</span>
-                    <span style={{ color: theme.semantic.textPrimary, fontWeight: 500 }}>{value}</span>
+                    <span style={{
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.02em',
+                      color: theme.semantic.textMuted,
+                    }}>
+                      {key}
+                    </span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: theme.semantic.textPrimary }}>{value}</span>
                   </div>
                 ))}
               </div>
@@ -431,7 +461,7 @@ export function ProductDetailPage() {
               }}>
                 Presentación
               </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: '8px', paddingBottom: '4px' }}>
                 {activeVariants.map((variant) => {
                   const isSelected = selectedVariant?.id === variant.id
                   return (
@@ -439,6 +469,8 @@ export function ProductDetailPage() {
                         key={variant.id}
                         onClick={() => setSelectedVariant(variant)}
                         style={{
+                          flexShrink: 0,
+                          whiteSpace: 'nowrap',
                           padding: '8px 16px',
                           borderRadius: '20px',
                           fontSize: '13px',
