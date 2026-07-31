@@ -296,12 +296,27 @@ export function ProductDetailPage() {
           fontSize: '20px',
           fontWeight: 600,
           color: theme.semantic.textPrimary,
-          margin: '0 0 10px',
+          margin: '0 0 4px',
           lineHeight: 1.3,
           textAlign: 'center',
         }}>
           {displayName}
         </h1>
+
+        {/* Marca */}
+        {product.brand_name && (
+          <p style={{
+            fontSize: '10px',
+            fontWeight: 500,
+            color: theme.semantic.textMuted,
+            margin: '0 0 10px',
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            letterSpacing: '0.03em',
+          }}>
+            {product.brand_name}
+          </p>
+        )}
 
         {/* Imagen grande con galería por variante */}
         <div style={{ marginBottom: '12px' }}>
@@ -415,19 +430,6 @@ export function ProductDetailPage() {
         {/* Info */}
         <div>
 
-          {/* Descripción */}
-          {product.description && (
-            <p style={{
-              fontSize: '13px',
-              color: theme.semantic.textSecondary,
-              margin: '0 0 8px',
-              lineHeight: 1.5,
-              textAlign: 'center',
-            }}>
-              {product.description}
-            </p>
-          )}
-
           {/* Tags */}
           {product.tags && product.tags.length > 0 && (
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px', justifyContent: 'center', }}>
@@ -455,6 +457,19 @@ export function ProductDetailPage() {
           }}>
             ${Number(product.display_price).toFixed(2)}
           </p>
+
+          {/* Descripción */}
+          {product.description && (
+            <p style={{
+              fontSize: '13px',
+              color: theme.semantic.textSecondary,
+              margin: '0 0 16px',
+              lineHeight: 1.5,
+              textAlign: 'center',
+            }}>
+              {product.description}
+            </p>
+          )}
 
           {/* Modo de uso */}
           {product.modo_de_uso && (
