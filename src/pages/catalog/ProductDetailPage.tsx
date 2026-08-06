@@ -305,6 +305,18 @@ export function ProductDetailPage() {
           {displayName}
         </h1>
 
+        {/* Código */}
+        {selectedVariant && (
+          <p style={{
+            fontSize: '12px',
+            color: theme.semantic.textMuted,
+            margin: '0 0 4px',
+            textAlign: 'center',
+          }}>
+            Código: {selectedVariant.sku}
+          </p>
+        )}
+
         {/* Marca */}
         {product.brand_name && (
           <p style={{
@@ -432,6 +444,18 @@ export function ProductDetailPage() {
         {/* Info */}
         <div>
 
+          {/* Variante */}
+          {selectedVariant?.variant_name && (
+            <p style={{
+              fontSize: '12px',
+              color: theme.semantic.textMuted,
+              margin: '0 0 8px',
+              textAlign: 'center',
+            }}>
+              Variante: {selectedVariant.variant_name}
+            </p>
+          )}
+
           {/* Tags */}
           {product.tags && product.tags.length > 0 && (
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px', justifyContent: 'center', }}>
@@ -539,60 +563,47 @@ export function ProductDetailPage() {
             </div>
           )}
 
-          {/* Detalles — código/variante siempre que haya variante seleccionada, más atributos dinámicos */}
-          {(() => {
-            const detailRows: [string, string][] = []
-            if (selectedVariant) {
-              detailRows.push(['Código', selectedVariant.sku])
-              if (selectedVariant.variant_name) {
-                detailRows.push(['Variante', selectedVariant.variant_name])
-              }
-            }
-            if (product.atributos) {
-              detailRows.push(...Object.entries(product.atributos))
-            }
-            if (detailRows.length === 0) return null
-            return (
-              <div style={{ marginBottom: '20px' }}>
-                <p style={{
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  color: theme.semantic.textSecondary,
-                  margin: '0 0 6px',
-                }}>
-                  Detalles
-                </p>
-                <div style={{
-                  background: theme.semantic.bgPage,
-                  borderRadius: '12px',
-                  padding: '0 14px',
-                }}>
-                  {detailRows.map(([key, value], i) => (
-                    <div
-                      key={key}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '10px 0',
-                        borderBottom: i < detailRows.length - 1 ? `1px solid ${theme.semantic.border}` : 'none',
-                      }}
-                    >
-                      <span style={{
-                        fontSize: '11px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.02em',
-                        color: theme.semantic.textMuted,
-                      }}>
-                        {key}
-                      </span>
-                      <span style={{ fontSize: '13px', fontWeight: 600, color: theme.semantic.textPrimary }}>{value}</span>
-                    </div>
-                  ))}
-                </div>
+          {/* Atributos */}
+          {product.atributos && Object.keys(product.atributos).length > 0 && (
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: theme.semantic.textSecondary,
+                margin: '0 0 6px',
+              }}>
+                Detalles
+              </p>
+              <div style={{
+                background: theme.semantic.bgPage,
+                borderRadius: '12px',
+                padding: '0 14px',
+              }}>
+                {Object.entries(product.atributos).map(([key, value], i, arr) => (
+                  <div
+                    key={key}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '10px 0',
+                      borderBottom: i < arr.length - 1 ? `1px solid ${theme.semantic.border}` : 'none',
+                    }}
+                  >
+                    <span style={{
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.02em',
+                      color: theme.semantic.textMuted,
+                    }}>
+                      {key}
+                    </span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: theme.semantic.textPrimary }}>{value}</span>
+                  </div>
+                ))}
               </div>
-            )
-          })()}
+            </div>
+          )}
 
           {/* Variantes */}
           {activeVariants.length > 0 && activeVariants.some(v => v.variant_name) && (
