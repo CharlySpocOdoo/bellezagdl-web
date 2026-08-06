@@ -102,7 +102,7 @@ export function WholesalePage() {
 
   const handleProductClick = (id: string) => {
     setScrollPosition(window.scrollY)
-    navigate(`/catalog/${id}`)
+    navigate(`/catalog/${id}${selectedBrand ? `?brand=${selectedBrand}` : ''}`)
   }
 
   const handleCheckout = async () => {

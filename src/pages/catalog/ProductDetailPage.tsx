@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -33,6 +33,7 @@ const probeImage = (url: string): Promise<string | null> =>
 export function ProductDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { addItem } = useCart()
   const { user } = useAuth()
 
@@ -55,7 +56,8 @@ export function ProductDetailPage() {
   const [variantScroll, setVariantScroll] = useState({ canLeft: false, canRight: false })
   const variantScrollRef = useRef<HTMLDivElement>(null)
 
-  const backPath = user?.role === 'wholesale' ? '/wholesale' : '/catalog'
+  const brandFromUrl = searchParams.get('brand')
+  const backPath = (user?.role === 'wholesale' ? '/wholesale' : '/catalog') + (brandFromUrl ? `?brand=${brandFromUrl}` : '')
 
   const SWIPE_THRESHOLD_RATIO = 0.35
   const ANIMATION_MS = 250
@@ -537,47 +539,60 @@ export function ProductDetailPage() {
             </div>
           )}
 
-          {/* Atributos */}
-          {product.atributos && Object.keys(product.atributos).length > 0 && (
-            <div style={{ marginBottom: '20px' }}>
-              <p style={{
-                fontSize: '13px',
-                fontWeight: 500,
-                color: theme.semantic.textSecondary,
-                margin: '0 0 6px',
-              }}>
-                Detalles
-              </p>
-              <div style={{
-                background: theme.semantic.bgPage,
-                borderRadius: '12px',
-                padding: '0 14px',
-              }}>
-                {Object.entries(product.atributos).map(([key, value], i, arr) => (
-                  <div
-                    key={key}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '10px 0',
-                      borderBottom: i < arr.length - 1 ? `1px solid ${theme.semantic.border}` : 'none',
-                    }}
-                  >
-                    <span style={{
-                      fontSize: '11px',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.02em',
-                      color: theme.semantic.textMuted,
-                    }}>
-                      {key}
-                    </span>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: theme.semantic.textPrimary }}>{value}</span>
-                  </div>
-                ))}
+          {/* Detalles — código/variante siempre que haya variante seleccionada, más atributos dinámicos */}
+          {(() => {
+            const detailRows: [string, string][] = []
+            if (selectedVariant) {
+              detailRows.push(['Código', selectedVariant.sku])
+              if (selectedVariant.variant_name) {
+                detailRows.push(['Variante', selectedVariant.variant_name])
+              }
+            }
+            if (product.atributos) {
+              detailRows.push(...Object.entries(product.atributos))
+            }
+            if (detailRows.length === 0) return null
+            return (
+              <div style={{ marginBottom: '20px' }}>
+                <p style={{
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: theme.semantic.textSecondary,
+                  margin: '0 0 6px',
+                }}>
+                  Detalles
+                </p>
+                <div style={{
+                  background: theme.semantic.bgPage,
+                  borderRadius: '12px',
+                  padding: '0 14px',
+                }}>
+                  {detailRows.map(([key, value], i) => (
+                    <div
+                      key={key}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '10px 0',
+                        borderBottom: i < detailRows.length - 1 ? `1px solid ${theme.semantic.border}` : 'none',
+                      }}
+                    >
+                      <span style={{
+                        fontSize: '11px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.02em',
+                        color: theme.semantic.textMuted,
+                      }}>
+                        {key}
+                      </span>
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: theme.semantic.textPrimary }}>{value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )
+          })()}
 
           {/* Variantes */}
           {activeVariants.length > 0 && activeVariants.some(v => v.variant_name) && (
