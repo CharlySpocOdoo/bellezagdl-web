@@ -174,10 +174,6 @@ export function OrderDetailPage() {
               ? order.cancelled_at
               : order.created_at)}
           </p>
-
-
-
-
         </div>
 
         {/* Mensajes de éxito/error */}
