@@ -102,10 +102,7 @@ export type OrderStatus =
   | 'pending'
   | 'partially_available'
   | 'confirmed'
-  | 'preparing'
-  | 'in_delivery'
   | 'delivery_failed'
-  | 'delivered_to_vendor'
   | 'delivered_to_client'
   | 'cancelled'
 
