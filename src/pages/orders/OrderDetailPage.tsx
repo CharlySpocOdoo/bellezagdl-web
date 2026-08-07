@@ -1,15 +1,63 @@
 import { statusColors, getStatusLabel } from '../../utils/orderStatus'
 import { formatDateTime } from '../../utils/date'
 import { getOrder, acceptPartialOrder, cancelOrder, updateOrderStatus } from '../../api/orders'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactElement } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/TopBar'
 import { theme } from '../../theme'
-import type { Order } from '../../types'
+import type { Order, OrderStatus } from '../../types'
 import { useAuth } from '../../contexts/AuthContext'
 
 const shortOrderNumber = (orderNumber: string) =>
   `ORD-${orderNumber.split('-').slice(-1)[0]}`
+
+// Íconos del tracker — SVG simples (mismo estilo outline que ya usa
+// TopBar: viewBox 24x24, trazo 2px, esquinas redondeadas), pero con
+// color recibido por prop en vez de fijo, ya que cada paso necesita
+// pintarse blanco/gris/color-de-estado según su progreso.
+const iconProps = (color: string) => ({
+  width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none',
+  stroke: color, strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const,
+})
+
+const BagIcon = ({ color }: { color: string }) => (
+  <svg {...iconProps(color)}>
+    <path d="M6 8h12l-1 12H7L6 8z" />
+    <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+  </svg>
+)
+
+const BoxIcon = ({ color }: { color: string }) => (
+  <svg {...iconProps(color)}>
+    <path d="M3 8l9-5 9 5-9 5-9-5z" />
+    <path d="M3 8v8l9 5 9-5V8" />
+    <path d="M12 13v8" />
+  </svg>
+)
+
+const ScooterIcon = ({ color }: { color: string }) => (
+  <svg {...iconProps(color)}>
+    <circle cx="6" cy="18" r="2.5" />
+    <circle cx="18" cy="18" r="2.5" />
+    <path d="M8.5 18h5l2-6h3" />
+    <path d="M13.5 12L11 8H8" />
+  </svg>
+)
+
+const HouseIcon = ({ color }: { color: string }) => (
+  <svg {...iconProps(color)}>
+    <path d="M4 11l8-7 8 7" />
+    <path d="M6 10v9h12v-9" />
+  </svg>
+)
+
+const TRACKER_STEPS: { status: OrderStatus; label: string; Icon: (p: { color: string }) => ReactElement }[] = [
+  { status: 'pending', label: 'Pedido creado', Icon: BagIcon },
+  { status: 'confirmed', label: 'Preparando pedido', Icon: BoxIcon },
+  { status: 'in_delivery', label: 'Pedido enviado', Icon: ScooterIcon },
+  { status: 'delivered_to_client', label: 'Pedido entregado', Icon: HouseIcon },
+]
+
 
 export function OrderDetailPage() {
   const { id } = useParams()
@@ -102,6 +150,11 @@ export function OrderDetailPage() {
 
   const colors = statusColors[order.status]
 
+  const trackerStepIndex = TRACKER_STEPS.findIndex((s) => s.status === order.status)
+  const showTracker = trackerStepIndex !== -1
+  const COMPLETED_COLOR = statusColors.delivered_to_client.text
+  const PENDING_CIRCLE_BG = theme.colors.neutral[100]
+
   return (
     <div style={{ minHeight: '100vh', background: theme.semantic.bgPage }}>
       <TopBar />
@@ -175,6 +228,80 @@ export function OrderDetailPage() {
               : order.created_at)}
           </p>
         </div>
+
+        {/* Tracker de progreso — solo en el flujo normal de 4 pasos */}
+        {showTracker && (
+          <div style={{
+            background: theme.semantic.bgCard,
+            borderRadius: '12px',
+            border: `0.5px solid ${theme.semantic.border}`,
+            padding: '20px 16px 16px',
+            marginBottom: '12px',
+          }}>
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
+              {/* Línea base gris, detrás de los círculos */}
+              <div style={{
+                position: 'absolute',
+                top: '18px',
+                left: '18px',
+                right: '18px',
+                height: '2px',
+                background: theme.semantic.border,
+              }} />
+              {/* Segmentos verdes superpuestos — uno por cada paso ya alcanzado */}
+              {TRACKER_STEPS.slice(0, -1).map((_, i) => (
+                i < trackerStepIndex && (
+                  <div
+                    key={i}
+                    style={{
+                      position: 'absolute',
+                      top: '18px',
+                      left: `calc(${(i / (TRACKER_STEPS.length - 1)) * 100}% + 18px)`,
+                      width: `calc(${100 / (TRACKER_STEPS.length - 1)}% - 36px)`,
+                      height: '2px',
+                      background: COMPLETED_COLOR,
+                    }}
+                  />
+                )
+              ))}
+
+              {TRACKER_STEPS.map((step, i) => {
+                const isCompleted = i < trackerStepIndex
+                const isCurrent = i === trackerStepIndex
+                const circleBg = isCompleted ? COMPLETED_COLOR : isCurrent ? statusColors[step.status].text : PENDING_CIRCLE_BG
+                const iconColor = isCompleted || isCurrent ? '#FFFFFF' : theme.semantic.textMuted
+                const labelColor = isCurrent ? statusColors[step.status].text : isCompleted ? theme.semantic.textSecondary : theme.semantic.textMuted
+                return (
+                  <div key={step.status} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '70px' }}>
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: circleBg,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: isCurrent ? `0 0 0 4px ${statusColors[step.status].bg}` : 'none',
+                      flexShrink: 0,
+                    }}>
+                      <step.Icon color={iconColor} />
+                    </div>
+                    <p style={{
+                      fontSize: '11px',
+                      fontWeight: isCurrent ? 600 : 400,
+                      color: labelColor,
+                      textAlign: 'center',
+                      margin: '8px 0 0',
+                      lineHeight: 1.3,
+                    }}>
+                      {step.label}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Mensajes de éxito/error */}
         {actionSuccess && (
