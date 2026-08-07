@@ -299,7 +299,7 @@ export function OrderDetailPage() {
 
 
         {/* Acción — entregar al cliente */}
-        {order.status === 'confirmed' && user?.role === 'vendor' && (
+        {order.status === 'in_delivery' && user?.role === 'vendor' && (
           <div style={{
             background: theme.semantic.bgCard,
             border: `0.5px solid ${theme.semantic.border}`,
