@@ -11,7 +11,7 @@ export function BrandImageBackground({ brandName, children, style }: BrandImageB
   const [bgFailed, setBgFailed] = useState(false)
 
   const brandBg = brandName
-    ? `https://rosadelima-assets.s3.amazonaws.com/marcas/fondos/${stripDiacritics(brandName).toUpperCase()}.webp`
+    ? `https://rosadelima-assets.s3.amazonaws.com/marcas/fondos/${encodeURIComponent(stripDiacritics(brandName).toUpperCase())}.webp`
     : null
 
   // Un fallo con una marca anterior no debe persistir si brandBg cambia
@@ -25,7 +25,7 @@ export function BrandImageBackground({ brandName, children, style }: BrandImageB
     <div style={{
       position: 'relative',
       backgroundColor: '#FFFFFF',
-      backgroundImage: showBg ? `url(${brandBg})` : undefined,
+      backgroundImage: showBg ? `url("${brandBg}")` : undefined,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       ...style,
