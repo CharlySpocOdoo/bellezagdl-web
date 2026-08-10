@@ -37,9 +37,9 @@ function App() {
               <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
               <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
 
-              <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta']}><CatalogPage /></ProtectedRoute>} />
-              <Route path="/catalog/marcas" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta', 'wholesale']}><BrandSelectPage /></ProtectedRoute>} />
-              <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'oferta', 'wholesale']}><ProductDetailPage /></ProtectedRoute>} />
+              <Route path="/catalog" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><CatalogPage /></ProtectedRoute>} />
+              <Route path="/catalog/marcas" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'wholesale']}><BrandSelectPage /></ProtectedRoute>} />
+              <Route path="/catalog/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor', 'wholesale']}><ProductDetailPage /></ProtectedRoute>} />
 
               <Route path="/orders" element={<ProtectedRoute allowedRoles={['client', 'admin']}><OrdersPage /></ProtectedRoute>} />
               <Route path="/orders/:id" element={<ProtectedRoute allowedRoles={['client', 'admin', 'vendor']}><OrderDetailPage /></ProtectedRoute>} />

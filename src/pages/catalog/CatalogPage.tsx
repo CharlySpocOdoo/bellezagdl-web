@@ -33,7 +33,7 @@ export function CatalogPage() {
   const [orderError, setOrderError] = useState('')
 
 useEffect(() => {
-  if (user?.role) loadIfEmpty(user.role)
+  if (user?.role) loadIfEmpty()
 }, [user?.role])
 
 useEffect(() => {
@@ -234,7 +234,7 @@ useEffect(() => {
         {/* Filtros Marcas + Categorías */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: user?.role === 'oferta' ? '1fr' : '1fr 1fr',
+          gridTemplateColumns: '1fr 1fr',
           gap: '10px',
           marginBottom: '16px',
         }}>
@@ -245,8 +245,7 @@ useEffect(() => {
             onClick={() => navigate(`/catalog/marcas?brand=${selectedBrand}`)}
           />
 
-          {user?.role !== 'oferta' && (
-            <select
+          <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               style={{
@@ -269,7 +268,6 @@ useEffect(() => {
                 <option key={label} value={label}>{label}</option>
               ))}
             </select>
-          )}
 
         </div>
 
@@ -311,40 +309,6 @@ useEffect(() => {
           </div>
         )}
       </div>
-
-      {user?.role === 'oferta' && (
-        <div style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'white',
-          borderTop: `1px solid ${theme.semantic.border}`,
-          padding: '12px 16px',
-          zIndex: 50,
-        }}>
-          <p style={{ textAlign: 'center', fontSize: '13px', fontWeight: 600, color: theme.semantic.textSecondary, margin: '0 0 8px' }}>
-            Contacta a tu vendedor
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', flexWrap: 'nowrap' }}>
-            {[
-              { name: 'Diana Larios', number: '523332507661' },
-              { name: 'Judith Trujillo', number: '523334882895' },
-              { name: 'Victor Corona', number: '523331794362' },
-            ].map((contact) => (
-              
-              <a key={contact.number}
-                href={`https://wa.me/${contact.number}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ background: '#25D366', color: 'white', padding: '7px 9px', borderRadius: '24px', fontSize: '10px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
-              >
-                💬 {contact.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
 
       <CartDrawer
         isOpen={isCartOpen}

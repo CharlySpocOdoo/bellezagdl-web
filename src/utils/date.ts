@@ -7,14 +7,14 @@ const toUTC = (dateStr: string) => {
 
 export const formatDate = (dateStr: string, options?: Intl.DateTimeFormatOptions) => {
   return new Date(toUTC(dateStr)).toLocaleDateString('es-MX', {
-    timeZone: 'America/Regina',
+    timeZone: 'America/Mexico_City',
     ...options,
   })
 }
 
 export const formatDateTime = (dateStr: string) => {
   return new Date(toUTC(dateStr)).toLocaleDateString('es-MX', {
-    timeZone: 'America/Regina',
+    timeZone: 'America/Mexico_City',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -25,7 +25,7 @@ export const formatDateTime = (dateStr: string) => {
 
 export const formatShortDate = (dateStr: string) => {
   return new Date(toUTC(dateStr)).toLocaleDateString('es-MX', {
-    timeZone: 'America/Regina',
+    timeZone: 'America/Mexico_City',
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -34,7 +34,7 @@ export const formatShortDate = (dateStr: string) => {
 
 export const formatMonthRange = (dateStr: string, options: Intl.DateTimeFormatOptions) => {
   return new Date(toUTC(dateStr)).toLocaleDateString('es-MX', {
-    timeZone: 'America/Regina',
+    timeZone: 'America/Mexico_City',
     ...options,
   })
 }

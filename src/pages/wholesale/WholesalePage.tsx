@@ -32,7 +32,7 @@ export function WholesalePage() {
   const [orderError, setOrderError] = useState('')
 
   useEffect(() => {
-    if (user?.role) loadIfEmpty(user.role)
+    if (user?.role) loadIfEmpty()
   }, [user?.role])
 
   useEffect(() => {

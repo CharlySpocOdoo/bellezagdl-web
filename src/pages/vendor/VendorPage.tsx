@@ -701,13 +701,12 @@ export function VendorPage() {
                     </div>
                     <div style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
+                      gridTemplateColumns: 'repeat(3, 1fr)',
                       gap: '8px',
                     }}>
                       {[
-                        { label: 'Base de cálculo', value: '$' + Number(period.commission_base_amount).toFixed(2), highlight: false },
+                        { label: 'Total de ventas', value: '$' + Number(period.commission_base_amount).toFixed(2), highlight: false },
                         { label: 'Comisión bruta', value: '$' + Number(period.commission_amount).toFixed(2), highlight: false },
-                        { label: 'Costo envío', value: '-$' + Number(period.shipping_charges).toFixed(2), highlight: false },
                         { label: 'A cobrar', value: '$' + Number(period.net_commission).toFixed(2), highlight: true },
                       ].map((item) => (
                         <div key={item.label} style={{

@@ -166,7 +166,7 @@ export function TopBar({ cartItemCount, onCartClick }: TopBarProps) {
           textTransform: 'uppercase',
           lineHeight: 1.2,
         }}>
-          {user?.role === 'oferta' ? 'CELAVI' : 'Rosa de Lima'}
+          Rosa de Lima
         </span>
         {/* Línea coral */}
         <div style={{
@@ -175,8 +175,7 @@ export function TopBar({ cartItemCount, onCartClick }: TopBarProps) {
           background: theme.semantic.actionPrimary,
           margin: '2px 0',
         }} />
-        {user?.role !== 'oferta' && (
-          <span style={{
+        <span style={{
             fontSize: '9px',
             color: 'rgba(255,255,255,0.7)',
             letterSpacing: '4px',
@@ -185,7 +184,6 @@ export function TopBar({ cartItemCount, onCartClick }: TopBarProps) {
           }}>
             Cosméticos
           </span>
-        )}
       </div>
 
       {/* Derecha: usuario + carrito */}

@@ -9,7 +9,7 @@ export interface LoginResponse {
 export interface User {
   id: string
   email: string
-  role: 'admin' | 'vendor' | 'client' | 'oferta' | 'wholesale'
+  role: 'admin' | 'vendor' | 'client' | 'wholesale'
   active: boolean
   profile_id: string | null
 }

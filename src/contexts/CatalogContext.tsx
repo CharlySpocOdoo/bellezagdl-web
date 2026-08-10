@@ -10,7 +10,7 @@ interface CatalogContextType {
   isLoading: boolean
   scrollPosition: number
   setScrollPosition: (pos: number) => void
-  loadIfEmpty: (role: string) => Promise<void>
+  loadIfEmpty: () => Promise<void>
 }
 
 const CatalogContext = createContext<CatalogContextType | null>(null)
@@ -35,7 +35,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user])
 
-  const loadIfEmpty = async (role: string) => {
+  const loadIfEmpty = async () => {
     if (loadedRef.current) return
     loadedRef.current = true
     setIsLoading(true)
@@ -43,20 +43,9 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       const prods = await getProducts()
       setProducts(prods)
 
-      if (role === 'oferta') {
-        const uniqueBrands = Array.from(
-          new Map(prods.map(p => [p.brand_id, { id: p.brand_id, name: p.brand_name || '', active: true }])).values()
-        )
-        setBrands(uniqueBrands)
-        const uniqueCategories = Array.from(
-          new Map(prods.map(p => [p.category_id, { id: p.category_id, name: p.category_name || '', slug: '', children: [] }])).values()
-        )
-        setCategories(uniqueCategories)
-      } else {
-        const [cats, brds] = await Promise.all([getCategories(), getBrands()])
-        setCategories(cats)
-        setBrands(brds)
-      }
+      const [cats, brds] = await Promise.all([getCategories(), getBrands()])
+      setCategories(cats)
+      setBrands(brds)
     } catch (err) {
       console.error('Error cargando catálogo:', err)
       loadedRef.current = false
