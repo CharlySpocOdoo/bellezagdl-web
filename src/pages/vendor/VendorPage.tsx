@@ -47,6 +47,7 @@ export function VendorPage() {
   const [profileSuccess, setProfileSuccess] = useState('')
   const [profileError, setProfileError] = useState('')
   const [approvingId, setApprovingId] = useState<string | null>(null)
+  const [orderView, setOrderView] = useState<'activos' | 'historial'>('activos')
 
   useEffect(() => {
     const load = async () => {
@@ -433,16 +434,58 @@ export function VendorPage() {
         )}
 
         {/* Tab — Pedidos */}
-        {activeTab === 'pedidos' && (
+        {activeTab === 'pedidos' && (() => {
+          const ACTIVE_STATUSES = ['pending', 'confirmed', 'in_delivery', 'partially_available']
+          const activeOrders = orders.filter(o => ACTIVE_STATUSES.includes(o.status))
+          const historicOrders = orders.filter(o => !ACTIVE_STATUSES.includes(o.status))
+          const visibleOrders = orderView === 'activos' ? activeOrders : historicOrders
+          return (
           <div>
+            {/* Segmented control */}
+            {orders.length > 0 && (
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                marginBottom: '14px',
+              }}>
+                {(['activos', 'historial'] as const).map((view) => {
+                  const count = view === 'activos' ? activeOrders.length : historicOrders.length
+                  const isActive = orderView === view
+                  return (
+                    <button
+                      key={view}
+                      onClick={() => setOrderView(view)}
+                      style={{
+                        padding: '6px 16px',
+                        fontSize: '13px',
+                        borderRadius: '20px',
+                        border: `1.5px solid ${isActive ? theme.colors.secondary[800] : theme.semantic.border}`,
+                        background: isActive ? theme.colors.secondary[800] : 'transparent',
+                        color: isActive ? 'white' : theme.semantic.textSecondary,
+                        cursor: 'pointer',
+                        fontWeight: isActive ? 500 : 400,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {view === 'activos' ? 'Activos' : 'Historial'} ({count})
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
             {orders.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px' }}>
                 <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
                 <p style={{ color: theme.semantic.textMuted }}>No hay pedidos en tu red todavía</p>
               </div>
+            ) : visibleOrders.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '48px', color: theme.semantic.textMuted }}>
+                {orderView === 'activos' ? 'No hay pedidos activos' : 'No hay pedidos en el historial'}
+              </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {orders.map((order) => (
+                {visibleOrders.map((order) => (
                   <div
                     key={order.id}
                     style={{
@@ -594,7 +637,8 @@ export function VendorPage() {
               </div>
             )}
           </div>
-        )}
+          )
+        })()}
 
         {/* Tab — Comisiones */}
         {activeTab === 'comisiones' && (
