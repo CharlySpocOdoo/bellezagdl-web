@@ -356,12 +356,23 @@ export function VendorPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {clients.map((client) => (
-                  <div key={client.id} style={{
-                    background: theme.semantic.bgCard,
-                    borderRadius: '12px',
-                    border: `0.5px solid ${client.active ? theme.semantic.border : '#F5A623'}`,
-                    padding: '14px 16px',
-                  }}>
+                  <div
+                    key={client.id}
+                    onClick={() => {
+                      if (client.active) navigate(`/vendor/clients/${client.id}/orders`, {
+                        state: { clientName: `${client.first_name} ${client.last_name}` }
+                      })
+                    }}
+                    style={{
+                      background: theme.semantic.bgCard,
+                      borderRadius: '12px',
+                      border: `0.5px solid ${client.active ? theme.semantic.border : '#F5A623'}`,
+                      padding: '14px 16px',
+                      cursor: client.active ? 'pointer' : 'default',
+                    }}
+                    onMouseEnter={(e) => { if (client.active) e.currentTarget.style.boxShadow = '0 2px 8px rgba(30,58,95,0.08)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none' }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
