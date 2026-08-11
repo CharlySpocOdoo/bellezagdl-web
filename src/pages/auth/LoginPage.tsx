@@ -21,11 +21,7 @@ export function LoginPage() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError('Por favor ingresa tu email y contraseña.')
-      return
-    }
-    if (!email.includes('@')) {
-      setError('El email no tiene un formato válido.')
+      setError('Por favor ingresa tu usuario y contraseña.')
       return
     }
     if (password.length < 8) {
@@ -123,11 +119,10 @@ export function LoginPage() {
         {/* Formulario */}
         <Input
           label="Correo electrónico"
-          type="email"
+          type="text"
           value={email}
           onChange={setEmail}
           placeholder="tu@email.com"
-          
         />
         <PasswordInput
           label="Contraseña"
