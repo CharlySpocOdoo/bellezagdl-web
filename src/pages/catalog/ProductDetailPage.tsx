@@ -172,8 +172,8 @@ export function ProductDetailPage() {
   }
 
   // Galería por variante — hasta 5 imágenes con SKU_2/_3/_4/_5, verificadas
-  // antes de mostrarse para saber cuántas existen realmente (necesario
-  // para decidir si se muestran flechas/puntos de navegación)
+  // secuencialmente: la primera que falla se asume como el fin de la
+  // secuencia (sin huecos tolerados) y se detiene la búsqueda ahí
   useEffect(() => {
     let cancelled = false
     if (animationFallbackRef.current) {
@@ -202,10 +202,16 @@ export function ProductDetailPage() {
         : `https://rosadelima-assets.s3.amazonaws.com/productos/${brandFolder}/${sku}_${n}.webp`
     )
 
-    Promise.all(candidates.map(probeImage)).then((results) => {
-      if (cancelled) return
-      setValidGallery(results.filter((url): url is string => url !== null))
-    })
+    ;(async () => {
+      const valid: string[] = []
+      for (const url of candidates) {
+        const result = await probeImage(url)
+        if (cancelled) return
+        if (result === null) break
+        valid.push(result)
+      }
+      setValidGallery(valid)
+    })()
 
     return () => { cancelled = true }
   }, [selectedVariant?.id, product?.id])
