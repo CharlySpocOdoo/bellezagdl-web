@@ -55,7 +55,7 @@ export function WholesalePage() {
         .filter((p) => (brandId ? p.brand_id === brandId : true))
         .map((p) => subcategoryLabel(p.category_name || ''))
         .filter(Boolean)
-    ))
+    )).sort((a, b) => a.localeCompare(b, 'es'))
 
   const availableCategoryLabels = getCategoryLabelsForBrand(selectedBrand)
 
