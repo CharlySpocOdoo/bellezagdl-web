@@ -474,15 +474,25 @@ export function ProductDetailPage() {
           )}
 
           {/* Precio */}
-          <p style={{
-            fontSize: '28px',
-            fontWeight: 600,
-            color: theme.semantic.actionPrimary,
-            margin: '0 0 16px',
-            textAlign: 'center',
-          }}>
-            ${Number(product.display_price).toFixed(2)}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '8px', margin: '0 0 16px' }}>
+            {product.precio_original != null && (
+              <span style={{
+                fontSize: '16px',
+                color: '#9CA3AF',
+                textDecoration: 'line-through',
+              }}>
+                ${Number(product.precio_original).toFixed(2)}
+              </span>
+            )}
+            <p style={{
+              fontSize: '28px',
+              fontWeight: 600,
+              color: theme.semantic.actionPrimary,
+              margin: 0,
+            }}>
+              ${Number(product.display_price).toFixed(2)}
+            </p>
+          </div>
 
           {/* Descripción */}
           {product.description && (

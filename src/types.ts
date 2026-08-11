@@ -78,6 +78,7 @@ export interface Product {
   brand_name: string | null
   category_name: string | null
   display_price: number
+  precio_original: number | null
   tags: string[]
   variants: ProductVariant[]
   images: ProductImage[]

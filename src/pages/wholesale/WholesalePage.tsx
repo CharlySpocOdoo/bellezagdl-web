@@ -25,6 +25,7 @@ export function WholesalePage() {
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedBrand, setSelectedBrand] = useState('')
+  const [outletOnly, setOutletOnly] = useState(false)
 
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isOrdering, setIsOrdering] = useState(false)
@@ -87,17 +88,18 @@ export function WholesalePage() {
     : []
 
   const filtered = products.filter((p) => {
+    const matchOutlet = outletOnly ? p.precio_original != null : true
     if (searchLower) {
       const matchName = p.name.toLowerCase().includes(searchLower)
       const matchBrand = matchingBrandIds.includes(p.brand_id)
       const matchCategory = matchingCategoryLabels.includes(subcategoryLabel(p.category_name || ''))
       const matchSku = (p.sku_template || '').toLowerCase().includes(searchLower)
         || (p.variants || []).some((v) => v.sku.toLowerCase().includes(searchLower))
-      return matchName || matchBrand || matchCategory || matchSku
+      return (matchName || matchBrand || matchCategory || matchSku) && matchOutlet
     }
     const matchCat = selectedCategory ? subcategoryLabel(p.category_name || '') === selectedCategory : true
     const matchBrand = selectedBrand ? p.brand_id === selectedBrand : true
-    return matchCat && matchBrand
+    return matchCat && matchBrand && matchOutlet
   })
 
   const handleProductClick = (id: string) => {
@@ -264,6 +266,48 @@ export function WholesalePage() {
             ))}
           </select>
         </div>
+
+        {/* Filtro Solo Outlet */}
+        <button
+          onClick={() => setOutletOnly((v) => !v)}
+          role="switch"
+          aria-checked={outletOnly}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            marginBottom: '16px',
+          }}
+        >
+          <span style={{
+            width: '40px',
+            height: '22px',
+            borderRadius: '20px',
+            background: outletOnly ? theme.semantic.actionPrimary : theme.semantic.border,
+            position: 'relative',
+            flexShrink: 0,
+            transition: 'background 0.15s',
+          }}>
+            <span style={{
+              position: 'absolute',
+              top: '2px',
+              left: outletOnly ? '20px' : '2px',
+              width: '18px',
+              height: '18px',
+              borderRadius: '50%',
+              background: '#FFFFFF',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+              transition: 'left 0.15s',
+            }} />
+          </span>
+          <span style={{ fontSize: '13px', fontWeight: 500, color: theme.semantic.textPrimary }}>
+            Solo Outlet
+          </span>
+        </button>
 
         {/* Contador */}
         <p style={{
@@ -477,14 +521,23 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
                   {product.sku_template}
                 </p>
               )}
-              <span style={{
-                fontSize: '12px',
-                fontWeight: 700,
-                color: theme.semantic.textOnPrimary,
-                flexShrink: 0,
-                marginLeft: 'auto',
-              }}>
-                ${Number(product.display_price)?.toFixed(2)}
+              <span style={{ display: 'flex', alignItems: 'baseline', gap: '4px', flexShrink: 0, marginLeft: 'auto' }}>
+                {product.precio_original != null && (
+                  <span style={{
+                    fontSize: '10px',
+                    color: 'rgba(255,255,255,0.6)',
+                    textDecoration: 'line-through',
+                  }}>
+                    ${Number(product.precio_original).toFixed(2)}
+                  </span>
+                )}
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: theme.semantic.textOnPrimary,
+                }}>
+                  ${Number(product.display_price)?.toFixed(2)}
+                </span>
               </span>
             </div>
           </div>
