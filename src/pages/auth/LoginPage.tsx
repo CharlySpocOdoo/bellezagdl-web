@@ -24,10 +24,7 @@ export function LoginPage() {
       setError('Por favor ingresa tu usuario y contraseña.')
       return
     }
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.')
-      return
-    }
+
 
     setError('')
     setIsLoading(true)

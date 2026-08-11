@@ -52,10 +52,6 @@ export function ActivatePage() {
       setError('Por favor ingresa y confirma tu contraseña.')
       return
     }
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.')
-      return
-    }
     if (password !== passwordConfirm) {
       setError('Las contraseñas no coinciden.')
       return
@@ -204,7 +200,7 @@ export function ActivatePage() {
           type="password"
           value={password}
           onChange={setPassword}
-          placeholder="Mínimo 8 caracteres"
+          placeholder="Contraseña"
         />
         <Input
           label="Confirmar contraseña"

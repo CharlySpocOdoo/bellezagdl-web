@@ -80,10 +80,6 @@ export function RegisterPage() {
       setError('Por favor completa todos los campos.')
       return
     }
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.')
-      return
-    }
     if (password !== confirmPassword) {
       setConfirmPasswordError('Las contraseñas no coinciden')
       return
@@ -111,7 +107,7 @@ export function RegisterPage() {
         if (Array.isArray(detail)) {
           const messages = detail.map((e: any) => {
             if (e.loc?.includes('email')) return 'El email no tiene un formato válido.'
-            if (e.loc?.includes('password')) return 'La contraseña debe tener al menos 8 caracteres.'
+            if (e.loc?.includes('password')) return e.msg
             return e.msg
           })
           setError(messages.join(' '))

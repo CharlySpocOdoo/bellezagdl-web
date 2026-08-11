@@ -25,10 +25,6 @@ export function ResetPasswordPage() {
       setError('Completa ambos campos.')
       return
     }
-    if (newPassword.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.')
-      return
-    }
     if (newPassword !== confirmPassword) {
       setError('Las contraseñas no coinciden.')
       return
