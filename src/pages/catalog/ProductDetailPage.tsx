@@ -222,9 +222,11 @@ export function ProductDetailPage() {
       try {
         const data = await getProduct(id)
         setProduct(data)
-        // Siempre seleccionar la primera variante activa — el stock no es
-        // un campo confiable ni bloqueante (el sistema no controla stock)
-        const activeOnes = data.variants?.filter((v) => v.active) || []
+        // Siempre seleccionar la primera variante activa en orden natural —
+        // el stock no es un campo confiable ni bloqueante (el sistema no
+        // controla stock)
+        const activeOnes = (data.variants?.filter((v) => v.active) || [])
+          .sort((a, b) => a.variant_name.localeCompare(b.variant_name, undefined, { numeric: true }))
         setSelectedVariant(activeOnes[0] || null)
       } catch {
         navigate(backPath)
@@ -267,7 +269,8 @@ export function ProductDetailPage() {
 
   if (!product) return null
 
-  const activeVariants = product.variants?.filter((v) => v.active) || []
+  const activeVariants = (product.variants?.filter((v) => v.active) || [])
+    .sort((a, b) => a.variant_name.localeCompare(b.variant_name, undefined, { numeric: true }))
   const displayName = stripBrandFromName(product.name, product.brand_name)
 
   return (
